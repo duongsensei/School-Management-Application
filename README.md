@@ -264,4 +264,36 @@ dotnet dev-certs https --trust
 - Báo cáo điểm danh
 - Export PDF với FastReport
 
+## ⚠️ **Lưu ý về Syncfusion License**
+
+Project này sử dụng **Syncfusion Essential Studio** cho các UI components nâng cao. Khi chạy ứng dụng, bạn có thể thấy thông báo:
+
+> "This application was built using a trial version of Syncfusion Essential Studio..."
+
+### **Cách xử lý:**
+
+1. **Community License (Miễn phí):**
+   - Đăng ký tại: https://www.syncfusion.com/products/communitylicense
+   - Điều kiện: Doanh thu < $1M USD/năm, tối đa 5 developers
+   - Sau khi có license key, thêm vào `src/main.ts`:
+   ```typescript
+   import { registerLicense } from '@syncfusion/ej2-base';
+   registerLicense('YOUR-LICENSE-KEY-HERE');
+   ```
+
+2. **Thay thế bằng thư viện miễn phí:**
+   - **AG Grid** thay cho Syncfusion Grid
+   - **Chart.js** thay cho Syncfusion Charts  
+   - **Angular Material** thay cho các UI components
+
+3. **Mua license thương mại:**
+   - Truy cập: https://www.syncfusion.com/sales/products
+
+### **Components Syncfusion đang sử dụng:**
+- DataGrid (Bảng dữ liệu)
+- Charts (Biểu đồ) 
+- PDF Viewer (Xem PDF)
+- Input Components (Thành phần nhập liệu)
+- Notifications (Thông báo)
+
 
