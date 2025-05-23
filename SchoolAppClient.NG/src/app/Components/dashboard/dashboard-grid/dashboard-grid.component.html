@@ -1,0 +1,104 @@
+<!-- Modern Dashboard Grid with Enhanced Cards -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">School Dashboard</h1>
+    <p class="dashboard-subtitle">Overview of your school's key metrics</p>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Student Card -->
+    <div class="stat-card student-card">
+      <div class="card-background"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">Total Students</h3>
+          <div class="card-value">{{ studentCount }}</div>
+          <div class="card-change positive">
+            <mat-icon>trending_up</mat-icon>
+            <span>+12% from last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Card -->
+    <div class="stat-card staff-card">
+      <div class="card-background"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">Total Staff</h3>
+          <div class="card-value">{{ staffCount }}</div>
+          <div class="card-change positive">
+            <mat-icon>trending_up</mat-icon>
+            <span>+3% from last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Department Card -->
+    <div class="stat-card department-card">
+      <div class="card-background"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">Departments</h3>
+          <div class="card-value">{{ departmentCount }}</div>
+          <div class="card-change neutral">
+            <mat-icon>remove</mat-icon>
+            <span>No change</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Standard/Classes Card -->
+    <div class="stat-card standard-card">
+      <div class="card-background"></div>
+      <div class="card-content">
+        <div class="card-icon">
+          <mat-icon>class</mat-icon>
+        </div>
+        <div class="card-info">
+          <h3 class="card-title">Classes</h3>
+          <div class="card-value">{{ standardCount }}</div>
+          <div class="card-change positive">
+            <mat-icon>trending_up</mat-icon>
+            <span>+2 new classes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+      <button class="action-btn" routerLink="/student">
+        <mat-icon>person_add</mat-icon>
+        <span>Add Student</span>
+      </button>
+      <button class="action-btn" routerLink="/staff">
+        <mat-icon>group_add</mat-icon>
+        <span>Add Staff</span>
+      </button>
+      <button class="action-btn" routerLink="/attendance">
+        <mat-icon>how_to_reg</mat-icon>
+        <span>Mark Attendance</span>
+      </button>
+      <button class="action-btn" routerLink="/marks">
+        <mat-icon>grade</mat-icon>
+        <span>Enter Marks</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,238 @@
+/* Enhanced Main Layout Styles */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Enhanced Sidebar Styles */
+.app-sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: var(--z-fixed);
+}
+
+.app-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-sidebar::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.app-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+.sidebar-visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.sidebar-hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+  width: 0;
+  border-right: none;
+  box-shadow: none;
+}
+
+/* Enhanced Content Styles */
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-base);
+  overflow: hidden;
+  background: var(--bg-secondary);
+  position: relative;
+}
+
+.content-with-sidebar {
+  margin-left: 0;
+}
+
+.content-full-width {
+  margin-left: 0;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: var(--spacing-8);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-secondary);
+  position: relative;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.content-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.content-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* Content Area Enhancements */
+.content-wrapper > * {
+  animation: fadeInUp var(--transition-base) ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-fixed) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(4px);
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    padding: var(--spacing-6);
+  }
+}
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    z-index: var(--z-fixed);
+    box-shadow: var(--shadow-xl);
+    border-right: 1px solid var(--border-light);
+  }
+  
+  .sidebar-hidden {
+    transform: translateX(-100%);
+    width: var(--sidebar-width);
+  }
+  
+  .app-content {
+    margin-left: 0 !important;
+  }
+  
+  .content-wrapper {
+    padding: var(--spacing-5);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    width: 280px;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+  }
+  
+  .content-wrapper {
+    padding: var(--spacing-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .content-wrapper {
+    padding: var(--spacing-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: var(--spacing-2);
+  }
+}
+
+/* Focus and Accessibility */
+.app-sidebar:focus-within {
+  box-shadow: var(--shadow-lg);
+}
+
+.content-wrapper:focus-within {
+  outline: none;
+}
+
+/* Print Styles */
+@media print {
+  .app-sidebar {
+    display: none;
+  }
+  
+  .app-content {
+    margin-left: 0 !important;
+  }
+  
+  .content-wrapper {
+    padding: 0;
+    overflow: visible;
+    height: auto;
+  }
+}
