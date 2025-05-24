@@ -9,7 +9,7 @@ import { Staff } from '../Models/staff';
   providedIn: 'root'
 })
 export class StaffService {
-  private apiUrl = 'https://localhost:7225/api/Staffs'; 
+  private apiUrl = 'http://localhost:5257/api/Staffs'; 
     //getAllDepartments: any;
     //getStaffSalaries: any;
 

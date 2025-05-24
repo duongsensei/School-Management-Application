@@ -7,6 +7,18 @@
 @import '../node_modules/@syncfusion/ej2-angular-notifications/styles/material.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* Hide Syncfusion license popup and watermark */
+.e-dlg-overlay[aria-label*="Syncfusion"],
+.e-dlg-overlay[aria-label*="License"],
+div[class*="sf-license"],
+div[id*="sf-license"],
+body > div:last-child {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Enhanced CSS Variables for consistent theming */
 :root {
   /* Modern Color Palette - Minimalist */
@@ -169,11 +181,6 @@ body {
   margin: 0;
   overflow-x: hidden;
   font-weight: 400;
-}
-
-/* Hide Syncfusion watermark */
-body > div:last-child {
-  display: none !important;
 }
 
 /* Enhanced Typography Scale */

@@ -82,7 +82,7 @@ export class ListStudentComponent implements OnInit {
   getActiveStudents(): number {
     // Assuming students are active by default, or you can add a property to filter by active status
     // For now, returning all students as active
-    return this.students?.length || 0;
+    return this.students.length || 0;
   }
 
   getUniqueStandards(): number {
