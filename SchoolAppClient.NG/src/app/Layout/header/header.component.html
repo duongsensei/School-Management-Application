@@ -11,105 +11,49 @@
       </button>
       
       <div class="logo">
-        <mat-icon class="logo-icon">school</mat-icon>
-        <span class="logo-text">School MS</span>
+        <div class="logo-icon-wrapper">
+          <mat-icon class="logo-icon">school</mat-icon>
+        </div>
+        <div class="logo-content">
+          <span class="logo-text">School MS</span>
+          <span class="logo-subtitle">Management System</span>
+        </div>
       </div>
     </div>
 
-    <!-- Center Section: Navigation (Desktop Only) -->
-    <nav class="header-nav">
-      <div class="nav-dropdown">
-        <button class="nav-button" type="button">
-          <mat-icon>people</mat-icon>
-          <span>Students</span>
-          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+    <!-- Center Section: Search Bar (Desktop) -->
+    <div class="header-center">
+      <div class="search-container">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search students, staff, subjects..."
+          #searchInput>
+        <button class="search-clear" *ngIf="searchInput.value" (click)="searchInput.value = ''">
+          <mat-icon>close</mat-icon>
         </button>
-        <div class="nav-dropdown-menu">
-          <a routerLink="/student" class="nav-dropdown-item">
-            <mat-icon>people</mat-icon>
-            <span>All Students</span>
-          </a>
-        </div>
       </div>
+    </div>
 
-      <div class="nav-dropdown">
-        <button class="nav-button" type="button">
-          <mat-icon>group</mat-icon>
-          <span>Staff</span>
-          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-        </button>
-        <div class="nav-dropdown-menu">
-          <a routerLink="/departments" class="nav-dropdown-item">
-            <mat-icon>business</mat-icon>
-            <span>Departments</span>
-          </a>
-          <a routerLink="/staff-list" class="nav-dropdown-item">
-            <mat-icon>group</mat-icon>
-            <span>Staff List</span>
-          </a>
-          <a routerLink="/staff-salaries" class="nav-dropdown-item">
-            <mat-icon>attach_money</mat-icon>
-            <span>Salaries</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="nav-dropdown">
-        <button class="nav-button" type="button">
-          <mat-icon>assignment</mat-icon>
-          <span>Academic</span>
-          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-        </button>
-        <div class="nav-dropdown-menu">
-          <a routerLink="/subjects" class="nav-dropdown-item">
-            <mat-icon>book</mat-icon>
-            <span>Subjects</span>
-          </a>
-          <a routerLink="/standards" class="nav-dropdown-item">
-            <mat-icon>class</mat-icon>
-            <span>Standards</span>
-          </a>
-          <a routerLink="/attendanceList" class="nav-dropdown-item">
-            <mat-icon>event_available</mat-icon>
-            <span>Attendance</span>
-          </a>
-          <a routerLink="/marksentrynewList" class="nav-dropdown-item">
-            <mat-icon>grade</mat-icon>
-            <span>Marks</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="nav-dropdown">
-        <button class="nav-button" type="button">
-          <mat-icon>payment</mat-icon>
-          <span>Finance</span>
-          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-        </button>
-        <div class="nav-dropdown-menu">
-          <a routerLink="/fee-types" class="nav-dropdown-item">
-            <mat-icon>list_alt</mat-icon>
-            <span>Fee Types</span>
-          </a>
-          <a routerLink="/fees" class="nav-dropdown-item">
-            <mat-icon>attach_money</mat-icon>
-            <span>Fees</span>
-          </a>
-          <a routerLink="/monthlypayment" class="nav-dropdown-item">
-            <mat-icon>event</mat-icon>
-            <span>Monthly Payment</span>
-          </a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Right Section: User Menu -->
+    <!-- Right Section: Actions and User Menu -->
     <div class="header-right">
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="action-btn mobile-search-toggle" title="Search" type="button" (click)="toggleMobileSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <!-- User Section -->
       <ng-container *ngIf="login; else notLoggedIn">
         <div class="user-dropdown">
           <button class="user-button" type="button">
             <div class="user-avatar">
-              <mat-icon>account_circle</mat-icon>
+              <img src="assets/images/default-avatar.svg" alt="User Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+              <div class="avatar-fallback">
+                <mat-icon>account_circle</mat-icon>
+              </div>
             </div>
             <div class="user-info">
               <span class="user-name">{{ user.username }}</span>
@@ -118,6 +62,27 @@
             <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
           </button>
           <div class="user-dropdown-menu">
+                         <div class="user-dropdown-header">
+               <div class="user-avatar-large">
+                 <img src="assets/images/default-avatar.svg" alt="User Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                 <div class="avatar-fallback">
+                   <mat-icon>account_circle</mat-icon>
+                 </div>
+               </div>
+              <div class="user-details">
+                <span class="user-name-large">{{ user.username }}</span>
+                <span class="user-email">{{ user.email || 'admin@school.edu' }}</span>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/profile" class="user-dropdown-item">
+              <mat-icon>person</mat-icon>
+              <span>My Profile</span>
+            </a>
+            <a routerLink="/settings" class="user-dropdown-item">
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </a>
             <a routerLink="/userlist" class="user-dropdown-item">
               <mat-icon>people</mat-icon>
               <span>Manage Users</span>
@@ -147,6 +112,144 @@
           </a>
         </div>
       </ng-template>
+    </div>
+  </div>
+
+  <!-- Enhanced Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-container">
+      <nav class="header-nav">
+        <div class="nav-dropdown">
+          <button class="nav-button" type="button">
+            <mat-icon>people</mat-icon>
+            <span>Students</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a routerLink="/student" class="nav-dropdown-item">
+              <mat-icon>people</mat-icon>
+              <span>All Students</span>
+            </a>
+            <a routerLink="/student/add" class="nav-dropdown-item">
+              <mat-icon>person_add</mat-icon>
+              <span>Add Student</span>
+            </a>
+            <a routerLink="/student/reports" class="nav-dropdown-item">
+              <mat-icon>assessment</mat-icon>
+              <span>Student Reports</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button class="nav-button" type="button">
+            <mat-icon>group</mat-icon>
+            <span>Staff</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a routerLink="/departments" class="nav-dropdown-item">
+              <mat-icon>business</mat-icon>
+              <span>Departments</span>
+            </a>
+            <a routerLink="/staff-list" class="nav-dropdown-item">
+              <mat-icon>group</mat-icon>
+              <span>Staff List</span>
+            </a>
+            <a routerLink="/staff-salaries" class="nav-dropdown-item">
+              <mat-icon>attach_money</mat-icon>
+              <span>Salaries</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button class="nav-button" type="button">
+            <mat-icon>assignment</mat-icon>
+            <span>Academic</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a routerLink="/subjects" class="nav-dropdown-item">
+              <mat-icon>book</mat-icon>
+              <span>Subjects</span>
+            </a>
+            <a routerLink="/standards" class="nav-dropdown-item">
+              <mat-icon>class</mat-icon>
+              <span>Standards</span>
+            </a>
+            <a routerLink="/attendanceList" class="nav-dropdown-item">
+              <mat-icon>event_available</mat-icon>
+              <span>Attendance</span>
+            </a>
+            <a routerLink="/marksentrynewList" class="nav-dropdown-item">
+              <mat-icon>grade</mat-icon>
+              <span>Marks</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button class="nav-button" type="button">
+            <mat-icon>payment</mat-icon>
+            <span>Finance</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a routerLink="/fee-types" class="nav-dropdown-item">
+              <mat-icon>list_alt</mat-icon>
+              <span>Fee Types</span>
+            </a>
+            <a routerLink="/fees" class="nav-dropdown-item">
+              <mat-icon>attach_money</mat-icon>
+              <span>Fees</span>
+            </a>
+            <a routerLink="/monthlypayment" class="nav-dropdown-item">
+              <mat-icon>event</mat-icon>
+              <span>Monthly Payment</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button class="nav-button" type="button">
+            <mat-icon>analytics</mat-icon>
+            <span>Reports</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a routerLink="/reports/academic" class="nav-dropdown-item">
+              <mat-icon>school</mat-icon>
+              <span>Academic Reports</span>
+            </a>
+            <a routerLink="/reports/financial" class="nav-dropdown-item">
+              <mat-icon>account_balance</mat-icon>
+              <span>Financial Reports</span>
+            </a>
+            <a routerLink="/reports/attendance" class="nav-dropdown-item">
+              <mat-icon>event_note</mat-icon>
+              <span>Attendance Reports</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Mobile Search Overlay -->
+  <div class="mobile-search-overlay" [class.mobile-search-open]="isMobileSearchOpen">
+    <div class="mobile-search-container">
+      <div class="mobile-search-header">
+        <mat-icon>search</mat-icon>
+        <input 
+          type="text" 
+          class="mobile-search-input" 
+          placeholder="Search..."
+          #mobileSearchInput>
+        <button class="mobile-search-close" (click)="toggleMobileSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 

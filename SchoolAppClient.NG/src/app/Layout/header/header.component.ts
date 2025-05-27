@@ -14,6 +14,7 @@ export class HeaderComponent {
   user!: AuthResponse;
   public login!: boolean;
   public isMobileMenuOpen = false;
+  public isMobileSearchOpen = false;
   
   constructor(private sidebarService: CommonServices) { }
 
@@ -23,6 +24,18 @@ export class HeaderComponent {
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    // Close mobile search if open
+    if (this.isMobileSearchOpen) {
+      this.isMobileSearchOpen = false;
+    }
+  }
+
+  toggleMobileSearch() {
+    this.isMobileSearchOpen = !this.isMobileSearchOpen;
+    // Close mobile menu if open
+    if (this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+    }
   }
 
   ngOnInit() {

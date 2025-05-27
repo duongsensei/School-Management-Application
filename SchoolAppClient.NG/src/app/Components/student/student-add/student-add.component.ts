@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
+import { Location } from '@angular/common';
 import { Student } from '../../../Models/student';
 import { Standard } from '../../../Models/standard';
 import { StudentService } from '../../../Services/student.service';
@@ -13,99 +14,86 @@ import { Router } from '@angular/router';
 })
 export class StudentAddComponent implements OnInit {
 
-
   @ViewChild("studentForm") studentForm!: NgForm;
 
   students: Student = new Student();
   standards: Standard[] = [];
 
-
-  //studentForm!: FormGroup;
-  //standards: Standard[] = [];
-  //genders = Object.values(GenderList);
-
   constructor(
     private fb: FormBuilder,
     private studentService: StudentService,
     private standardService: StandardService,
-    private router: Router
-
-    //private fb: FormBuilder,
-    //private standardService: StandardService, // Update path accordingly
-    //private studentService: StudentService, // Update path accordingly
-    //private router: Router
+    private router: Router,
+    private location: Location
   ) { }
 
 
 
   ngOnInit(): void {
-
     this.initializeForm();
-    this.standardService.getStandards().subscribe((depts: Standard[]) => this.standards = depts);
-
-    //this.initializeForm();
-    //this.standardService.getAllStandards().subscribe((standards: Standard[]) => {
-    //  this.standards = standards;
-    //});
+    this.loadStandards();
   }
 
   initializeForm(): void {
+    // Initialize form if needed
+  }
 
+  loadStandards(): void {
+    this.standardService.getStandards().subscribe({
+      next: (standards: Standard[]) => {
+        this.standards = standards;
+      },
+      error: (error) => {
+        console.error('Error loading standards:', error);
+      }
+    });
   }
 
   onSubmit(): void {
-    // Submit the form
     if (this.studentForm.valid) {
-      // Call the service method to add the staff
-      this.studentService.SaveStudent(this.students).subscribe(
-        () => {
-
-          console.log('students added successfully');
-
+      this.studentService.SaveStudent(this.students).subscribe({
+        next: () => {
+          console.log('Student added successfully');
           this.router.navigate(['/student']);
         },
-        error => {
-
+        error: (error) => {
           console.error('Error adding student:', error);
+          alert('Error adding student. Please try again.');
         }
-      );
+      });
     } else {
-      // Form is invalid, display validation errors
       console.log('Form is invalid');
+      this.markFormGroupTouched();
     }
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.studentForm.controls).forEach(key => {
+      const control = this.studentForm.controls[key];
+      control.markAsTouched();
+    });
   }
 
 
 
-  //onSubmit(): void {
-  //  if (this.studentForm.valid) {
-  //    const newStudent: Student = this.studentForm.value;
-  //    this.studentService.createSubject(newStudent).subscribe(
-  //      () => {
-  //        console.log('Student added successfully');
-  //        this.router.navigate(['/student-list']); // Navigate to student list page
-  //      },
-  //      error => {
-  //        console.error('Error adding student:', error);
-  //      }
-  //    );
-  //  } else {
-  //    console.log('Form is invalid');
-  //  }
-  //}
 
 
-
-
-
-  uploadImage(imageInput: any) {
-    var file: File = imageInput.files[0];
-    if (file.size > 200 * 1024) {
-      alert('max allowed size is 200KB');
+  uploadImage(imageInput: any): void {
+    if (!imageInput.files || imageInput.files.length === 0) {
       return;
     }
+    
+    const file: File = imageInput.files[0];
+    if (file.size > 200 * 1024) {
+      alert('Maximum allowed size is 200KB');
+      return;
+    }
+    
     this.students.imageUpload.getBase64(file);
+  }
 
+  goBack(): void {
+    this.location.back();
   }
 }
 

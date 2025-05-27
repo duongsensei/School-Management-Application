@@ -6,6 +6,7 @@ import { StandardService } from '../../../Services/standard.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImageUpload } from '../../../Models/StaticImageModel/imageUpload';
 import { NgForm } from '@angular/forms';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-student-edit',
@@ -22,7 +23,8 @@ export class StudentEditComponent implements OnInit {
     private studentService: StudentService,
     private standardService: StandardService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -75,16 +77,19 @@ export class StudentEditComponent implements OnInit {
 
   uploadImage(imageInput: any) {
     var file: File = imageInput.files[0];
-    if (file.size > 200 * 1024) {
-      alert('max allowed size is 200KB');
-      this.errorMessages.push('max allowed size is 200KB');
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      alert('Maximum allowed size is 2MB');
+      this.errorMessages.push('Maximum allowed size is 2MB');
       return;
     }
     else {
       this.errorMessages = [];
     }
     this.students.imageUpload.getBase64(file);
+  }
 
+  goBack(): void {
+    this.location.back();
   }
 }
 
