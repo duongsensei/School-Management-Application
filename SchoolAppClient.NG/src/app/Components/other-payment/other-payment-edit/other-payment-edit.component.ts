@@ -18,7 +18,7 @@ export class OtherpaymentEditComponent implements OnInit {
   public standards: Standard[] = [];
   public fee: Fee[] = [];
   public otherPaymentId!: number;
-  public selectedStandardId: string = '';
+  public selectedStandardId = '';
 
 
   constructor(

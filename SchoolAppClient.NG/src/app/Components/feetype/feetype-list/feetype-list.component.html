@@ -1,27 +1,432 @@
-<div class="container">
-  <h2>Fee Types</h2>
-  <a class="btn btn-success" routerLink="/fee-types/create">Create Fee Type</a>
-  <ejs-grid #grid [dataSource]="feeTypes" [editSettings]="editSettings" [allowPaging]="true"
-            [pageSettings]="pageSettings" [filterSettings]="filterSettings" [toolbar]="toolbarOptions"
-            [selectionSettings]="selectionOptions" [searchSettings]="searchOptions">
-    <e-columns>
-      <e-column field="feeTypeId" headerText="ID" width="100"></e-column>
-      <e-column field="typeName" headerText="Name" width="150"></e-column>
-      <e-column headerText="Action" width="150">
-        <ng-template #template let-data>
-          <button class="btn btn-primary" [routerLink]="['/fee-types', data.feeTypeId, 'edit']">Edit</button>
-          <button class="btn btn-danger" (click)="confirmDelete(data.feeTypeId)">Delete</button>
-        </ng-template>
-      </e-column>
-    </e-columns>
-  </ejs-grid>
+<!-- Enhanced Fee Types List Component -->
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <span class="breadcrumb-item">School Management</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Finance</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Fee Types</span>
+        </nav>
 
-  <!-- Confirmation Dialog Popup -->
-  <div class="confirmation-popup" *ngIf="confirmationDialogVisible">
-    <div class="confirmation-dialog">
-      <app-confirmation-dialog [title]="'Confirmation'" [message]="'Are you sure you want to delete this fee type?'"></app-confirmation-dialog>
-      <button class="btn btn-danger" (click)="deleteFeeType()">Confirm Delete</button>
+        <!-- Page Title -->
+        <h1 class="page-title">
+          <mat-icon class="title-icon">payment</mat-icon>
+          Fee Type Management
+        </h1>
+        <p class="page-description">
+          Manage and configure different types of fees for students and academic programs
+        </p>
+      </div>
+
+      <!-- Page Actions -->
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="loadFeeTypes()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        <a routerLink="/fee-types/create" class="btn btn-primary">
+          <mat-icon>add</mat-icon>
+          Create Fee Type
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Section -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>category</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ totalFeeTypes }}</div>
+              <div class="stat-label">Total Fee Types</div>
+              <div class="stat-change">
+                <mat-icon>info</mat-icon>
+                Active categories
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart" [style.width.%]="100"></div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ academicFeeTypes }}</div>
+              <div class="stat-label">Academic Fees</div>
+              <div class="stat-change">
+                <mat-icon>trending_up</mat-icon>
+                Core educational
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart success" [style.width.%]="getAcademicPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>local_activity</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ extraFeeTypes }}</div>
+              <div class="stat-label">Extra Activities</div>
+              <div class="stat-change">
+                <mat-icon>sports</mat-icon>
+                Additional services
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart warning" [style.width.%]="getExtraPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ selectedFeeTypes.length }}</div>
+              <div class="stat-label">Selected</div>
+              <div class="stat-change">
+                <mat-icon>select_all</mat-icon>
+                Current selection
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart info" [style.width.%]="getSelectionPercentage()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <mat-icon>filter_list</mat-icon>
+          Filters & Search
+        </h3>
+        <div class="filters-actions">
+          <button class="btn btn-sm btn-secondary" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+          <button class="btn btn-sm btn-primary" (click)="toggleAdvancedFilters()">
+            <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ showAdvancedFilters ? 'Less' : 'More' }}
+          </button>
+        </div>
+      </div>
+      <div class="filters-content">
+        <div class="filter-row primary">
+          <!-- Search -->
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" class="search-input" placeholder="Search fee types..." [(ngModel)]="searchTerm"
+              (input)="onSearch()">
+            <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Sort By -->
+          <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select class="filter-select" [(ngModel)]="sortBy" (change)="applySorting()">
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="id-asc">ID (Low to High)</option>
+              <option value="id-desc">ID (High to Low)</option>
+            </select>
+          </div>
+
+          <!-- Records per page -->
+          <div class="filter-group">
+            <label class="filter-label">Show</label>
+            <select class="filter-select" [(ngModel)]="pageSize" (change)="updatePageSize()">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+          <div class="filter-group">
+            <label class="filter-label">Category Filter</label>
+            <select class="filter-select" [(ngModel)]="categoryFilter" (change)="applyFilters()">
+              <option value="">All Categories</option>
+              <option value="academic">Academic Fees</option>
+              <option value="extra">Extra Activities</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Quick Actions</label>
+            <button class="btn btn-sm btn-secondary" (click)="selectAll()">
+              <mat-icon>select_all</mat-icon>
+              Select All
+            </button>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Export Options</label>
+            <button class="btn btn-sm btn-secondary" (click)="exportToCSV()">
+              <mat-icon>download</mat-icon>
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" *ngIf="selectedFeeTypes.length > 0">
+      <div class="bulk-info">
+        <mat-icon>check_circle</mat-icon>
+        {{ selectedFeeTypes.length }} fee type(s) selected
+      </div>
+      <div class="bulk-actions">
+        <button class="btn btn-sm btn-secondary" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          Clear Selection
+        </button>
+        <button class="btn btn-sm btn-warning" (click)="bulkEdit()">
+          <mat-icon>edit</mat-icon>
+          Bulk Edit
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+          <mat-icon>delete</mat-icon>
+          Delete Selected
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Card -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <div class="data-card-title-section">
+          <h3 class="data-card-title">
+            <mat-icon>category</mat-icon>
+            Fee Types
+            <span class="record-count">({{ filteredFeeTypes.length }} of {{ feeTypes.length }})</span>
+          </h3>
+          <p class="data-card-subtitle">Manage fee categories and billing structures</p>
+        </div>
+        <div class="data-card-actions">
+          <div class="page-size-selector">
+            <label>Items per page:</label>
+            <select class="page-size-select" [(ngModel)]="pageSize" (change)="updatePageSize()">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="toggle-btn" [class.active]="currentView === 'table'" (click)="setView('table')">
+              <mat-icon>table_rows</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="currentView === 'cards'" (click)="setView('cards')">
+              <mat-icon>view_module</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div class="loading-overlay" *ngIf="loading">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading fee types...</p>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-container" *ngIf="currentView === 'table' && !loading">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th class="checkbox-column">
+                  <input type="checkbox" class="form-check" [checked]="isAllSelected()" (change)="toggleSelectAll()">
+                </th>
+                <th>Fee Type ID</th>
+                <th>Type Name</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let feeType of paginatedFeeTypes; let i = index" class="table-row">
+                <td class="checkbox-cell">
+                  <input type="checkbox" class="form-check" [checked]="isSelected(feeType)"
+                    (change)="toggleSelection(feeType)">
+                </td>
+                <td class="id-cell">
+                  <div class="id-badge">#{{ feeType.feeTypeId }}</div>
+                </td>
+                <td class="name-cell">
+                  <div class="fee-type-info">
+                    <div class="fee-type-name">{{ feeType.typeName }}</div>
+                    <div class="fee-type-meta">Fee Category</div>
+                  </div>
+                </td>
+                <td class="category-cell">
+                  <div class="category-badge" [ngClass]="getCategoryClass(feeType.typeName)">
+                    <mat-icon>{{ getCategoryIcon(feeType.typeName) }}</mat-icon>
+                    {{ getCategory(feeType.typeName) }}
+                  </div>
+                </td>
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <button class="action-btn btn-info" (click)="viewFeeTypeDetails(feeType)" title="View Details">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <a class="action-btn btn-warning" [routerLink]="['/fee-types', feeType.feeTypeId, 'edit']"
+                      title="Edit Fee Type">
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                    <button class="action-btn btn-danger" (click)="confirmDelete(feeType.feeTypeId)"
+                      title="Delete Fee Type">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card View -->
+        <div class="cards-container" *ngIf="currentView === 'cards' && !loading">
+          <div class="fee-type-grid">
+            <div class="fee-type-card" *ngFor="let feeType of paginatedFeeTypes">
+              <div class="card-checkbox">
+                <input type="checkbox" class="form-check" [checked]="isSelected(feeType)"
+                  (change)="toggleSelection(feeType)">
+              </div>
+
+              <div class="card-header">
+                <div class="fee-type-icon" [ngClass]="getCategoryClass(feeType.typeName)">
+                  <mat-icon>{{ getCategoryIcon(feeType.typeName) }}</mat-icon>
+                </div>
+                <div class="fee-type-id">#{{ feeType.feeTypeId }}</div>
+              </div>
+
+              <div class="card-content">
+                <h4 class="fee-type-name">{{ feeType.typeName }}</h4>
+                <div class="fee-type-category">
+                  <span class="category-label">Category:</span>
+                  <span class="category-value">{{ getCategory(feeType.typeName) }}</span>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn btn-sm btn-info" (click)="viewFeeTypeDetails(feeType)">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </button>
+                <a class="btn btn-sm btn-warning" [routerLink]="['/fee-types', feeType.feeTypeId, 'edit']">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </a>
+                <button class="btn btn-sm btn-danger" (click)="confirmDelete(feeType.feeTypeId)">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!loading && feeTypes.length === 0">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>payment</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No Fee Types Found</h3>
+            <p class="empty-state-description">
+              Get started by creating fee types for your institution. You can categorize different types of
+              fees like tuition, library, laboratory, and other charges.
+            </p>
+            <div class="empty-state-actions">
+              <a routerLink="/fee-types/create" class="btn btn-primary">
+                <mat-icon>add</mat-icon>
+                Create First Fee Type
+              </a>
+              <button class="btn btn-secondary" (click)="loadFeeTypes()">
+                <mat-icon>refresh</mat-icon>
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Pagination -->
+        <div class="custom-pagination" *ngIf="!loading && feeTypes.length > 0">
+          <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+            <mat-icon>chevron_left</mat-icon>
+            Previous
+          </button>
+
+          <div class="pagination-info">
+            Showing {{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ filteredFeeTypes.length }} records
+          </div>
+
+          <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+            Next
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Confirmation Dialog -->
+<div class="confirmation-overlay" *ngIf="confirmationDialogVisible" (click)="closeConfirmationDialog()">
+  <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <div class="dialog-icon warning">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="dialog-content">
+        <h3 class="dialog-title">Confirm Deletion</h3>
+        <p class="dialog-message">
+          Are you sure you want to delete this fee type? This action cannot be undone and may affect
+          existing fee records.
+        </p>
+      </div>
+    </div>
+    <div class="dialog-actions">
       <button class="btn btn-secondary" (click)="closeConfirmationDialog()">Cancel</button>
+      <button class="btn btn-danger" (click)="deleteFeeType()">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
     </div>
   </div>
 </div>

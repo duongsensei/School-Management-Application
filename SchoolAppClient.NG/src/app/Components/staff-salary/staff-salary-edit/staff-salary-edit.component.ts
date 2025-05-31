@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StaffSalary } from '../../../Models/staff-salary';
 import { FormBuilder, NgForm } from '@angular/forms';
 import { StaffSalaryService } from '../../../Services/staff-salary.service';
@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './staff-salary-edit.component.html',
   styleUrl: './staff-salary-edit.component.css'
 })
-export class StaffSalaryEditComponent {
+export class StaffSalaryEditComponent implements OnInit {
 
   staffSalaryId!: number;
   staffSalary: StaffSalary = new StaffSalary();

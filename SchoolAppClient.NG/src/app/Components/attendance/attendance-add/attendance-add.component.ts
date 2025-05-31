@@ -31,7 +31,7 @@ export class AttendanceAddComponent {
     });
   }
 
-  validateIdentificationNumber(control: FormControl): { [s: string]: boolean } {
+  validateIdentificationNumber(control: FormControl): Record<string, boolean> {
     if (!control.value) {
       return {};
     }

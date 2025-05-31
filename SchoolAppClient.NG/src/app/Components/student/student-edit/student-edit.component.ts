@@ -76,7 +76,7 @@ export class StudentEditComponent implements OnInit {
   }
 
   uploadImage(imageInput: any) {
-    var file: File = imageInput.files[0];
+    const file: File = imageInput.files[0];
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
       alert('Maximum allowed size is 2MB');
       this.errorMessages.push('Maximum allowed size is 2MB');

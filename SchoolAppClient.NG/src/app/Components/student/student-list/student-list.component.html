@@ -159,19 +159,19 @@
                 <div class="table-cell actions-column">
                   <div class="action-buttons">
                     <button 
-                      class="action-btn view-btn" 
+                      class="action-btn btn-info" 
                       [routerLink]="['/student-details', student.studentId]"
-                      title="View Details">
+                      title="View Student Details">
                       <mat-icon>visibility</mat-icon>
                     </button>
                     <button 
-                      class="action-btn edit-btn" 
+                      class="action-btn btn-warning" 
                       [routerLink]="['/student', student.studentId, 'edit']"
                       title="Edit Student">
                       <mat-icon>edit</mat-icon>
                     </button>
                     <button 
-                      class="action-btn delete-btn" 
+                      class="action-btn btn-danger" 
                       (click)="deleteStudent(student)"
                       title="Delete Student">
                       <mat-icon>delete</mat-icon>

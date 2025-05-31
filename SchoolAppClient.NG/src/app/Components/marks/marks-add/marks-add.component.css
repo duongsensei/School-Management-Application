@@ -37,11 +37,7 @@
   border-color: #f5c6cb;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
-}
+/* Using global button system - no custom button styles needed */
 
 
 

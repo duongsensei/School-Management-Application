@@ -1,104 +1,211 @@
-<!-- Modern Dashboard Grid with Enhanced Cards -->
+<!-- Ocean-Themed Dashboard with Introduction Slides -->
 <div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1 class="dashboard-title">School Dashboard</h1>
-    <p class="dashboard-subtitle">Overview of your school's key metrics</p>
-  </div>
+  <!-- Introduction Slider Section -->
+  <section class="intro-slider">
+    <div class="ocean-wave"></div>
+    <div class="floating-particles">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+    </div>
 
-  <div class="dashboard-grid">
-    <!-- Student Card -->
-    <div class="stat-card student-card">
-      <div class="card-background"></div>
-      <div class="card-content">
-        <div class="card-icon">
-          <mat-icon>school</mat-icon>
+    <div class="slide-container">
+      <div class="slide" [class.active]="currentSlide === 0">
+        <div class="slide-content">
+          <div class="slide-icon">
+            <mat-icon>school</mat-icon>
+          </div>
+          <h1 class="slide-title">Welcome to Our School Management System</h1>
+          <p class="slide-description">
+            A comprehensive digital solution designed to streamline educational administration,
+            enhance student learning experiences, and empower educators with powerful tools.
+          </p>
+          <div class="slide-features">
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Student Information Management</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Academic Performance Tracking</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Administrative Efficiency</span>
+            </div>
+          </div>
         </div>
-        <div class="card-info">
-          <h3 class="card-title">Total Students</h3>
-          <div class="card-value">{{ studentCount }}</div>
-          <div class="card-change positive">
-            <mat-icon>trending_up</mat-icon>
-            <span>+12% from last month</span>
+        <div class="slide-illustration">
+          <div class="illustration-card">
+            <mat-icon>dashboard</mat-icon>
+            <div class="ocean-ripple"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide" [class.active]="currentSlide === 1">
+        <div class="slide-content">
+          <div class="slide-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <h1 class="slide-title">Comprehensive Student Management</h1>
+          <p class="slide-description">
+            Manage student records, track academic progress, monitor attendance,
+            and facilitate seamless communication between students, teachers, and parents.
+          </p>
+          <div class="stats-preview">
+            <div class="stat-item">
+              <div class="stat-number">{{ studentCount }}</div>
+              <div class="stat-label">Active Students</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ standardCount }}</div>
+              <div class="stat-label">Classes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ getAttendanceRate() }}%</div>
+              <div class="stat-label">Attendance Rate</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-illustration">
+          <div class="illustration-card">
+            <mat-icon>groups</mat-icon>
+            <div class="ocean-ripple"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide" [class.active]="currentSlide === 2">
+        <div class="slide-content">
+          <div class="slide-icon">
+            <mat-icon>psychology</mat-icon>
+          </div>
+          <h1 class="slide-title">Smart Academic Analytics</h1>
+          <p class="slide-description">
+            Leverage data-driven insights to improve educational outcomes,
+            identify learning patterns, and provide personalized academic support for every student.
+          </p>
+          <div class="capabilities-grid">
+            <div class="capability-card">
+              <mat-icon>trending_up</mat-icon>
+              <h3>Performance Analytics</h3>
+              <p>Track and analyze student performance trends</p>
+            </div>
+            <div class="capability-card">
+              <mat-icon>assessment</mat-icon>
+              <h3>Assessment Tools</h3>
+              <p>Comprehensive exam and grading management</p>
+            </div>
+            <div class="capability-card">
+              <mat-icon>report</mat-icon>
+              <h3>Detailed Reports</h3>
+              <p>Generate insightful academic reports</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-illustration">
+          <div class="illustration-card">
+            <mat-icon>analytics</mat-icon>
+            <div class="ocean-ripple"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide" [class.active]="currentSlide === 3">
+        <div class="slide-content">
+          <div class="slide-icon">
+            <mat-icon>security</mat-icon>
+          </div>
+          <h1 class="slide-title">Secure & Reliable Platform</h1>
+          <p class="slide-description">
+            Built with enterprise-grade security, ensuring data protection,
+            privacy compliance, and reliable access to your educational resources.
+          </p>
+          <div class="security-features">
+            <div class="security-item">
+              <div class="security-icon">
+                <mat-icon>verified_user</mat-icon>
+              </div>
+              <div class="security-info">
+                <h4>Data Encryption</h4>
+                <p>End-to-end encryption for all sensitive information</p>
+              </div>
+            </div>
+            <div class="security-item">
+              <div class="security-icon">
+                <mat-icon>backup</mat-icon>
+              </div>
+              <div class="security-info">
+                <h4>Regular Backups</h4>
+                <p>Automated daily backups with cloud storage</p>
+              </div>
+            </div>
+            <div class="security-item">
+              <div class="security-icon">
+                <mat-icon>support_agent</mat-icon>
+              </div>
+              <div class="security-info">
+                <h4>24/7 Support</h4>
+                <p>Round-the-clock technical support and assistance</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-illustration">
+          <div class="illustration-card">
+            <mat-icon>shield</mat-icon>
+            <div class="ocean-ripple"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Staff Card -->
-    <div class="stat-card staff-card">
-      <div class="card-background"></div>
-      <div class="card-content">
-        <div class="card-icon">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="card-info">
-          <h3 class="card-title">Total Staff</h3>
-          <div class="card-value">{{ staffCount }}</div>
-          <div class="card-change positive">
-            <mat-icon>trending_up</mat-icon>
-            <span>+3% from last month</span>
-          </div>
-        </div>
+    <!-- Slide Navigation -->
+    <div class="slide-navigation">
+      <div class="nav-dots">
+        <button class="nav-dot" *ngFor="let slide of slides; let i = index" [class.active]="currentSlide === i"
+          (click)="goToSlide(i)">
+        </button>
+      </div>
+      <div class="nav-controls">
+        <button class="nav-btn prev" (click)="previousSlide()" [disabled]="currentSlide === 0">
+          <mat-icon>chevron_left</mat-icon>
+          <span>Previous</span>
+        </button>
+        <button class="nav-btn next" (click)="nextSlide()" [disabled]="currentSlide === slides.length - 1">
+          <span>Next</span>
+          <mat-icon>chevron_right</mat-icon>
+        </button>
       </div>
     </div>
 
-    <!-- Department Card -->
-    <div class="stat-card department-card">
-      <div class="card-background"></div>
-      <div class="card-content">
-        <div class="card-icon">
-          <mat-icon>business</mat-icon>
-        </div>
-        <div class="card-info">
-          <h3 class="card-title">Departments</h3>
-          <div class="card-value">{{ departmentCount }}</div>
-          <div class="card-change neutral">
-            <mat-icon>remove</mat-icon>
-            <span>No change</span>
-          </div>
-        </div>
-      </div>
+    <!-- Auto-play Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressWidth"></div>
     </div>
+  </section>
 
-    <!-- Standard/Classes Card -->
-    <div class="stat-card standard-card">
-      <div class="card-background"></div>
-      <div class="card-content">
-        <div class="card-icon">
-          <mat-icon>class</mat-icon>
-        </div>
-        <div class="card-info">
-          <h3 class="card-title">Classes</h3>
-          <div class="card-value">{{ standardCount }}</div>
-          <div class="card-change positive">
-            <mat-icon>trending_up</mat-icon>
-            <span>+2 new classes</span>
-          </div>
-        </div>
-      </div>
+  <!-- System Status Footer -->
+  <section class="system-status">
+    <div class="status-item">
+      <div class="status-indicator active"></div>
+      <span>System Online</span>
     </div>
-  </div>
-
-  <!-- Quick Actions Section -->
-  <div class="quick-actions">
-    <h2 class="section-title">Quick Actions</h2>
-    <div class="actions-grid">
-      <button class="action-btn" routerLink="/student">
-        <mat-icon>person_add</mat-icon>
-        <span>Add Student</span>
-      </button>
-      <button class="action-btn" routerLink="/staff">
-        <mat-icon>group_add</mat-icon>
-        <span>Add Staff</span>
-      </button>
-      <button class="action-btn" routerLink="/attendance">
-        <mat-icon>how_to_reg</mat-icon>
-        <span>Mark Attendance</span>
-      </button>
-      <button class="action-btn" routerLink="/marks">
-        <mat-icon>grade</mat-icon>
-        <span>Enter Marks</span>
-      </button>
+    <div class="status-item">
+      <mat-icon>schedule</mat-icon>
+      <span>Last updated: {{ getCurrentTime() }}</span>
     </div>
-  </div>
+    <div class="status-item">
+      <mat-icon>people</mat-icon>
+      <span>{{ staffCount }} Staff Members Active</span>
+    </div>
+    <div class="status-item">
+      <mat-icon>assessment</mat-icon>
+      <span>{{ departmentCount }} Departments</span>
+    </div>
+  </section>
 </div>

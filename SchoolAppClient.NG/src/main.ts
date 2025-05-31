@@ -7,7 +7,7 @@ import { registerLicense } from '@syncfusion/ej2-base';
 
 // Register Syncfusion license key (thay YOUR-LICENSE-KEY bằng key thật)
 // Để lấy free license key: https://www.syncfusion.com/products/communitylicense
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF1cWWhMYVB3WmFZfVtgdVdMY19bRnBPMyBoS35Rc0VmW3tecHdWRGZcUU10VEBU');
+registerLicense('@32392e302e303b32393bfIB10Ehs/S4ckqumjiJPkRPkNxk5VJgXYYEtoQseh34=');
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

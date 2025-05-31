@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonServices } from '../../../Services/common.service';
 import { Standard } from '../../../Models/standard';
 import { Student } from '../../../Models/student';
@@ -19,9 +19,11 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
   public students: Student[] = [];
   public standards: Standard[] = [];
   filteredStudents: Student[] = [];
-  public selectedStandardId: string = '';
+  public selectedStandardId = '';
   paymentDetails: any[] = [];
 
+  // Header scroll state
+  isHeaderScrolled = false;
 
   constructor(private commonService: CommonServices) { }
 
@@ -29,6 +31,33 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
     // Fetch the standards and students data when the component initializes
     this.fetchStandards();
     this.fetchStudents();
+    this.updateHeaderScroll();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(event: Event): void {
+    this.updateHeaderScroll();
+  }
+
+  private updateHeaderScroll(): void {
+    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const shouldBeScrolled = scrollPosition > 100;
+
+    if (this.isHeaderScrolled !== shouldBeScrolled) {
+      this.isHeaderScrolled = shouldBeScrolled;
+      this.updateHeaderClass();
+    }
+  }
+
+  private updateHeaderClass(): void {
+    const headerElement = document.querySelector('.page-header');
+    if (headerElement) {
+      if (this.isHeaderScrolled) {
+        headerElement.classList.add('scrolled');
+      } else {
+        headerElement.classList.remove('scrolled');
+      }
+    }
   }
 
   onSubmit(): void {
@@ -72,7 +101,6 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
     });
   }
 
-
   getPaymentsByStudentId(): void {
     if (this.studentId) {
       this.commonService.getAllPaymentsByStudentId(this.studentId)
@@ -89,8 +117,6 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
     } else {
       console.error("Student ID is not set.");
     }
-
-
   }
 
   geDueBalanceByStudentId(): void {
@@ -100,8 +126,6 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
     } else {
       console.error("Student ID is not set.");
     }
-
-
   }
 
   getfeePaymentByStudentId(): void {
@@ -111,9 +135,67 @@ export class PaymentDetailsPerStudentComponent implements OnInit {
     } else {
       console.error("Student ID is not set.");
     }
-
-
   }
 
+  // Payment status classification methods for Monthly Payments
+  getPaymentStatus(payment: MonthlyPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'Fully Paid';
+    } else if (payment.amountPaid > 0) {
+      return 'Partially Paid';
+    } else {
+      return 'Pending';
+    }
+  }
 
+  getPaymentStatusClass(payment: MonthlyPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'paid';
+    } else if (payment.amountPaid > 0) {
+      return 'partial';
+    } else {
+      return 'pending';
+    }
+  }
+
+  getPaymentStatusIcon(payment: MonthlyPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'check_circle';
+    } else if (payment.amountPaid > 0) {
+      return 'hourglass_empty';
+    } else {
+      return 'schedule';
+    }
+  }
+
+  // Payment status classification methods for Other Payments
+  getOtherPaymentStatus(payment: OthersPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'Fully Paid';
+    } else if (payment.amountPaid > 0) {
+      return 'Partially Paid';
+    } else {
+      return 'Pending';
+    }
+  }
+
+  getOtherPaymentStatusClass(payment: OthersPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'paid';
+    } else if (payment.amountPaid > 0) {
+      return 'partial';
+    } else {
+      return 'pending';
+    }
+  }
+
+  getOtherPaymentStatusIcon(payment: OthersPayment): string {
+    if (payment.amountRemaining === 0) {
+      return 'check_circle';
+    } else if (payment.amountPaid > 0) {
+      return 'hourglass_empty';
+    } else {
+      return 'schedule';
+    }
+  }
 }

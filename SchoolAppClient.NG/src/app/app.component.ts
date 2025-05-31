@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from './Authentication/SecurityModels/auth.service';
 import { AuthResponse } from './Authentication/SecurityModels/auth-response';
 
@@ -8,7 +8,7 @@ import { AuthResponse } from './Authentication/SecurityModels/auth-response';
   styleUrl: './app.component.css'
   
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'NG.ClientsSchoolAPI';
   private authService = inject(AuthService);
   user!: AuthResponse;

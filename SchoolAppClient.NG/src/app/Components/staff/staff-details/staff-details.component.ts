@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 })
 export class StaffDetailsComponent implements OnInit {
   staff: Staff = new Staff();
-  errorMessage: string = '';
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,

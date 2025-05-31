@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { RegistrationRequest } from "./RegistrationRequest";
 import { AuthRegRequest } from "./AuthRegRequest";
 
-const api: string = "http://localhost:5257/api/users/";
+const api = "http://localhost:5257/api/users/";
 
 @Injectable({
   providedIn: 'root',
@@ -19,9 +19,9 @@ export class AuthService {
   private loggedUser?: string;
   private router = inject(Router);
   private http = inject(HttpClient);
-  private isLogin: boolean = false;
+  private isLogin = false;
 
-  private userSubject: BehaviorSubject<AuthResponse | null> = new BehaviorSubject(JSON.parse(localStorage.getItem(this.JWT_USER)!));
+  private userSubject = new BehaviorSubject<AuthResponse | null>(JSON.parse(localStorage.getItem(this.JWT_USER)!));
   public user: Observable<AuthResponse | null> = this.userSubject.asObservable();
 
   //constructor(@Inject(ChangeDetectorRef) private changeDetectorRef: ChangeDetectorRef) { }
@@ -99,7 +99,7 @@ export class AuthService {
 
   get getCurrentAuthUser(): any {
     if (localStorage.getItem(this.JWT_USER)) {
-      var user = JSON.parse(localStorage.getItem(this.JWT_USER) ?? "");
+      const user = JSON.parse(localStorage.getItem(this.JWT_USER) ?? "");
       return user;
     }
     return null;
@@ -138,7 +138,7 @@ export class AuthService {
     let tokens: any = localStorage.getItem(this.JWT_TOKEN);
     if (!tokens) return;
     tokens = JSON.parse(tokens);
-    let refreshToken = tokens.refresh_token;
+    const refreshToken = tokens.refresh_token;
     return this.http
       .post<any>('https://api.escuelajs.co/api/v1/auth/refresh-token', {
         refreshToken,

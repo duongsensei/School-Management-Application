@@ -1,32 +1,216 @@
-<div class="container">
-  <h2>Standard</h2>
-  <a class="btn btn-success" routerLink="/standard/create">Create Standard</a>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Standard Name</th>
-        <th>Standard Capacity</th>
-        <th>Student Count</th>
-        <th>Subject Count</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let standard of standard">
-        <td>{{ standard.standardId }}</td>
-        <td>{{ standard.standardName }}</td>
-        <td>{{ standard.standardCapacity }}</td>
-        <td>{{ standard.students.length }}</td>
-        <td>{{ standard.subjects.length }}</td>
+<!-- Enhanced Standard List Component -->
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <h1 class="page-title">Classes Management</h1>
+        <p class="page-description">Manage and view all class/standard information</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="refreshData()" title="Refresh">
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-secondary" (click)="exportData()" title="Export">
+          <mat-icon>download</mat-icon>
+          <span>Export</span>
+        </button>
+        <button class="btn btn-primary" routerLink="/standard/create">
+          <mat-icon>add</mat-icon>
+          <span>Add Class</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-        <td>
-          <a class="btn btn-primary" [routerLink]="['/standard', standard.standardId, 'edit']">Edit</a>
-          <button class="btn btn-danger" (click)="deleteStandard(standard.standardId)">Delete</button>  
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Section -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon">
+            <mat-icon>class</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ standard.length || 0 }}</div>
+            <div class="stat-label">Total Classes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon success">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getTotalStudents() }}</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon warning">
+            <mat-icon>book</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getTotalSubjects() }}</div>
+            <div class="stat-label">Total Subjects</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon info">
+            <mat-icon>event_seat</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getTotalCapacity() }}</div>
+            <div class="stat-label">Total Capacity</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Table Section -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <h3 class="data-card-title">Classes Directory</h3>
+        <div class="data-card-actions">
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Search classes..." class="search-input" #searchInput
+              (keyup)="onSearch(searchInput.value)" [value]="searchTerm">
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading classes...</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && (!filteredStandards || filteredStandards.length === 0)" class="empty-state">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>class</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No classes found</h3>
+            <p class="empty-state-description">
+              {{ searchTerm ? 'Try adjusting your search criteria' : 'Get started by adding your first class' }}
+            </p>
+            <button *ngIf="!searchTerm" class="btn btn-primary" routerLink="/standard/create">
+              <mat-icon>add</mat-icon>
+              <span>Add First Class</span>
+            </button>
+            <button *ngIf="searchTerm" class="btn btn-secondary" (click)="onSearch('')">
+              <mat-icon>clear</mat-icon>
+              <span>Clear Search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Standards Table -->
+        <div *ngIf="!isLoading && filteredStandards && filteredStandards.length > 0" class="standards-table-container">
+          <div class="standards-table">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="header-cell id-column">ID</div>
+              <div class="header-cell name-column">Class Name</div>
+              <div class="header-cell capacity-column">Capacity</div>
+              <div class="header-cell students-column">Students</div>
+              <div class="header-cell subjects-column">Subjects</div>
+              <div class="header-cell utilization-column">Utilization</div>
+              <div class="header-cell actions-column">Actions</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="table-body">
+              <div *ngFor="let std of paginatedStandards; let i = index" class="table-row" [class.even]="i % 2 === 1">
+                <div class="table-cell id-column">
+                  <span class="cell-content">{{ std.standardId }}</span>
+                </div>
+
+                <div class="table-cell name-column">
+                  <div class="standard-name-cell">
+                    <span class="standard-name">{{ std.standardName }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell capacity-column">
+                  <span class="capacity-badge">{{ std.standardCapacity }}</span>
+                </div>
+
+                <div class="table-cell students-column">
+                  <span class="count-badge students">{{ std.students?.length || 0 }}</span>
+                </div>
+
+                <div class="table-cell subjects-column">
+                  <span class="count-badge subjects">{{ std.subjects?.length || 0 }}</span>
+                </div>
+
+                <div class="table-cell utilization-column">
+                  <div class="utilization-indicator">
+                    <div class="utilization-bar">
+                      <div class="utilization-fill" [style.width.%]="getUtilizationPercentage(std)"></div>
+                    </div>
+                    <span class="utilization-text">{{ getUtilizationPercentage(std) }}%</span>
+                  </div>
+                </div>
+
+                <div class="table-cell actions-column">
+                  <div class="action-buttons">
+                    <button class="action-btn btn-info" title="View Class Details" (click)="viewStandardDetails(std)">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button class="action-btn btn-warning" [routerLink]="['/standard', std.standardId, 'edit']"
+                      title="Edit Class">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn btn-danger" (click)="deleteStandard(std.standardId)" title="Delete Class">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && filteredStandards && filteredStandards.length > 0" class="pagination-container">
+          <div class="pagination-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} -
+            {{ Math.min(currentPage * pageSize, filteredStandards.length) }}
+            of {{ filteredStandards.length }} classes
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"
+              title="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+
+            <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"
+              title="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 

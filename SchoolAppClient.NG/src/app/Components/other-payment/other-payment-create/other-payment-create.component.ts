@@ -19,8 +19,8 @@ export class OtherpaymentCreatComponent implements OnInit {
   public standards: Standard[] = [];
   public fee: Fee[] = [];
 
-  public selectedStandardId: string = '';
-  public totalAmount: number = 0;
+  public selectedStandardId = '';
+  public totalAmount = 0;
 
   constructor(
     private commonService: CommonServices,

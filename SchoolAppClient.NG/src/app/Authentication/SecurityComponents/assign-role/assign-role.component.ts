@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppRole, AppUser } from '../../SecurityModels/auth-response';
 import { AuthService } from '../../SecurityModels/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../SecurityModels/auth.service';
   templateUrl: './assign-role.component.html',
   styleUrl: './assign-role.component.css'
 })
-export class AssignRoleComponent {
+export class AssignRoleComponent implements OnInit {
   model!: AppUser;
 
   public roles: AppRole[] = [];
@@ -18,7 +18,7 @@ export class AssignRoleComponent {
   }
 
   ngOnInit() {
-    let id = this.route.snapshot.params['id'];
+    const id = this.route.snapshot.params['id'];
     this.service.roles().subscribe((response: AppRole[]) => {
       this.roles = response;
       //console.log(response);

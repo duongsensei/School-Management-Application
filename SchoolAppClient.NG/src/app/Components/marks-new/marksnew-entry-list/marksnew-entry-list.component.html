@@ -1,43 +1,625 @@
-<div class="staff-management">
-
-  <div class="staff-management-header">
-    <button routerLink="/markNew-entry-create" class="btn btn-primary">New Mark Entry</button>
-
-    <!--<button class="btn btn-primary" (click)="loadStaffList()">Refresh Staff Data</button>-->
+<!-- Enhanced Marks Entry List Component with Advanced Features -->
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">Dashboard</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Examination</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Marks Entry Management</span>
+        </div>
+        <h1 class="page-title">
+          <mat-icon class="title-icon">assignment_add</mat-icon>
+          Marks Entry Management
+        </h1>
+        <p class="page-description">Manage and track examination marks entry records with comprehensive analytics</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="refreshData()" title="Refresh" [disabled]="isLoading">
+          <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-secondary" (click)="exportData()" title="Export">
+          <mat-icon>file_download</mat-icon>
+          <span>Export</span>
+        </button>
+        <button class="btn btn-secondary" (click)="generateReport()" title="Generate Report">
+          <mat-icon>bar_chart</mat-icon>
+          <span>Analytics</span>
+        </button>
+        <button class="btn btn-primary" routerLink="/markNew-entry-create">
+          <mat-icon>add</mat-icon>
+          <span>New Entry</span>
+        </button>
+      </div>
+    </div>
   </div>
 
-
-  <ejs-grid [dataSource]="markEntries" [allowFiltering]="true" [searchSettings]="searchOptions" [filterSettings]="filterSettings" [allowPaging]="true" [allowSorting]="true" [allowPdfExport]="true" [allowExcelExport]="true" [allowResizing]="true" [pageSettings]="pageSettings" [showColumnChooser]="true" [toolbar]="toolbarOptions" [selectionSettings]="selectionOptions" showColumnMenu="true" width="100%">
-    <e-columns>
-      <e-column field="markEntryId" headerText="Mark Entry Id" textAlign="Right" width="90"></e-column>
-
-      <e-column field="markEntryDate" headerText="Mark Entry Date" width="120"></e-column>
-
-      <e-column field="staff.staffName" headerText="Staff Name" width="120"></e-column>
-
-      <e-column field="examSchedule.examScheduleName" headerText="Exam Schedule Name" width="120"></e-column>
-
-      <e-column field="examType.examTypeName" headerText="Exam Type" width="120"></e-column>
-
-      <e-column field="subject.subjectName" headerText="Subject Name" width="120"></e-column>
-
-      <e-column field="standard.standardName" headerText="Standard Name" width="120"></e-column>
-
-      <e-column headerText="Action" width="120" textAlign="Center">
-        <ng-template #template let-data>
-          <div class="btn-group">
-            <a [routerLink]="['/markNew-entry-details/', data.markEntryId]" class="btn btn-warning">Details</a>
-            <a [routerLink]="['/sta', data.staffId]" class="btn btn-info">Edit</a>
-            <a [routerLink]="['/markNew-entry-delete/', data.markEntryId]" class="btn btn-danger">Delete</a>
-
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Enhanced Statistics Section -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>assignment_add</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ filteredMarkEntries.length || 0 }}</div>
+              <div class="stat-label">Total Entries</div>
+              <div class="stat-change positive" *ngIf="getTotalChangePercent() > 0">
+                <mat-icon>trending_up</mat-icon>
+                <span>+{{ getTotalChangePercent() }}%</span>
+              </div>
+            </div>
           </div>
-        </ng-template>
-      </e-column>
-    </e-columns>
-    <ng-template #detailTemplate let-data>
-      <div class="custom-grid"></div>
-    </ng-template>
-  </ejs-grid>
+          <div class="stat-chart">
+            <div class="mini-chart"
+              [style.width.%]="markEntries.length > 0 ? (filteredMarkEntries.length / markEntries.length) * 100 : 0">
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>event_available</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getCompletedEntriesCount() }}</div>
+              <div class="stat-label">Completed Entries</div>
+              <div class="stat-percentage">{{ getCompletedPercentage() }}% Complete</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart success" [style.width.%]="getCompletedPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getTotalStudentsCount() }}</div>
+              <div class="stat-label">Total Students</div>
+              <div class="stat-percentage">{{ getAverageStudentsPerEntry() }} per entry</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart info" [style.width.%]="Math.min((getTotalStudentsCount() / 100), 100)"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getUniqueSubjects().length }}</div>
+              <div class="stat-label">Active Subjects</div>
+              <div class="stat-percentage">{{ getUniqueStandards().length }} Standards</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart warning" [style.width.%]="(getUniqueSubjects().length / 20) * 100"></div>
+          </div>
+        </div>
+
+        <div class="stat-card purple">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>quiz</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getUniqueExamTypes().length }}</div>
+              <div class="stat-label">Exam Types</div>
+              <div class="stat-percentage">{{ getAverageMarks() }} avg marks</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart purple" [style.width.%]="(getUniqueExamTypes().length / 10) * 100"></div>
+          </div>
+        </div>
+
+        <div class="stat-card danger">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>supervisor_account</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getUniqueStaff().length }}</div>
+              <div class="stat-label">Active Staff</div>
+              <div class="stat-percentage">{{ getAverageEntriesPerStaff() }} entries/staff</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart danger" [style.width.%]="(getUniqueStaff().length / 50) * 100"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry Distribution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <mat-icon>pie_chart</mat-icon>
+            Entry Distribution by Subject
+          </h3>
+          <div class="chart-actions">
+            <button class="btn btn-sm btn-secondary" (click)="toggleChartType()">
+              <mat-icon>{{ chartType === 'pie' ? 'bar_chart' : 'pie_chart' }}</mat-icon>
+              <span>{{ chartType === 'pie' ? 'Bar Chart' : 'Pie Chart' }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-content">
+          <div class="subject-distribution">
+            <div *ngFor="let subject of getSubjectDistribution()" class="subject-bar"
+              [class]="getSubjectCssClass(subject.subject)">
+              <div class="subject-info">
+                <span class="subject-label">{{ subject.subject }}</span>
+                <span class="subject-count">{{ subject.count }} entries</span>
+                <span class="subject-percentage">{{ subject.percentage }}%</span>
+              </div>
+              <div class="subject-progress">
+                <div class="subject-fill" [style.width.%]="subject.percentage"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Advanced Filters Section -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <mat-icon>filter_list</mat-icon>
+          Advanced Filters & Search
+        </h3>
+        <div class="filters-actions">
+          <button class="btn btn-sm btn-secondary" (click)="toggleAdvancedFilters()">
+            <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+            <span>{{ showAdvancedFilters ? 'Less' : 'More' }} Filters</span>
+          </button>
+          <button class="btn btn-sm btn-secondary" (click)="clearAllFilters()" *ngIf="hasActiveFilters()">
+            <mat-icon>clear_all</mat-icon>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+      <div class="filters-content">
+        <div class="filter-row primary">
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Search by staff name, subject, exam type, or standard..."
+              class="search-input" #searchInput (keyup)="onSearch(searchInput.value)" [value]="searchTerm"
+              (keydown.enter)="onSearch(searchInput.value)">
+            <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="subjectFilter">Subject:</label>
+            <select class="filter-select" id="subjectFilter" (change)="onSubjectFilter($event)"
+              [value]="selectedSubject">
+              <option value="">All Subjects ({{ getUniqueSubjects().length }})</option>
+              <option *ngFor="let subject of getUniqueSubjects()" [value]="subject">
+                📚 {{ subject }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="examTypeFilter">Exam Type:</label>
+            <select class="filter-select" id="examTypeFilter" (change)="onExamTypeFilter($event)"
+              [value]="selectedExamType">
+              <option value="">All Exam Types</option>
+              <option *ngFor="let examType of getUniqueExamTypes()" [value]="examType">
+                📝 {{ examType }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="standardFilter">Standard:</label>
+            <select class="filter-select" id="standardFilter" (change)="onStandardFilter($event)"
+              [value]="selectedStandard">
+              <option value="">All Standards</option>
+              <option *ngFor="let standard of getUniqueStandards()" [value]="standard">
+                🎓 {{ standard }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Filters Row -->
+        <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+          <div class="filter-group">
+            <label class="filter-label" for="staffFilter">Staff:</label>
+            <select class="filter-select" id="staffFilter" (change)="onStaffFilter($event)" [value]="selectedStaff">
+              <option value="">All Staff ({{ getUniqueStaff().length }})</option>
+              <option *ngFor="let staff of getUniqueStaff()" [value]="staff">
+                👨‍🏫 {{ staff }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="dateRangeFilter">Date Range:</label>
+            <select class="filter-select" id="dateRangeFilter" (change)="onDateRangeFilter($event)"
+              [value]="selectedDateRange">
+              <option value="">All Dates</option>
+              <option value="today">📅 Today</option>
+              <option value="week">📅 This Week</option>
+              <option value="month">📅 This Month</option>
+              <option value="quarter">📅 This Quarter</option>
+              <option value="year">📅 This Year</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="marksRangeFilter">Marks Range:</label>
+            <select class="filter-select" id="marksRangeFilter" (change)="onMarksRangeFilter($event)"
+              [value]="selectedMarksRange">
+              <option value="">All Marks</option>
+              <option value="0-50">📊 0-50 marks</option>
+              <option value="51-100">📊 51-100 marks</option>
+              <option value="101-200">📊 101-200 marks</option>
+              <option value="201+">📊 200+ marks</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="sortFilter">Sort By:</label>
+            <select class="filter-select" id="sortFilter" (change)="onSortFilter($event)" [value]="selectedSort">
+              <option value="">Default Order</option>
+              <option value="date-desc">📅 Date (Newest First)</option>
+              <option value="date-asc">📅 Date (Oldest First)</option>
+              <option value="subject-asc">📚 Subject A-Z</option>
+              <option value="staff-asc">👨‍🏫 Staff A-Z</option>
+              <option value="marks-desc">📊 Marks (High-Low)</option>
+              <option value="marks-asc">📊 Marks (Low-High)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" *ngIf="selectedEntries.length > 0">
+      <div class="bulk-info">
+        <mat-icon>check_box</mat-icon>
+        <span>{{ selectedEntries.length }} entry(ies) selected</span>
+      </div>
+      <div class="bulk-actions">
+        <button class="btn btn-sm btn-secondary" (click)="bulkExport()">
+          <mat-icon>file_download</mat-icon>
+          <span>Export Selected</span>
+        </button>
+        <button class="btn btn-sm btn-warning" (click)="bulkEdit()">
+          <mat-icon>edit</mat-icon>
+          <span>Bulk Edit</span>
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+          <mat-icon>delete</mat-icon>
+          <span>Delete Selected</span>
+        </button>
+        <button class="btn btn-sm btn-secondary" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          <span>Clear Selection</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table Section -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <div class="data-card-title-section">
+          <h3 class="data-card-title">
+            <mat-icon>table_view</mat-icon>
+            Marks Entry Records
+            <span class="record-count">({{ filteredMarkEntries.length }} records)</span>
+          </h3>
+          <div class="data-card-subtitle">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+            filteredMarkEntries.length) }} of {{ filteredMarkEntries.length }} records
+          </div>
+        </div>
+        <div class="data-card-actions">
+          <div class="page-size-selector">
+            <label for="pageSizeSelect">Show:</label>
+            <select id="pageSizeSelect" class="page-size-select" (change)="onPageSizeChange($event)" [value]="pageSize">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span>per page</span>
+          </div>
+          <div class="view-toggle">
+            <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')"
+              title="Table View">
+              <mat-icon>table_view</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')"
+              title="Card View">
+              <mat-icon>view_module</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'compact'" (click)="setViewMode('compact')"
+              title="Compact View">
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading marks entry records...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage && !isLoading" class="error-state">
+          <div class="error-state-content">
+            <div class="error-state-icon">
+              <mat-icon>error</mat-icon>
+            </div>
+            <h3 class="error-state-title">Error Loading Data</h3>
+            <p class="error-state-description">{{ errorMessage }}</p>
+            <button class="btn btn-primary" (click)="refreshData()">
+              <mat-icon>refresh</mat-icon>
+              <span>Try Again</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && !errorMessage && (!filteredMarkEntries || filteredMarkEntries.length === 0)"
+          class="empty-state">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>assignment_add</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No marks entry records found</h3>
+            <p class="empty-state-description">
+              {{ searchTerm || selectedSubject || selectedExamType || selectedStandard ? 'Try adjusting your search
+              criteria or filters' : 'Get started by creating your first marks entry record' }}
+            </p>
+            <button *ngIf="!searchTerm && !selectedSubject && !selectedExamType && !selectedStandard"
+              class="btn btn-primary" routerLink="/markNew-entry-create">
+              <mat-icon>add</mat-icon>
+              <span>Create First Entry</span>
+            </button>
+            <button *ngIf="searchTerm || selectedSubject || selectedExamType || selectedStandard"
+              class="btn btn-secondary" (click)="clearAllFilters()">
+              <mat-icon>clear</mat-icon>
+              <span>Clear Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div
+          *ngIf="!isLoading && !errorMessage && filteredMarkEntries && filteredMarkEntries.length > 0 && viewMode === 'table'"
+          class="marks-table-container">
+          <div class="marks-table">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="header-cell checkbox-column">
+                <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" class="checkbox-input">
+              </div>
+              <div class="header-cell entry-id-column">Entry ID</div>
+              <div class="header-cell date-column">Date</div>
+              <div class="header-cell staff-column">Staff</div>
+              <div class="header-cell subject-column">Subject</div>
+              <div class="header-cell exam-type-column">Exam Type</div>
+              <div class="header-cell standard-column">Standard</div>
+              <div class="header-cell marks-column">Marks</div>
+              <div class="header-cell students-column">Students</div>
+              <div class="header-cell actions-column">Actions</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="table-body">
+              <div *ngFor="let entry of paginatedMarkEntries; let i = index" class="table-row"
+                [class.even]="i % 2 === 1" [class.selected]="isEntrySelected(entry)">
+                <div class="table-cell checkbox-column">
+                  <input type="checkbox" [checked]="isEntrySelected(entry)" (change)="toggleSelectEntry(entry)"
+                    class="checkbox-input">
+                </div>
+
+                <div class="table-cell entry-id-column">
+                  <span class="entry-id-badge">{{ entry.markEntryId }}</span>
+                </div>
+
+                <div class="table-cell date-column">
+                  <div class="date-info">
+                    <span class="date-value">{{ entry.markEntryDate | date:'MMM dd, yyyy' }}</span>
+                    <span class="time-value">{{ entry.markEntryDate | date:'HH:mm' }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell staff-column">
+                  <div class="staff-info">
+                    <mat-icon class="staff-icon">person</mat-icon>
+                    <span class="staff-name">{{ entry.staff?.staffName || 'N/A' }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell subject-column">
+                  <span class="subject-badge">{{ entry.subject?.subjectName || 'N/A' }}</span>
+                </div>
+
+                <div class="table-cell exam-type-column">
+                  <span class="exam-type-badge">{{ entry.examType?.examTypeName || 'N/A' }}</span>
+                </div>
+
+                <div class="table-cell standard-column">
+                  <span class="standard-badge">{{ entry.standard?.standardName || 'N/A' }}</span>
+                </div>
+
+                <div class="table-cell marks-column">
+                  <div class="marks-info">
+                    <div class="marks-item">
+                      <span class="marks-label">Total:</span>
+                      <span class="marks-value total">{{ entry.totalMarks || 0 }}</span>
+                    </div>
+                    <div class="marks-item">
+                      <span class="marks-label">Pass:</span>
+                      <span class="marks-value pass">{{ entry.passMarks || 0 }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-cell students-column">
+                  <div class="students-info">
+                    <mat-icon class="students-icon">group</mat-icon>
+                    <span class="students-count">{{ entry.studentMarksDetails?.length || 0 }} students</span>
+                  </div>
+                </div>
+
+                <div class="table-cell actions-column">
+                  <div class="action-buttons">
+                    <button class="action-btn view-btn" title="View Details"
+                      [routerLink]="['/markNew-entry-details/', entry.markEntryId]">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button class="action-btn edit-btn" title="Edit Entry"
+                      [routerLink]="['/markNew-entry-edit/', entry.markEntryId]">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="deleteEntry(entry.markEntryId)" title="Delete Entry">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    <button class="action-btn students-btn" (click)="viewStudents(entry)" title="View Students">
+                      <mat-icon>group</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card View -->
+        <div
+          *ngIf="!isLoading && !errorMessage && filteredMarkEntries && filteredMarkEntries.length > 0 && viewMode === 'card'"
+          class="marks-cards-container">
+          <div class="marks-cards-grid">
+            <div *ngFor="let entry of paginatedMarkEntries" class="marks-card"
+              [class.selected]="isEntrySelected(entry)">
+              <div class="marks-card-header">
+                <div class="card-selection">
+                  <input type="checkbox" [checked]="isEntrySelected(entry)" (change)="toggleSelectEntry(entry)"
+                    class="checkbox-input">
+                </div>
+                <div class="card-id">
+                  <span class="entry-id-badge">Entry #{{ entry.markEntryId }}</span>
+                </div>
+                <div class="card-date">
+                  <span class="date-value">{{ entry.markEntryDate | date:'MMM dd, yyyy' }}</span>
+                </div>
+              </div>
+
+              <div class="marks-card-content">
+                <div class="card-field">
+                  <label>Staff:</label>
+                  <div class="staff-info">
+                    <mat-icon class="staff-icon">person</mat-icon>
+                    <span>{{ entry.staff?.staffName || 'N/A' }}</span>
+                  </div>
+                </div>
+
+                <div class="card-field">
+                  <label>Subject:</label>
+                  <span class="subject-badge">{{ entry.subject?.subjectName || 'N/A' }}</span>
+                </div>
+
+                <div class="card-field">
+                  <label>Exam Type:</label>
+                  <span class="exam-type-badge">{{ entry.examType?.examTypeName || 'N/A' }}</span>
+                </div>
+
+                <div class="card-field">
+                  <label>Standard:</label>
+                  <span class="standard-badge">{{ entry.standard?.standardName || 'N/A' }}</span>
+                </div>
+
+                <div class="card-field">
+                  <label>Marks:</label>
+                  <div class="marks-display">
+                    <span class="marks-text">Total: {{ entry.totalMarks || 0 }}</span>
+                    <span class="marks-text">Pass: {{ entry.passMarks || 0 }}</span>
+                  </div>
+                </div>
+
+                <div class="card-field">
+                  <label>Students:</label>
+                  <div class="students-info">
+                    <mat-icon class="students-icon">group</mat-icon>
+                    <span>{{ entry.studentMarksDetails?.length || 0 }} students</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="marks-card-actions">
+                <button class="action-btn view-btn" title="View Details"
+                  [routerLink]="['/markNew-entry-details/', entry.markEntryId]">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button class="action-btn edit-btn" title="Edit Entry"
+                  [routerLink]="['/markNew-entry-edit/', entry.markEntryId]">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="action-btn delete-btn" (click)="deleteEntry(entry.markEntryId)" title="Delete Entry">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button class="action-btn students-btn" (click)="viewStudents(entry)" title="View Students">
+                  <mat-icon>group</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && !errorMessage && filteredMarkEntries && filteredMarkEntries.length > 0"
+          class="pagination-container">
+          <div class="pagination-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+            filteredMarkEntries.length) }} of {{ filteredMarkEntries.length }} records
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"
+              title="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+
+            <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"
+              title="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -53,7 +635,7 @@
 
 
 
-  <!--<div>
+<!--<div>
     <h2>Mark Entries</h2>
 
     <button routerLink="/markNew-entry-create" class="btn btn-primary">New Mark Entry</button>

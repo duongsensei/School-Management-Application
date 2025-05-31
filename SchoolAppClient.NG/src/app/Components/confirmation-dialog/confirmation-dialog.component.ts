@@ -19,8 +19,8 @@ import { Component, Input } from '@angular/core';
   `]
 })
 export class ConfirmationDialogComponent {
-  @Input() title: string = 'Dialog';
-  @Input() message: string = 'This is a custom dialog';
+  @Input() title = 'Dialog';
+  @Input() message = 'This is a custom dialog';
 
   close() {
     // Close dialog logic

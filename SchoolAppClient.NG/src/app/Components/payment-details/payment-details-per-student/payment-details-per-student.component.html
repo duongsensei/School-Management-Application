@@ -1,138 +1,323 @@
-<div class="container">
-  <a class="btn btn-success" routerLink="/monthlypayment/create">Create Monthly Payment</a>
-  <a class="btn btn-success" routerLink="/otherpayment/create">Create Others Payment</a>
+<!-- Enhanced Payment Details Per Student Component -->
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <span class="breadcrumb-item">School Management</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Finance</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Student Payment Details</span>
+        </nav>
 
-  <form (ngSubmit)="onSubmit()">
-    <div class="form-group row">
-      <label for="standardFilter" class="col-md-4 col-form-label">Filter by Standard:</label>
-      <div class="col-md-8">
-        <select id="standardFilter" name="standardFilter" class="form-control" [(ngModel)]="selectedStandardId" (ngModelChange)="onStandardChange()">
-          <option value="">All</option>
-          <option *ngFor="let standard of standards" [value]="standard.standardId">{{ standard.standardName }}</option>
-        </select>
+        <!-- Page Title -->
+        <h1 class="page-title">
+          <mat-icon class="title-icon">account_balance_wallet</mat-icon>
+          Student Payment Details
+        </h1>
+        <p class="page-description">
+          View comprehensive payment history and details for individual students
+        </p>
+      </div>
+
+      <!-- Page Actions -->
+      <div class="page-actions">
+        <a routerLink="/monthlypayment/create" class="btn btn-secondary">
+          <mat-icon>add</mat-icon>
+          Create Monthly Payment
+        </a>
+        <a routerLink="/otherpayment/create" class="btn btn-primary">
+          <mat-icon>add_card</mat-icon>
+          Create Other Payment
+        </a>
       </div>
     </div>
+  </div>
 
-    <div class="form-group row">
-      <label for="studentId" class="col-md-4 col-form-label">Student Name:</label>
-      <div class="col-md-8">
-        <select id="studentId" name="studentId" class="form-control" required [(ngModel)]="studentId" #patID="ngModel">
-          <option *ngFor="let student of filteredStudents" [value]="student.studentId">
-            {{ student.enrollmentNo }} - {{ student.studentName }}
-          </option>
-        </select>
-        <div *ngIf="patID.invalid && (patID.dirty || patID.touched)" class="invalid-feedback">
-          Select a student name.
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Student Selection Card -->
+    <div class="selection-card">
+      <div class="selection-header">
+        <h3 class="selection-title">
+          <mat-icon>person_search</mat-icon>
+          Student Selection
+        </h3>
+        <p class="selection-subtitle">Select a student to view their payment details</p>
+      </div>
+      <form (ngSubmit)="onSubmit()" class="selection-form">
+        <div class="form-grid">
+          <!-- Standard Filter -->
+          <div class="form-group">
+            <label for="standardFilter" class="form-label">
+              <mat-icon>school</mat-icon>
+              Filter by Standard
+            </label>
+            <select id="standardFilter" name="standardFilter" class="form-select" [(ngModel)]="selectedStandardId"
+              (ngModelChange)="onStandardChange()">
+              <option value="">All Standards</option>
+              <option *ngFor="let standard of standards" [value]="standard.standardId">
+                {{ standard.standardName }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Student Selection -->
+          <div class="form-group">
+            <label for="studentId" class="form-label">
+              <mat-icon>person</mat-icon>
+              Student Name
+            </label>
+            <select id="studentId" name="studentId" class="form-select" required [(ngModel)]="studentId"
+              #patID="ngModel">
+              <option value="" disabled>Select a student...</option>
+              <option *ngFor="let student of filteredStudents" [value]="student.studentId">
+                {{ student.enrollmentNo }} - {{ student.studentName }}
+              </option>
+            </select>
+            <div *ngIf="patID.invalid && (patID.dirty || patID.touched)" class="form-error">
+              <mat-icon>error</mat-icon>
+              Please select a student name
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-group submit-group">
+            <button type="submit" class="btn btn-primary btn-large" [disabled]="!studentId">
+              <mat-icon>search</mat-icon>
+              View Payment Details
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Due Balance Alert -->
+    <div class="alert-card warning" *ngIf="dueBalance && dueBalance.dueBalanceAmount > 0">
+      <div class="alert-content">
+        <div class="alert-icon">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="alert-info">
+          <h4 class="alert-title">Outstanding Balance</h4>
+          <p class="alert-message">
+            Total Due Balance Amount: <strong>${{ dueBalance.dueBalanceAmount | number:'1.2-2' }}</strong>
+          </p>
         </div>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+    <!-- Payment Sections Container -->
+    <div class="payment-sections" *ngIf="studentId">
+      <!-- Fee Payment Details Section -->
+      <div class="payment-section" *ngIf="paymentDetails && paymentDetails.length > 0">
+        <div class="section-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <mat-icon>receipt</mat-icon>
+              Fee Payment Breakdown
+            </h3>
+            <div class="section-badge">
+              {{ paymentDetails.length }} fee types
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="fee-breakdown-grid">
+              <div class="fee-card" *ngFor="let payment of paymentDetails">
+                <div class="fee-header">
+                  <h4 class="fee-name">{{ payment.feeName }}</h4>
+                </div>
+                <div class="fee-months">
+                  <div class="month-tags">
+                    <span class="month-tag" *ngFor="let month of payment.months">
+                      {{ month }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <h4 *ngIf="dueBalance">Total Due Balance Amount = {{ dueBalance.dueBalanceAmount }}</h4>
-
-  <div>
-    <h4>Monthly Payment Details</h4>
-    <!-- <div *ngIf="paymentDetails.length > 0">
-        <table class="payment-table">
-            <thead>
-                <tr>
-                    <th>Fee Name</th>
-                    <th>Month Name</th>
-                    <th>Number of Months</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let payment of paymentDetails">
-                    <td>{{ payment.feeName }}</td>
-                    <td>{{ payment.monthName }}</td>
-                    <td>
-                        {{ payment.numberOfMonths }}
-                        <span *ngIf="payment.numberOfMonths > 1" style="color: red;">Multiple payment for {{ payment.feeName }} in a single Month</span>
+      <!-- Monthly Payments Section -->
+      <div class="payment-section" *ngIf="payments && payments.length > 0">
+        <div class="section-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <mat-icon>payment</mat-icon>
+              Monthly Payment History
+            </h3>
+            <div class="section-badge">
+              {{ payments.length }} payments
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="table-container">
+              <table class="modern-table">
+                <thead>
+                  <tr>
+                    <th>Payment ID</th>
+                    <th>Payment Date</th>
+                    <th>Total Amount</th>
+                    <th>Amount Paid</th>
+                    <th>Amount Remaining</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let payment of payments" class="table-row">
+                    <td class="id-cell">
+                      <div class="id-badge">#{{ payment.monthlyPaymentId }}</div>
                     </td>
-                </tr>
-            </tbody>
-        </table>
-    </div> -->
-    <div *ngIf="paymentDetails && paymentDetails.length > 0">
-      <table class="payment-table">
-        <thead>
-          <tr>
-            <th>Fee Name</th>
-            <th>Months</th>
-            <!-- <th>Number of Months</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let payment of paymentDetails">
-            <td>{{ payment.feeName }}</td>
-            <td>
-              <ul>
-                <li *ngFor="let month of payment.months">{{ month }}</li>
-              </ul>
-            </td>
-            <!-- <td>{{ payment.numberOfMonths }}</td> -->
-          </tr>
-        </tbody>
-      </table>
+                    <td class="date-cell">
+                      <div class="payment-date">
+                        <mat-icon>event</mat-icon>
+                        {{ payment.paymentDate | date:'MMM dd, yyyy' }}
+                      </div>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount total">${{ payment.totalAmount | number:'1.2-2' }}</span>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount paid">${{ payment.amountPaid | number:'1.2-2' }}</span>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount remaining" [class.zero]="payment.amountRemaining === 0">
+                        ${{ payment.amountRemaining | number:'1.2-2' }}
+                      </span>
+                    </td>
+                    <td class="status-cell">
+                      <div class="status-badge" [ngClass]="getPaymentStatusClass(payment)">
+                        <mat-icon>{{ getPaymentStatusIcon(payment) }}</mat-icon>
+                        {{ getPaymentStatus(payment) }}
+                      </div>
+                    </td>
+                    <td class="actions-cell">
+                      <a class="action-btn btn-info"
+                        [routerLink]="['/monthlypayment', payment.monthlyPaymentId, 'details']" title="View Details">
+                        <mat-icon>visibility</mat-icon>
+                        Details
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Payments Section -->
+      <div class="payment-section" *ngIf="otherPayment && otherPayment.length > 0">
+        <div class="section-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <mat-icon>receipt_long</mat-icon>
+              Other Payment History
+            </h3>
+            <div class="section-badge">
+              {{ otherPayment.length }} payments
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="table-container">
+              <table class="modern-table">
+                <thead>
+                  <tr>
+                    <th>Payment ID</th>
+                    <th>Payment Date</th>
+                    <th>Total Amount</th>
+                    <th>Amount Paid</th>
+                    <th>Amount Remaining</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let payment of otherPayment" class="table-row">
+                    <td class="id-cell">
+                      <div class="id-badge">#{{ payment.othersPaymentId }}</div>
+                    </td>
+                    <td class="date-cell">
+                      <div class="payment-date">
+                        <mat-icon>event</mat-icon>
+                        {{ payment.paymentDate | date:'MMM dd, yyyy' }}
+                      </div>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount total">${{ payment.totalAmount | number:'1.2-2' }}</span>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount paid">${{ payment.amountPaid | number:'1.2-2' }}</span>
+                    </td>
+                    <td class="amount-cell">
+                      <span class="amount remaining" [class.zero]="payment.amountRemaining === 0">
+                        ${{ payment.amountRemaining | number:'1.2-2' }}
+                      </span>
+                    </td>
+                    <td class="status-cell">
+                      <div class="status-badge" [ngClass]="getOtherPaymentStatusClass(payment)">
+                        <mat-icon>{{ getOtherPaymentStatusIcon(payment) }}</mat-icon>
+                        {{ getOtherPaymentStatus(payment) }}
+                      </div>
+                    </td>
+                    <td class="actions-cell">
+                      <a class="action-btn btn-info"
+                        [routerLink]="['/otherpayment', payment.othersPaymentId, 'details']" title="View Details">
+                        <mat-icon>visibility</mat-icon>
+                        Details
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state"
+        *ngIf="studentId && (!payments || payments.length === 0) && (!otherPayment || otherPayment.length === 0) && (!paymentDetails || paymentDetails.length === 0)">
+        <div class="empty-state-content">
+          <div class="empty-state-icon">
+            <mat-icon>payment</mat-icon>
+          </div>
+          <h3 class="empty-state-title">No Payment Records Found</h3>
+          <p class="empty-state-description">
+            No payment history available for the selected student.
+            Payment records will appear here once payments are made.
+          </p>
+          <div class="empty-state-actions">
+            <a routerLink="/monthlypayment/create" class="btn btn-primary">
+              <mat-icon>add</mat-icon>
+              Create Monthly Payment
+            </a>
+            <a routerLink="/otherpayment/create" class="btn btn-secondary">
+              <mat-icon>add_card</mat-icon>
+              Create Other Payment
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-    <div *ngIf="paymentDetails && paymentDetails.length === 0">
-      <p>No payment details found.</p>
+
+    <!-- No Student Selected State -->
+    <div class="no-selection-state" *ngIf="!studentId">
+      <div class="no-selection-content">
+        <div class="no-selection-icon">
+          <mat-icon>person_search</mat-icon>
+        </div>
+        <h3 class="no-selection-title">Select a Student</h3>
+        <p class="no-selection-description">
+          Please select a student from the dropdown above to view their payment details and history.
+        </p>
+      </div>
     </div>
-
-
-
-
-    <div *ngIf="paymentDetails.length === 0">
-      <p>No fee payment details available for this student.</p>
-    </div>
-
-    <table class="payment-table">
-      <thead>
-        <tr>
-          <th>Payment Date</th>
-          <th>Payment ID</th>
-          <th>Total Amount</th>
-          <th>Amount Paid</th>
-          <th>Amount Remaining</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let payment of payments">
-          <td>{{ payment.paymentDate | date }}</td>
-          <td>{{ payment.monthlyPaymentId }}</td>
-          <td>{{ payment.totalAmount }}</td>
-          <td>{{ payment.amountPaid }}</td>
-          <td>{{ payment.amountRemaining }}</td>
-          <td><a class="btn btn-info" [routerLink]="['/monthlypayment', payment.monthlyPaymentId, 'details']">Details</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h4>Others Payment Details</h4>
-    <table class="payment-table">
-      <thead>
-        <tr>
-          <th>Payment Date</th>
-          <th>Payment ID</th>
-          <th>Total Amount</th>
-          <th>Amount Paid</th>
-          <th>Amount Remaining</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let payment of otherPayment">
-          <td>{{ payment.paymentDate | date }}</td>
-          <td>{{ payment.othersPaymentId }}</td>
-          <td>{{ payment.totalAmount }}</td>
-          <td>{{ payment.amountPaid }}</td>
-          <td>{{ payment.amountRemaining }}</td>
-          <td><a class="btn btn-info" [routerLink]="['/otherpayment', payment.othersPaymentId, 'details']">Details</a></td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>

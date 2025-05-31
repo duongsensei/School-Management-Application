@@ -1,6 +1,6 @@
 export class RegistrationRequest {
-  email: string = '';
-  username: string = '';
-  password: string = '';
+  email = '';
+  username = '';
+  password = '';
   role?: string[] = []; // Assuming role is optional and an array of strings
 }

@@ -1,28 +1,483 @@
-<div class="container">
-  <h2>Department List</h2>
-  <a class="btn btn-success" routerLink="/departments/create">Create Department</a>
-  <div class="form-group">
-    <input type="text" class="form-control short-input" placeholder="Search by Name" [(ngModel)]="searchName">
+<div class="department-list-container">
+  <!-- Modern Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">Dashboard</span>
+          <span class="breadcrumb-separator">→</span>
+          <span class="breadcrumb-item">Organization</span>
+          <span class="breadcrumb-separator">→</span>
+          <span class="breadcrumb-item active">Departments</span>
+        </div>
+        <h1 class="page-title">
+          <mat-icon class="title-icon">business</mat-icon>
+          Department Management
+        </h1>
+        <p class="page-description">Manage organizational departments and their information</p>
+      </div>
+
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="exportDepartments()">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+        <button class="btn btn-primary" routerLink="/departments/create">
+          <mat-icon>add</mat-icon>
+          Add New Department
+        </button>
+      </div>
+    </div>
   </div>
-  <ejs-grid #grid [dataSource]="departments" [allowPaging]="true" [pageSettings]="pageSettings"
-            [filterSettings]="filterSettings" [searchSettings]="searchSettings">
-    <e-columns>
-      <e-column field="departmentId" headerText="ID" width="100"></e-column>
-      <e-column field="departmentName" headerText="Name" width="200"></e-column>
-      <e-column headerText="Action" width="150">
-        <ng-template #template let-data>
-          <a class="btn btn-primary" [routerLink]="['/departments', data.departmentId, 'edit']">Edit</a>
-          <button class="btn btn-danger" (click)="confirmDelete(data.departmentId)">Delete</button>
-        </ng-template>
-      </e-column>
-    </e-columns>
-  </ejs-grid>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Enhanced Statistics Cards -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>business</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getTotalDepartments() }}</div>
+              <div class="stat-label">Total Departments</div>
+              <div class="stat-change positive">
+                <mat-icon>trending_up</mat-icon>
+                Active departments
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart" [style.width]="'100%'"></div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getTotalDepartments() }}</div>
+              <div class="stat-label">Active Status</div>
+              <div class="stat-percentage">
+                <mat-icon>info</mat-icon>
+                All departments active
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart success" [style.width]="'100%'"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>add_circle</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getRecentAdditions() }}</div>
+              <div class="stat-label">Recent Additions</div>
+              <div class="stat-percentage">
+                <mat-icon>calendar_today</mat-icon>
+                This month
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart info" [style.width]="getRecentAdditionsPercentage() + '%'"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>checklist</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ selectedDepartments.length }}</div>
+              <div class="stat-label">Selected Items</div>
+              <div class="stat-percentage">
+                <mat-icon>timeline</mat-icon>
+                {{ getSelectionPercentage() }}% selected
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart warning" [style.width]="getSelectionPercentage() + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Filters Card -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <mat-icon>filter_list</mat-icon>
+          Search & Filter
+        </h3>
+        <div class="filters-actions">
+          <button class="btn btn-sm btn-ghost" (click)="toggleAdvancedFilters()" [class.active]="showAdvancedFilters">
+            <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced
+          </button>
+          <button class="btn btn-sm btn-warning" (click)="clearAllFilters()" *ngIf="hasActiveFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-content">
+        <!-- Primary Filter Row -->
+        <div class="filter-row primary">
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" class="search-input" placeholder="Search departments..." [(ngModel)]="searchName"
+              (input)="performSearch()">
+            <button class="search-clear" *ngIf="searchName" (click)="clearSearch()" type="button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select class="filter-select" [(ngModel)]="selectedSort" (change)="applySorting()">
+              <option value="">Default Order</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="id-asc">ID (Low to High)</option>
+              <option value="id-desc">ID (High to Low)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">View</label>
+            <div class="view-toggle">
+              <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')">
+                <mat-icon>table_chart</mat-icon>
+              </button>
+              <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')">
+                <mat-icon>grid_view</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Show</label>
+            <select class="filter-select" [(ngModel)]="pageSettings.pageSize" (change)="updatePageSize()">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+          <div class="filter-group">
+            <label class="filter-label">Quick Filter</label>
+            <select class="filter-select" [(ngModel)]="quickFilter" (change)="applyQuickFilter()">
+              <option value="all">All Departments</option>
+              <option value="recent">Recently Added</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select class="filter-select">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Date Range</label>
+            <select class="filter-select">
+              <option value="">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Actions</label>
+            <button class="btn btn-sm btn-primary" (click)="applyAdvancedFilters()">
+              <mat-icon>search</mat-icon>
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" *ngIf="selectedDepartments.length > 0">
+      <div class="bulk-info">
+        <mat-icon>checklist</mat-icon>
+        <span>{{ selectedDepartments.length }} department(s) selected</span>
+      </div>
+      <div class="bulk-actions">
+        <button class="btn btn-sm btn-secondary" (click)="bulkExport()">
+          <mat-icon>download</mat-icon>
+          Export Selected
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+          <mat-icon>delete</mat-icon>
+          Delete Selected
+        </button>
+        <button class="btn btn-sm btn-ghost" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          Clear Selection
+        </button>
+      </div>
+    </div>
+
+    <!-- Enhanced Data Card -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <div class="data-card-title-section">
+          <h3 class="data-card-title">
+            <mat-icon>list</mat-icon>
+            Departments List
+            <span class="record-count">({{ getFilteredDepartments().length }} records)</span>
+          </h3>
+          <p class="data-card-subtitle">
+            Showing {{ getDisplayedRecordsStart() }}-{{ getDisplayedRecordsEnd() }} of {{
+            getFilteredDepartments().length }} departments
+          </p>
+        </div>
+
+        <div class="data-card-actions">
+          <div class="page-size-selector">
+            <span>Show:</span>
+            <select class="page-size-select" [(ngModel)]="pageSettings.pageSize" (change)="updatePageSize()">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+
+          <div class="view-toggle">
+            <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')">
+              <mat-icon>table_chart</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Content -->
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div class="loading-overlay" *ngIf="loading">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading departments...</p>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div *ngIf="!loading && viewMode === 'table'">
+          <ejs-grid #grid [dataSource]="getFilteredDepartments()" [allowPaging]="true" [pageSettings]="pageSettings"
+            [allowSorting]="true" [allowFiltering]="false" [height]="'auto'" class="modern-grid">
+            <e-columns>
+              <e-column width="50" [allowSorting]="false">
+                <ng-template #headerTemplate>
+                  <div class="checkbox-container">
+                    <input type="checkbox" class="form-check" [checked]="selectAll" (change)="toggleSelectAll($event)">
+                  </div>
+                </ng-template>
+                <ng-template #template let-data>
+                  <div class="checkbox-container">
+                    <input type="checkbox" class="form-check" [checked]="isSelected(data)"
+                      (change)="toggleSelectDepartment(data, $event)">
+                  </div>
+                </ng-template>
+              </e-column>
+
+              <e-column field="departmentId" headerText="ID" width="100" [allowSorting]="true">
+                <ng-template #template let-data>
+                  <div class="id-cell">
+                    <span class="id-badge">{{ data.departmentId }}</span>
+                  </div>
+                </ng-template>
+              </e-column>
+
+              <e-column field="departmentName" headerText="Department Name" width="300" [allowSorting]="true">
+                <ng-template #template let-data>
+                  <div class="department-cell">
+                    <div class="department-icon">
+                      <mat-icon>business</mat-icon>
+                    </div>
+                    <div class="department-info">
+                      <span class="department-name">{{ data.departmentName }}</span>
+                      <span class="department-meta">Active Department</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </e-column>
+
+              <e-column headerText="Status" width="120" [allowSorting]="false">
+                <ng-template #template let-data>
+                  <div class="status-cell">
+                    <span class="status-badge status-active">
+                      <mat-icon>check_circle</mat-icon>
+                      Active
+                    </span>
+                  </div>
+                </ng-template>
+              </e-column>
+
+              <e-column headerText="Actions" width="200" [allowSorting]="false">
+                <ng-template #template let-data>
+                  <div class="actions-cell">
+                    <div class="action-buttons">
+                      <button class="action-btn btn-info" [routerLink]="['/departments', data.departmentId]"
+                        title="View Department">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button class="action-btn btn-warning" [routerLink]="['/departments', data.departmentId, 'edit']"
+                        title="Edit Department">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button class="action-btn btn-danger" (click)="confirmDelete(data.departmentId)"
+                        title="Delete Department">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </ng-template>
+              </e-column>
+            </e-columns>
+          </ejs-grid>
+        </div>
+
+        <!-- Card View -->
+        <div *ngIf="!loading && viewMode === 'card'" class="cards-container">
+          <div class="departments-grid">
+            <div class="department-card"
+              *ngFor="let department of getPaginatedDepartments(); let i = index; trackBy: trackByDepartmentId"
+              [style.animation-delay]="(i * 50) + 'ms'">
+              <div class="card-checkbox">
+                <input type="checkbox" class="form-check" [checked]="isSelected(department)"
+                  (change)="toggleSelectDepartment(department, $event)">
+              </div>
+
+              <div class="card-header">
+                <div class="department-icon-large">
+                  <mat-icon>business</mat-icon>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge status-active">Active</span>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h4 class="department-name">{{ department.departmentName }}</h4>
+                <div class="department-meta">
+                  <span class="meta-item">
+                    <span class="meta-label">ID:</span>
+                    <span class="meta-value">{{ department.departmentId }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn btn-sm btn-info" [routerLink]="['/departments', department.departmentId]">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </button>
+                <button class="btn btn-sm btn-warning" [routerLink]="['/departments', department.departmentId, 'edit']">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="confirmDelete(department.departmentId)">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Pagination for Card View -->
+          <div class="custom-pagination" *ngIf="getFilteredDepartments().length > (pageSettings?.pageSize ?? 10)">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+
+            <div class="pagination-info">
+              Page {{ currentPage }} of {{ getTotalPages() }}
+            </div>
+
+            <button class="pagination-btn" [disabled]="currentPage === getTotalPages()"
+              (click)="goToPage(currentPage + 1)">
+              Next
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!loading && getFilteredDepartments().length === 0">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>business</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No departments found</h3>
+            <p class="empty-state-description">
+              {{ searchName ? 'No departments match your search criteria.' : 'Get started by creating your first
+              department.' }}
+            </p>
+            <div class="empty-state-actions">
+              <button class="btn btn-primary" routerLink="/departments/create" *ngIf="!searchName">
+                <mat-icon>add</mat-icon>
+                Create First Department
+              </button>
+              <button class="btn btn-secondary" (click)="clearSearch()" *ngIf="searchName">
+                <mat-icon>clear</mat-icon>
+                Clear Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="confirmation-popup" *ngIf="confirmationDialogVisible">
-  <div class="confirmation-dialog">
-    <app-confirmation-dialog [title]="'Confirmation'"
-                             [message]="'Are you sure you want to delete this Department?'"></app-confirmation-dialog>
-    <button class="btn btn-danger" (click)="deleteDepartment()">Confirm Delete</button>
-    <button class="btn btn-secondary" (click)="closeConfirmationDialog()">Cancel</button>
+
+<!-- Enhanced Confirmation Dialog -->
+<div class="confirmation-overlay" *ngIf="confirmationDialogVisible">
+  <div class="confirmation-dialog modern-dialog">
+    <div class="dialog-header">
+      <div class="dialog-icon warning">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="dialog-content">
+        <h3 class="dialog-title">Confirm Deletion</h3>
+        <p class="dialog-message">Are you sure you want to delete this department? This action cannot be undone.</p>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" (click)="closeConfirmationDialog()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      <button class="btn btn-danger" (click)="deleteDepartment()">
+        <mat-icon>delete</mat-icon>
+        Delete Department
+      </button>
+    </div>
   </div>
 </div>

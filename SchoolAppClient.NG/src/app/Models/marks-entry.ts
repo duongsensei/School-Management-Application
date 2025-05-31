@@ -22,8 +22,8 @@ export class MarksEntry {
   standardId!: number;
   /*standard?: Standard;*/
   standard?: Standard;
-  totalMarks: number = 100;
-  passMarks: number = 40;
+  totalMarks = 100;
+  passMarks = 40;
 
   studentMarksDetails: StudentMarksDetails[] = [];
 
@@ -57,7 +57,7 @@ export enum PassFailStatus {
 export class StudentMarksDetails {
   studentId !: number;
   studentName !: string;
-  obtainedScore: number = 0;
+  obtainedScore = 0;
 
   /*grade ?: string;*/
 

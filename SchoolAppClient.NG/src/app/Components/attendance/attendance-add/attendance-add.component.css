@@ -116,15 +116,7 @@ h2 {
     border-color: #007bff;
   }
 
-.btn-primary {
-  background-color: #007bff;
-  border: 2px solid #007bff;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
+/* Using global button system - no custom button styles needed */
 
 .alert-danger {
   background-color: #f8d7da;

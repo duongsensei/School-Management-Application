@@ -11,7 +11,7 @@ import { MarksEntry } from '../../../Models/marks-entry';
 export class MarksnewEntryDeleteComponent {
 
   markEntryId!: number;
-  isDeleting: boolean = false;
+  isDeleting = false;
 
   constructor(private markEntryService: MarkEntryService, private router: Router) { }
 

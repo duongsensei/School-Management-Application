@@ -83,7 +83,7 @@ export class StaffCreateComponent implements OnInit {
     }
   }
   uploadImage(imageInput: any) {
-    var file: File = imageInput.files[0];
+    const file: File = imageInput.files[0];
     if (file.size > 200 * 1024) {
       alert('max allowed size is 200KB');
       return;
@@ -93,7 +93,7 @@ export class StaffCreateComponent implements OnInit {
   }
 
   deleteExperience(index:number): void {
-   let deletedExp = this.staff.staffExperiences.splice(index,1);
+   const deletedExp = this.staff.staffExperiences.splice(index,1);
   }
 
 }

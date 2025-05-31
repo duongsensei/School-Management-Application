@@ -8,8 +8,8 @@ export class StaffSalary {
   medicalAllowance?: number;
   housingAllowance?: number;
   transportationAllowance?: number;
-  savingFund: number = 0;
-  taxes: number = 0;
+  savingFund = 0;
+  taxes = 0;
   netSalary?: number; 
 
   //constructor() {

@@ -1,24 +1,288 @@
+<!-- Enhanced Exam Types Management Component -->
+<div class="page-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-title-section">
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb">
+                    <span class="breadcrumb-item">School Management</span>
+                    <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+                    <span class="breadcrumb-item">Academic</span>
+                    <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+                    <span class="breadcrumb-item active">Exam Types</span>
+                </nav>
 
-<a routerLink="/examType/create" class="btn btn-info">Create New ExamType</a>
-<button class="btn btn-primary" (click)="LoadData()">Refresh</button>
-<hr />
-<table class="table table-bordered table-responsive table-hover">
-    <thead>
-        <tr>
-            <th>ExamTypeId</th>
-            <th>ExamTypeName</th>
-            <th>Operation</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let examType of examtypes">
-            <td>{{examType.examTypeId}}</td>
-            <th>{{examType.examTypeName}}</th>
-            <td>
-                <a [routerLink]="['/examType/edit', examType.examTypeId]" class="btn btn-warning">Edit</a>
-                <button class="btn btn-danger" (click)="DeleteExamType(examType)">Delete</button>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                <!-- Page Title -->
+                <h1 class="page-title">
+                    <mat-icon class="title-icon">assignment</mat-icon>
+                    Exam Types Management
+                </h1>
+                <p class="page-description">
+                    Manage and organize different types of examinations in your school system
+                </p>
+            </div>
 
+            <!-- Page Actions -->
+            <div class="page-actions">
+                <button class="btn btn-secondary" (click)="LoadData()" [disabled]="isLoading">
+                    <mat-icon>refresh</mat-icon>
+                    Refresh
+                </button>
+                <a routerLink="/examType/create" class="btn btn-primary">
+                    <mat-icon>add</mat-icon>
+                    Create New Exam Type
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <mat-icon>assignment</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ getTotalExamTypes() }}</div>
+                    <div class="stat-label">Total Exam Types</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <mat-icon>search</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ getFilteredExamTypes().length }}</div>
+                    <div class="stat-label">Filtered Results</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <mat-icon>check_circle</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ getSelectedCount() }}</div>
+                    <div class="stat-label">Selected</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <mat-icon>trending_up</mat-icon>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ getRecentlyAddedCount() }}</div>
+                    <div class="stat-label">Recently Added</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-card">
+                <div class="controls-header">
+                    <h3 class="controls-title">
+                        <mat-icon>tune</mat-icon>
+                        Search & Filter
+                    </h3>
+                </div>
+                <div class="controls-content">
+                    <div class="controls-grid">
+                        <!-- Search Input -->
+                        <div class="control-group">
+                            <label class="control-label">
+                                <mat-icon>search</mat-icon>
+                                Search Exam Types
+                            </label>
+                            <input type="text" class="form-input" placeholder="Search by exam type name..."
+                                [(ngModel)]="searchTerm" (input)="performSearch()">
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="control-group actions-group">
+                            <button class="btn btn-outline" (click)="clearAllFilters()">
+                                <mat-icon>clear_all</mat-icon>
+                                Clear Filters
+                            </button>
+                            <button class="btn btn-outline" (click)="exportExamTypes()"
+                                [disabled]="!examtypes || examtypes.length === 0">
+                                <mat-icon>download</mat-icon>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-card">
+                <!-- Content Header -->
+                <div class="content-header">
+                    <div class="content-title-section">
+                        <h3 class="content-title">
+                            <mat-icon>list</mat-icon>
+                            Exam Types List
+                        </h3>
+                        <p class="content-subtitle">
+                            {{ getFilteredExamTypes().length }} exam types found
+                        </p>
+                    </div>
+                    <div class="content-actions">
+                        <!-- Bulk Actions -->
+                        <div class="bulk-actions" *ngIf="hasSelectedItems()">
+                            <button class="btn btn-danger btn-sm" (click)="bulkDelete()">
+                                <mat-icon>delete</mat-icon>
+                                Delete Selected ({{ getSelectedCount() }})
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading-state" *ngIf="isLoading">
+                    <div class="loading-content">
+                        <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+                        <h3>Loading Exam Types...</h3>
+                        <p>Please wait while we fetch the data</p>
+                    </div>
+                </div>
+
+                <!-- Table Content -->
+                <div class="table-container" *ngIf="!isLoading">
+                    <table class="modern-table" *ngIf="getFilteredExamTypes().length > 0">
+                        <thead>
+                            <tr>
+                                <th class="select-column">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" [checked]="isAllSelected()"
+                                            [indeterminate]="isIndeterminate()" (change)="toggleSelectAll()">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </th>
+                                <th>ID</th>
+                                <th>Exam Type Name</th>
+                                <th>Created Date</th>
+                                <th>Status</th>
+                                <th class="actions-column">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let examType of getPaginatedExamTypes(); trackBy: trackByExamTypeId"
+                                class="table-row" [class.selected]="isSelected(examType.examTypeId)">
+                                <td class="select-cell">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" [checked]="isSelected(examType.examTypeId)"
+                                            (change)="toggleSelectExamType(examType.examTypeId)">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </td>
+                                <td class="id-cell">
+                                    <div class="id-badge">#{{ examType.examTypeId }}</div>
+                                </td>
+                                <td class="name-cell">
+                                    <div class="name-content">
+                                        <div class="name-primary">{{ examType.examTypeName }}</div>
+                                        <div class="name-secondary">Type ID: {{ examType.examTypeId }}</div>
+                                    </div>
+                                </td>
+                                <td class="date-cell">
+                                    <div class="date-content">
+                                        <mat-icon>event</mat-icon>
+                                        {{ getFormattedDate(examType) }}
+                                    </div>
+                                </td>
+                                <td class="status-cell">
+                                    <div class="status-badge active">
+                                        <mat-icon>check_circle</mat-icon>
+                                        Active
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="action-buttons">
+                                        <button class="action-btn btn-warning"
+                                            [routerLink]="['/examType/edit', examType.examTypeId]"
+                                            title="Edit Exam Type">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button class="action-btn btn-danger" (click)="DeleteExamType(examType)"
+                                            title="Delete Exam Type">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container" *ngIf="getTotalPages() > 1">
+                        <div class="pagination-info">
+                            Showing {{ getPaginationStart() }}-{{ getPaginationEnd() }} of {{
+                            getFilteredExamTypes().length }} exam types
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" [disabled]="currentPage === 1"
+                                (click)="goToPage(currentPage - 1)">
+                                <mat-icon>chevron_left</mat-icon>
+                                Previous
+                            </button>
+
+                            <div class="page-numbers">
+                                <button *ngFor="let page of getPageNumbers()" class="page-btn"
+                                    [class.active]="page === currentPage" (click)="goToPageNumber(page)"
+                                    [disabled]="page === '...'">
+                                    {{ page }}
+                                </button>
+                            </div>
+
+                            <button class="pagination-btn" [disabled]="currentPage === getTotalPages()"
+                                (click)="goToPage(currentPage + 1)">
+                                Next
+                                <mat-icon>chevron_right</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" *ngIf="!isLoading && getFilteredExamTypes().length === 0">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">
+                            <mat-icon>assignment</mat-icon>
+                        </div>
+                        <h3 class="empty-state-title">
+                            {{ (examtypes && examtypes.length === 0) ? 'No Exam Types Found' : 'No Results Found' }}
+                        </h3>
+                        <p class="empty-state-description" *ngIf="examtypes && examtypes.length === 0">
+                            Get started by creating your first exam type. Exam types help organize
+                            different kinds of assessments in your school.
+                        </p>
+                        <p class="empty-state-description" *ngIf="examtypes && examtypes.length > 0">
+                            No exam types match your current search criteria.
+                            Try adjusting your filters or search terms.
+                        </p>
+                        <div class="empty-state-actions">
+                            <a routerLink="/examType/create" class="btn btn-primary"
+                                *ngIf="examtypes && examtypes.length === 0">
+                                <mat-icon>add</mat-icon>
+                                Create First Exam Type
+                            </a>
+                            <button class="btn btn-secondary" (click)="clearAllFilters()"
+                                *ngIf="examtypes && examtypes.length > 0">
+                                <mat-icon>clear_all</mat-icon>
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

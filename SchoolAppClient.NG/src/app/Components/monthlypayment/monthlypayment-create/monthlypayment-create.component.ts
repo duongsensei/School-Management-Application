@@ -20,8 +20,8 @@ export class MonthlypaymentCreatComponent implements OnInit {
   public standards: Standard[] = [];
   public fee: Fee[] = [];
   public academicMonthList: AcademicMonth[] = [];
-  public selectedStandardId: string = '';
-  public totalAmount: number = 0; // Initialize totalAmount property
+  public selectedStandardId = '';
+  public totalAmount = 0; // Initialize totalAmount property
 
   constructor(
     private commonService: CommonServices,
@@ -54,7 +54,7 @@ export class MonthlypaymentCreatComponent implements OnInit {
   calculateTotalAmount(): number {
     let totalAmount = 0;
     const waver = this.model.waver || 0; // Assuming waver is a property of the model
-    const dueBalance = parseFloat((<HTMLInputElement>document.getElementById('dueBalance')).value) || 0; // Get due balance from the input field
+    const dueBalance = parseFloat((document.getElementById('dueBalance') as HTMLInputElement).value) || 0; // Get due balance from the input field
 
     for (const fee of this.filteredData.fees) {
       totalAmount += (fee.amount * this.model.academicMonths.length) - (fee.amount * this.model.academicMonths.length * waver / 100) + dueBalance;

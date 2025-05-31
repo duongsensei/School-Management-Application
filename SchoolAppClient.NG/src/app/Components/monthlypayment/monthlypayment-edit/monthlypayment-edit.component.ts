@@ -20,7 +20,7 @@ export class MonthlypaymentEditComponent implements OnInit {
   public standards: Standard[] = [];
   public fee: Fee[] = [];
   public academicMonthList: AcademicMonth[] = [];
-  public selectedStandardId: string = '';
+  public selectedStandardId = '';
   public monthlyPaymentId!: number;
 
   constructor(

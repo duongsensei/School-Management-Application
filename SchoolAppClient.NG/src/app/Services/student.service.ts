@@ -10,7 +10,7 @@ export class StudentService {
 
   constructor(private http: HttpClient) { }
 
-  apiUrl: string = "http://localhost:5257/api/Students";
+  apiUrl = "http://localhost:5257/api/Students";
 
   public GetStudents(): Observable<Student[]> {
     return this.http.get<Student[]>(this.apiUrl);

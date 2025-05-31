@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import { StaffSalary } from '../../../Models/staff-salary';
 import { Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { StaffSalaryService } from '../../../Services/staff-salary.service';
   templateUrl: './staff-salary-create.component.html',
   styleUrl: './staff-salary-create.component.css'
 })
-export class StaffSalaryCreateComponent {
+export class StaffSalaryCreateComponent implements OnInit {
 
   @ViewChild("staffSalaryForm") staffSalaryForm!: NgForm;
 

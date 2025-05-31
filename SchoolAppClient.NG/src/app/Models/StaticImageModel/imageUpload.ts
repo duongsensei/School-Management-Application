@@ -5,7 +5,7 @@ export class ImageUpload {
 
 
   public getBase64(file: File): void {
-    var reader = new FileReader();
+    const reader = new FileReader();
 
     reader.onload = (e: any) => {
       this.imageData = e.target.result as string;

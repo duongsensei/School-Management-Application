@@ -13,13 +13,13 @@ export class ListStudentComponent implements OnInit {
   public students: Student[] = [];
   public filteredStudents: Student[] = [];
   public paginatedStudents: Student[] = [];
-  public isLoading: boolean = false;
-  public searchTerm: string = '';
+  public isLoading = false;
+  public searchTerm = '';
   
   // Pagination properties
-  public currentPage: number = 1;
-  public pageSize: number = 15; // Table layout can show more items
-  public totalPages: number = 1;
+  public currentPage = 1;
+  public pageSize = 15; // Table layout can show more items
+  public totalPages = 1;
   
   // Math for template
   public Math = Math;

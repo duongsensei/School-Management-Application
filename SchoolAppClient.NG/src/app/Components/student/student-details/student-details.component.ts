@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 })
 export class StudentDetailsComponent implements OnInit {
   student: Student = new Student();
-  errorMessage: string = '';
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,

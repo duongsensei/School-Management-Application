@@ -90,7 +90,7 @@ export class StaffEditComponent implements OnInit {
   }
 
   uploadImage(imageInput: any) {
-    var file: File = imageInput.files[0];
+    const file: File = imageInput.files[0];
     if (file.size > 200 * 1024) {
       alert('max allowed size is 200KB');
       this.errorMessages.push('max allowed size is 200KB');

@@ -24,7 +24,7 @@ export class ExamtypeService {
   }
 
 
-  apiUrl: string = "http://localhost:5257/api/ExamTypes";
+  apiUrl = "http://localhost:5257/api/ExamTypes";
 
 
   public GetdbsExamType(): Observable<Examtype[]> {

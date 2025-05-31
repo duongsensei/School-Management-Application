@@ -262,10 +262,9 @@ ServiceFabricBackup/
 *.rptproj.bak
 
 # SQL Server files
-# *.mdf
-# *.ldf
-# *.ndf
-
+*.mdf
+*.ldf
+*.ndf
 
 # Business Intelligence projects
 *.rdl.data
@@ -362,3 +361,62 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Custom additions for School Management System
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# IDE and OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Environment and configuration files with sensitive data
+appsettings.local.json
+appsettings.*.local.json
+
+# Angular specific
+/SchoolAppClient.NG/dist/
+/SchoolAppClient.NG/.angular/cache/
+/SchoolAppClient.NG/coverage/
+
+# Dependencies
+/SchoolAppClient.NG/node_modules/
+/SchoolAppClient.NG/npm-debug.log*
+/SchoolAppClient.NG/yarn-error.log
+/SchoolAppClient.NG/yarn.lock
+
+# Testing
+/SchoolAppClient.NG/coverage/
+/SchoolAppClient.NG/.nyc_output/
+
+# Production files
+/SchoolAppClient.NG/build/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Cleanup script (keep this commented out if you want to include it)
+# cleanup-before-push.ps1

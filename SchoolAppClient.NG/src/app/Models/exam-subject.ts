@@ -3,7 +3,7 @@ import { Examtype } from "./examtype";
 import { Subject } from "./subject";
 
 export class ExamSubject {
-  examSubjectId: number = 0;
+  examSubjectId = 0;
   examScheduleStandardId !: number;
   subjectId !: number;
   examTypeId !: number;

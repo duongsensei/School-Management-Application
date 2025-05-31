@@ -25,7 +25,7 @@ export class ExamScheduleStandardService {
 
     })
   }
-  apiUrl: string = "http://localhost:5257/api/ExamScheduleStandards";
+  apiUrl = "http://localhost:5257/api/ExamScheduleStandards";
 
 
   public GetExamScheduleStandards(): Observable<ExamScheduleStandardVm[]> {

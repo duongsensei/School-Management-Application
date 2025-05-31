@@ -13,9 +13,9 @@ export class OtherpaymentListComponent implements OnInit {
   @ViewChild('grid') grid: any;
 
   otherPayments: OthersPayment[] = [];
-  confirmationDialogVisible: boolean = false;
+  confirmationDialogVisible = false;
   otherPaymentIdToDelete: number | undefined;
-  searchName: string = '';
+  searchName = '';
 
   pageSettings: PageSettingsModel = { pageSize: 5 };
   filterSettings: FilterSettingsModel = { type: 'Menu' };

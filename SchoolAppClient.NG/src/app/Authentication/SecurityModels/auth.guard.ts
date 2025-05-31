@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { AuthService } from './auth.service';
 
 export const AuthGuard: CanActivateFn = (route, state) => {
-  let authenticationService = inject(AuthService);
-  let router = inject(Router);
+  const authenticationService = inject(AuthService);
+  const router = inject(Router);
   //alert(JSON.stringify(authenticationService.userValue));
   const user = authenticationService.userValue;
 
@@ -14,7 +14,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
 
     const { roles } = route.data;
 
-    let roleList: string[] = roles;//['Admin', 'Operator']
+    const roleList: string[] = roles;//['Admin', 'Operator']
 
     //alert('route role: ' + role);
     if (roleList) {

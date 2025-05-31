@@ -1,7 +1,7 @@
 export class AuthRegRequest {
-  public email: string = '';
-  public userName: string = '';
-  public password: string = '';
-  public comparePassword: string = '';
+  public email = '';
+  public userName = '';
+  public password = '';
+  public comparePassword = '';
   public role: string[] = [];
 }

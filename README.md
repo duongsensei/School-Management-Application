@@ -296,4 +296,356 @@ Project này sử dụng **Syncfusion Essential Studio** cho các UI components 
 - Input Components (Thành phần nhập liệu)
 - Notifications (Thông báo)
 
+## 🧹 Dọn dẹp project cho Production
+
+Trước khi deploy hoặc push lên GitHub, hãy chạy script dọn dẹp để loại bỏ các file không cần thiết:
+
+### Tự động (Khuyến nghị):
+```powershell
+# Đóng Visual Studio trước khi chạy
+.\cleanup-before-push.ps1
+```
+
+### Thủ công:
+```bash
+# 1. Xóa thư mục build và cache
+rm -rf SchoolAppClient.NG/node_modules
+rm -rf SchoolAppClient.NG/dist
+rm -rf bin
+rm -rf obj
+
+# 2. Xóa file database local (sẽ được ignore bởi .gitignore)
+rm SchoolApp.DAL/Database/SchoolSystemDb.mdf
+rm SchoolApp.DAL/Database/SchoolSystemDb_log.ldf
+
+# 3. Xóa Visual Studio cache
+rm -rf .vs
+```
+
+### Các file đã được ignore trong .gitignore:
+- `*.mdf`, `*.ldf` (Database files)
+- `bin/`, `obj/` (Build outputs)
+- `node_modules/` (NPM packages)
+- `.vs/` (Visual Studio cache)
+- `*.log` (Log files)
+- Environment-specific config files
+
+## 🚀 Chuẩn bị cho Deployment
+
+### Build Production:
+
+#### Backend:
+```bash
+dotnet publish SchoolApiService -c Release -o ./publish
+```
+
+#### Frontend:
+```bash
+cd SchoolAppClient.NG
+npm run build --prod
+```
+
+### Kích thước project tối ưu:
+- Source code: ~50MB (sau khi dọn dẹp)
+- Không bao gồm: `node_modules` (~400MB), `bin/obj` (~200MB), database files (~16MB)
+
+## 🧪 Testing
+
+### Backend Testing:
+```bash
+# Chạy unit tests
+dotnet test
+
+# Chạy với coverage report
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+### Frontend Testing:
+```bash
+cd SchoolAppClient.NG
+
+# Unit tests
+npm run test
+
+# E2E tests  
+npm run e2e
+
+# Test coverage
+npm run test:coverage
+```
+
+### Testing Database:
+- Sử dụng In-Memory Database cho unit tests
+- Separate test database cho integration tests
+- Mock data được cung cấp trong `SchoolApp.Models/TestData/`
+
+## 🔒 Security & Performance
+
+### Security Features:
+- **JWT Authentication** với refresh tokens
+- **Role-based Authorization** (Admin, Teacher, Student)
+- **Input Validation** với Data Annotations
+- **SQL Injection Protection** thông qua Entity Framework
+- **CORS Configuration** được cấu hình an toàn
+- **HTTPS Enforcement** trong production
+
+### Performance Optimizations:
+- **Lazy Loading** cho Entity Framework relationships  
+- **Pagination** cho tất cả danh sách dữ liệu
+- **Caching** với Memory Cache cho frequent queries
+- **Image Optimization** với WebP format
+- **Bundle Optimization** cho Angular production builds
+- **Database Indexing** trên các trường thường truy vấn
+
+### Security Best Practices:
+```bash
+# Update dependencies thường xuyên
+npm audit fix
+dotnet list package --outdated
+
+# Kiểm tra vulnerabilities
+npm audit
+dotnet list package --vulnerable
+```
+
+## 📈 Recent Updates & Changelog
+
+### Version 2.0.0 (Latest)
+#### ✨ New Features:
+- **Modern UI Design** với Angular Material 17
+- **Sticky Headers** cho tất cả data tables
+- **Advanced Filtering** và search functionality
+- **Responsive Design** optimization
+- **Dark Mode Support** (experimental)
+
+#### 🐛 Bug Fixes:
+- Fixed button synchronization issues trong staff list
+- Resolved TypeScript compilation errors
+- Fixed API URL configuration problems
+- Improved exam schedule UI consistency
+- Enhanced fee management workflow
+
+#### 🔧 Technical Improvements:
+- Migrated to Angular 17 với standalone components
+- Upgraded to .NET 8.0
+- Removed Syncfusion dependencies where possible
+- Improved error handling và user feedback
+- Enhanced performance với lazy loading
+
+### Previous Versions:
+- **v1.5.0**: Added exam management system
+- **v1.4.0**: Implemented fee management
+- **v1.3.0**: Added staff salary management
+- **v1.2.0**: Enhanced user management
+- **v1.1.0**: Added department management
+- **v1.0.0**: Initial release với basic CRUD operations
+
+## 🤝 Contributing
+
+Chúng tôi hoan nghênh mọi đóng góp cho dự án! 
+
+### Quy trình đóng góp:
+
+1. **Fork** repository này
+2. **Create** một feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** những thay đổi của bạn (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** lên branch (`git push origin feature/AmazingFeature`)
+5. **Open** một Pull Request
+
+### Coding Standards:
+
+#### Backend (.NET):
+- Sử dụng **PascalCase** cho public members
+- Sử dụng **camelCase** cho private members
+- Thêm **XML Documentation** cho public APIs
+- Follow **SOLID principles**
+- Sử dụng **async/await** cho I/O operations
+
+#### Frontend (Angular):
+- Sử dụng **Angular Style Guide**
+- **Components**: PascalCase filenames, kebab-case selectors
+- **Services**: PascalCase với suffix 'Service'
+- **Variables**: camelCase
+- **Constants**: UPPER_SNAKE_CASE
+
+### Commit Message Convention:
+```
+type(scope): description
+
+feat(auth): add JWT refresh token functionality
+fix(ui): resolve button alignment in staff list
+docs(readme): update installation instructions
+style(css): improve responsive design for mobile
+refactor(api): optimize database queries
+test(unit): add tests for user service
+```
+
+### Issues & Bug Reports:
+Khi báo cáo bugs, vui lòng bao gồm:
+- **Mô tả** chi tiết về vấn đề
+- **Steps to reproduce** 
+- **Expected behavior**
+- **Actual behavior**
+- **Environment** info (OS, browser, .NET version)
+- **Screenshots** nếu có
+
+## ⚠️ Known Issues
+
+### Current Limitations:
+1. **Syncfusion License**: Cần license cho production deployment
+2. **Mobile Responsiveness**: Một số trang chưa tối ưu hoàn toàn cho mobile
+3. **Real-time Updates**: Chưa implement SignalR cho real-time notifications
+4. **File Upload**: Size limit 5MB cho image uploads
+5. **Report Generation**: PDF reports có thể chậm với dữ liệu lớn
+
+### Workarounds:
+- **Syncfusion**: Sử dụng community license hoặc thay thế bằng AG Grid
+- **Mobile**: Sử dụng landscape mode cho tablets
+- **Large Reports**: Filter data trước khi generate reports
+
+## 🌍 Deployment
+
+### Development Environment:
+```bash
+# Local development
+dotnet run --project SchoolApiService --environment Development
+cd SchoolAppClient.NG && npm start
+```
+
+### Production Deployment:
+
+#### Docker (Recommended):
+```dockerfile
+# Dockerfile example cho backend
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore
+RUN dotnet build -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "SchoolApiService.dll"]
+```
+
+#### IIS Deployment:
+1. Publish backend: `dotnet publish -c Release`
+2. Build frontend: `npm run build --prod`
+3. Copy files to IIS directory
+4. Configure IIS với ASP.NET Core Hosting Bundle
+
+#### Azure App Service:
+1. Create App Service với .NET 8.0 stack
+2. Configure connection strings trong Application Settings
+3. Deploy using Visual Studio hoặc Azure DevOps
+
+#### Database Migration trên Production:
+```bash
+# Update database schema
+dotnet ef database update --project SchoolApp.DAL --configuration Production
+
+# Seed initial data (nếu cần)
+dotnet run --project SchoolApiService --environment Production -- --seed-data
+```
+
+## 📋 Environment Variables
+
+### Development (.env):
+```bash
+ASPNETCORE_ENVIRONMENT=Development
+ConnectionStrings__DefaultConnection="Server=(localdb)\\mssqllocaldb;Database=SchoolSystemDb;Trusted_Connection=true"
+JWT__SecretKey="your-secret-key-here"
+JWT__Issuer="IDB"
+JWT__Audience="DITC"
+```
+
+### Production:
+```bash
+ASPNETCORE_ENVIRONMENT=Production
+ConnectionStrings__DefaultConnection="your-production-connection-string"
+JWT__SecretKey="your-strong-production-secret"
+CORS__AllowedOrigins="https://yourfrontend.domain.com"
+```
+
+## 📞 Support & Contact
+
+### Documentation:
+- **API Documentation**: Available tại `/swagger` khi chạy backend
+- **Architecture Decision Records**: Trong `docs/adr/` folder
+- **Database Schema**: Trong `docs/database/` folder
+
+### Support Channels:
+- **GitHub Issues**: Cho bug reports và feature requests
+- **Discussions**: Cho questions và general discussions
+- **Wiki**: Cho detailed documentation và tutorials
+
+### Contributors:
+- **Lead Developer**: [Your Name] - Backend Architecture & API Development
+- **Frontend Developer**: [Your Name] - Angular UI/UX Implementation  
+- **Database Designer**: [Your Name] - Database Schema & Optimization
+
+## 📄 License
+
+Dự án này được phân phối dưới **MIT License**. Xem file `LICENSE` để biết thêm chi tiết.
+
+```
+MIT License
+
+Copyright (c) 2024 School Management System
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+## 🎯 Roadmap
+
+### Upcoming Features:
+- [ ] **Real-time notifications** với SignalR
+- [ ] **Mobile app** với .NET MAUI
+- [ ] **Advanced reporting** với Power BI integration
+- [ ] **Multi-tenant support** cho nhiều trường học
+- [ ] **Offline mode** cho mobile app
+- [ ] **AI-powered analytics** cho student performance
+- [ ] **Integration APIs** với third-party systems
+
+### Technical Debt:
+- [ ] **Complete Syncfusion removal** và migration to open-source alternatives
+- [ ] **Microservices architecture** refactoring
+- [ ] **GraphQL API** implementation
+- [ ] **Redis caching** implementation
+- [ ] **Event sourcing** cho audit trails
+
+---
+
+## 🙏 Acknowledgments
+
+- **Microsoft**: Cho .NET 8.0 và Entity Framework Core
+- **Angular Team**: Cho Angular 17 framework
+- **Syncfusion**: Cho UI components (trial version)
+- **Material Design**: Cho design system
+- **Community**: Cho feedback và contributions
+
+---
+
+<div align="center">
+  <p><strong>⭐ Nếu project này hữu ích, hãy cho chúng tôi một star! ⭐</strong></p>
+  <p>Built with ❤️ by School Management System Team</p>
+</div>
+
 

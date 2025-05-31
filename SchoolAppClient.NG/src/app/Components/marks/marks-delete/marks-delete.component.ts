@@ -10,7 +10,7 @@ import { MarksService } from '../../../Services/marks.service';
 })
 export class MarksDeleteComponent implements OnInit {
   mark: Mark = new Mark();
-  message: string = '';
+  message = '';
 
   constructor(
     private route: ActivatedRoute,
