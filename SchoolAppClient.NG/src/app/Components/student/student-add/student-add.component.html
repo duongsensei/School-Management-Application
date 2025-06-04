@@ -26,7 +26,7 @@
           <!-- Image Upload -->
           <div class="image-upload-section">
             <div class="current-image">
-              <img [src]="students.imageUpload.imageData || students.imagePath || '/assets/images/default-avatar.svg'"
+              <img [src]="students.imageUpload.ImageData || students.imagePath || '/assets/images/default-avatar.svg'"
                 alt="Student Photo" class="student-photo" onerror="this.src='/assets/images/default-avatar.svg'">
             </div>
             <div class="upload-controls">
@@ -37,8 +37,8 @@
               <input type="file" id="imageInput" #imageInput (change)="uploadImage(imageInput)" accept="image/*"
                 [multiple]="false" style="display: none;" />
               <p class="upload-hint">JPG, PNG or GIF (max 2MB)</p>
-              <p class="current-file" *ngIf="students.imageUpload.imageName">
-                Selected: {{ students.imageUpload.imageName }}
+              <p class="current-file" *ngIf="students.imageUpload.ImageName">
+                Selected: {{ students.imageUpload.ImageName }}
               </p>
             </div>
           </div>

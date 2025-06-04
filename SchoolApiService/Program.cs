@@ -19,57 +19,22 @@ namespace SchoolApiService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
+            // Add CORS services
             builder.Services.AddCors();
-
-
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy(name: MyAllowSpecificOrigins,
-            //                      policy =>
-            //                      {
-            //                          policy
-            //                          .AllowAnyOrigin()
-            //                          .AllowAnyHeader()
-            //                          .AllowAnyMethod();
-            //                      });
-            //});
-
-
-            //builder.Services.AddControllers();
 
             builder.Services.TryAddScoped<ImageUploadService, ImageUploadService>();
 
-
-            // Or the following
+            // Add controllers with JSON options
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                //options.JsonSerializerOptions.PropertyNamingPolicy = null;
-
-                //support string to enum converter
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-
-
-
-            //builder.Services.Configure<JsonOptions>(opt =>
-            //{
-            //	opt.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            //});
 
             var connectionString = builder.Configuration.GetConnectionString("LocalDbConnection");
             builder.Services.AddDbContext<SchoolDbContext>(options =>
               options.UseSqlServer(connectionString));
-
-            //builder.Services.AddDbContext<SchoolDbContext>(opt =>
-            //{
-            //    opt.UseSqlServer("server = DESKTOP-PQL41F3\\SQLEXPRESS; database = sCHHOLDbApi; trusted_connection =true; trust server certificate =true;");
-            //});
-
-
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -81,9 +46,6 @@ namespace SchoolApiService
                 options.Password.RequireUppercase = false;
             })
 .AddRoles<IdentityRole>().AddEntityFrameworkStores<SchoolDbContext>();
-
-
-
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -118,42 +80,11 @@ namespace SchoolApiService
           });
             });
 
-
-
-            //builder.Services.AddTokenService();
-
             builder.Services.AddScoped<ITokenService, TokenService>();
-
-
-            #region Excluded
-            //builder.Services.AddAuthentication(opt =>
-            //{
-            //    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    //opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //}).AddJwtBearer(opt =>
-            //{
-
-
-            //    var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SignKey"]);
-            //    //opt.SaveToken = true;
-            //    opt.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(key),
-            //        ValidateIssuer = false,
-            //        ValidateAudience = false,
-            //        RequireExpirationTime = true,
-            //        ValidateLifetime = true,
-            //    };
-            //    opt.UseSecurityTokenValidators = true;
-            //}); 
-            #endregion
 
             var validIssuer = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidIssuer");
             var validAudience = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidAudience");
             var symmetricSecurityKey = builder.Configuration.GetValue<string>("JwtTokenSettings:SymmetricSecurityKey");
-
 
             builder.Services.AddAuthentication(options =>
             {
@@ -183,11 +114,7 @@ namespace SchoolApiService
 
             FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 
-
             builder.Services.AddFastReport();
-
-
-
 
             var app = builder.Build();
 
@@ -203,13 +130,7 @@ namespace SchoolApiService
 
             app.UseHttpsRedirection();
 
-            //app.UseCors(MyAllowSpecificOrigins);
-
-
-            app.UseAuthentication();
-
-            app.UseAuthorization();
-
+            // CORS must be placed before Authentication and Authorization
             app.UseCors(opt =>
             {
                 opt.AllowAnyHeader();
@@ -217,13 +138,13 @@ namespace SchoolApiService
                 opt.AllowAnyOrigin();
             });
 
-            //app.UseCors(MyAllowSpecificOrigins);
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
-
             app.UseFastReport();
-
 
             app.Run();
         }

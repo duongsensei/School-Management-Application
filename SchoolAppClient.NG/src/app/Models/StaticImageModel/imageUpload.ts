@@ -1,15 +1,15 @@
 export class ImageUpload {
 
-  public imageData!: string | any;
-  public imageName?: string;
+  public ImageData!: string | any;
+  public ImageName?: string;
 
 
   public getBase64(file: File): void {
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
-      this.imageData = e.target.result as string;
-      this.imageName = file.name;
+      this.ImageData = e.target.result as string;
+      this.ImageName = file.name;
       //console.log(reader.result);
 
     };

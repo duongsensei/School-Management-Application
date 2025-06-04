@@ -51,19 +51,64 @@ export class StudentAddComponent implements OnInit {
 
   onSubmit(): void {
     if (this.studentForm.valid) {
+      // Clean up data before sending
+      this.cleanStudentData();
+
+      console.log('Submitting student data:', this.students);
+
       this.studentService.SaveStudent(this.students).subscribe({
-        next: () => {
-          console.log('Student added successfully');
+        next: (response) => {
+          console.log('Student added successfully', response);
+          alert('Student added successfully!');
           this.router.navigate(['/student']);
         },
         error: (error) => {
           console.error('Error adding student:', error);
-          alert('Error adding student. Please try again.');
+
+          // Show more specific error messages
+          if (error.status === 400) {
+            if (error.error) {
+              alert(`Validation Error: ${JSON.stringify(error.error)}`);
+            } else {
+              alert('Bad Request: Please check your form data.');
+            }
+          } else if (error.status === 401) {
+            alert('Unauthorized: Please login with Admin or Operator role.');
+          } else if (error.status === 403) {
+            alert('Forbidden: You need Admin or Operator role to add students.');
+          } else {
+            alert('Error adding student. Please try again.');
+          }
         }
       });
     } else {
       console.log('Form is invalid');
       this.markFormGroupTouched();
+      alert('Please fill in all required fields correctly.');
+    }
+  }
+
+  private cleanStudentData(): void {
+    // Clean NID fields - remove if empty or make them null
+    if (!this.students.studentNIDNumber || this.students.studentNIDNumber.trim() === '') {
+      this.students.studentNIDNumber = null;
+    }
+    if (!this.students.fatherNID || this.students.fatherNID.trim() === '') {
+      this.students.fatherNID = null;
+    }
+    if (!this.students.motherNID || this.students.motherNID.trim() === '') {
+      this.students.motherNID = null;
+    }
+
+    // Ensure required numeric fields are proper numbers
+    if (this.students.admissionNo) {
+      this.students.admissionNo = Number(this.students.admissionNo);
+    }
+    if (this.students.enrollmentNo) {
+      this.students.enrollmentNo = Number(this.students.enrollmentNo);
+    }
+    if (this.students.uniqueStudentAttendanceNumber) {
+      this.students.uniqueStudentAttendanceNumber = Number(this.students.uniqueStudentAttendanceNumber);
     }
   }
 
@@ -82,13 +127,13 @@ export class StudentAddComponent implements OnInit {
     if (!imageInput.files || imageInput.files.length === 0) {
       return;
     }
-    
+
     const file: File = imageInput.files[0];
     if (file.size > 200 * 1024) {
       alert('Maximum allowed size is 200KB');
       return;
     }
-    
+
     this.students.imageUpload.getBase64(file);
   }
 

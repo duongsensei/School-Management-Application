@@ -1,191 +1,67 @@
-<header class="ocean-header">
-  <!-- Ocean wave animation background -->
-  <div class="ocean-wave-bg">
-    <div class="wave wave1"></div>
-    <div class="wave wave2"></div>
-    <div class="wave wave3"></div>
-  </div>
-
-  <!-- Floating particles -->
-  <div class="floating-particles">
-    <div class="particle particle-1"></div>
-    <div class="particle particle-2"></div>
-    <div class="particle particle-3"></div>
-    <div class="particle particle-4"></div>
-  </div>
-
+<header class="simple-header" role="banner">
   <!-- Main Header Container -->
   <div class="header-container">
-    <!-- Left Section: Logo and Menu Toggle -->
+    <!-- Left Section: Menu Toggle and Logo -->
     <div class="header-left">
-      <button class="menu-toggle ocean-btn" (click)="toggleSidebar()" type="button" aria-label="Toggle Sidebar">
+      <button class="menu-toggle" (click)="toggleSidebar()" type="button" aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="false">
         <mat-icon>menu</mat-icon>
-        <div class="ripple-effect"></div>
       </button>
 
-      <div class="logo" routerLink="/dashboard">
-        <div class="logo-icon-wrapper">
-          <mat-icon class="logo-icon">school</mat-icon>
-          <div class="logo-glow"></div>
+      <div class="logo" routerLink="/dashboard" role="link" tabindex="0">
+        <div class="logo-icon">
+          <mat-icon>school</mat-icon>
         </div>
         <div class="logo-content">
-          <span class="logo-text">Hệ Thống Quản Lý</span>
-          <span class="logo-subtitle">Trường Học Đại Dương</span>
+          <span class="logo-text">School MS</span>
+          <span class="logo-subtitle">MANAGEMENT SYSTEM</span>
         </div>
       </div>
     </div>
 
-    <!-- Center Section: Enhanced Search Bar -->
+    <!-- Center Section: Search Bar -->
     <div class="header-center">
-      <div class="search-container">
-        <div class="search-wrapper">
-          <mat-icon class="search-icon">search</mat-icon>
-          <input type="text" class="search-input" placeholder="Tìm kiếm học sinh, giáo viên, môn học..." #searchInput
-            (focus)="onSearchFocus()" (blur)="onSearchBlur()">
-          <button class="search-clear" *ngIf="searchInput.value" (click)="clearSearch(searchInput)">
-            <mat-icon>close</mat-icon>
-          </button>
-          <div class="search-suggestions" [class.visible]="showSearchSuggestions">
-            <div class="suggestion-item">
-              <mat-icon>people</mat-icon>
-              <span>Tìm học sinh</span>
-            </div>
-            <div class="suggestion-item">
-              <mat-icon>group</mat-icon>
-              <span>Tìm giáo viên</span>
-            </div>
-            <div class="suggestion-item">
-              <mat-icon>book</mat-icon>
-              <span>Tìm môn học</span>
-            </div>
-          </div>
-        </div>
+      <div class="search-container" role="search">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" class="search-input" placeholder="Search students, staff, subjects..." #searchInput
+          (input)="onSearchInput($event)" (focus)="onSearchFocus()" (blur)="onSearchBlur()"
+          aria-label="Search in system" autocomplete="off">
       </div>
     </div>
 
-    <!-- Right Section: Actions and User Menu -->
+    <!-- Right Section: User Menu -->
     <div class="header-right">
-      <!-- Quick Actions -->
-      <div class="quick-actions">
-        <!-- Notifications -->
-        <div class="notification-dropdown">
-          <button class="action-btn ocean-btn" title="Thông báo" type="button" (click)="toggleNotifications()">
-            <mat-icon>notifications</mat-icon>
-            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="notification-menu" [class.visible]="showNotifications">
-            <div class="notification-header">
-              <h3>Thông Báo</h3>
-              <button class="clear-all" (click)="clearAllNotifications()">Xóa tất cả</button>
-            </div>
-            <div class="notification-list">
-              <div class="notification-item" *ngFor="let notification of notifications">
-                <div class="notification-icon">
-                  <mat-icon [style.color]="notification.color">{{ notification.icon }}</mat-icon>
-                </div>
-                <div class="notification-content">
-                  <div class="notification-title">{{ notification.title }}</div>
-                  <div class="notification-text">{{ notification.message }}</div>
-                  <div class="notification-time">{{ notification.time }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Calendar -->
-        <button class="action-btn ocean-btn" title="Lịch" type="button" routerLink="/calendar">
-          <mat-icon>calendar_today</mat-icon>
-          <div class="ripple-effect"></div>
-        </button>
-
-        <!-- Messages -->
-        <button class="action-btn ocean-btn" title="Tin nhắn" type="button" routerLink="/messages">
-          <mat-icon>mail</mat-icon>
-          <span class="message-badge" *ngIf="messageCount > 0">{{ messageCount }}</span>
-          <div class="ripple-effect"></div>
-        </button>
-
-        <!-- Mobile Search Toggle -->
-        <button class="action-btn ocean-btn mobile-search-toggle" title="Tìm kiếm" type="button"
-          (click)="toggleMobileSearch()">
-          <mat-icon>search</mat-icon>
-          <div class="ripple-effect"></div>
-        </button>
-      </div>
-
-      <!-- User Section -->
       <ng-container *ngIf="login; else notLoggedIn">
         <div class="user-dropdown">
-          <button class="user-button ocean-btn" type="button" (click)="toggleUserMenu()">
+          <button class="user-button" type="button" (click)="toggleUserMenu()" aria-label="User menu"
+            [attr.aria-expanded]="showUserMenu">
             <div class="user-avatar">
-              <img src="assets/images/default-avatar.svg" alt="User Avatar"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+              <img [src]="getUserAvatar()" [alt]="'Avatar of ' + user.username" (error)="onAvatarError($event)">
               <div class="avatar-fallback">
                 <mat-icon>account_circle</mat-icon>
               </div>
-              <div class="user-status online"></div>
             </div>
             <div class="user-info">
               <span class="user-name">{{ user.username }}</span>
               <span class="user-role">{{ user.roles.join(', ') }}</span>
             </div>
             <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
           </button>
-          <div class="user-dropdown-menu" [class.visible]="showUserMenu">
-            <div class="user-dropdown-header">
-              <div class="user-avatar-large">
-                <img src="assets/images/default-avatar.svg" alt="User Avatar"
-                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar-fallback">
-                  <mat-icon>account_circle</mat-icon>
-                </div>
-                <div class="user-status online"></div>
-              </div>
-              <div class="user-details">
-                <span class="user-name-large">{{ user.username }}</span>
-                <span class="user-email">{{ user.email || 'admin@school.edu' }}</span>
-                <span class="user-last-login">Đăng nhập lần cuối: {{ getLastLoginTime() }}</span>
-              </div>
-            </div>
-            <div class="dropdown-divider"></div>
-            <a routerLink="/profile" class="user-dropdown-item">
+
+          <!-- User Dropdown Menu -->
+          <div class="user-dropdown-menu" [class.visible]="showUserMenu" role="menu">
+            <a routerLink="/profile" class="dropdown-item" role="menuitem">
               <mat-icon>person</mat-icon>
-              <span>Hồ Sơ Cá Nhân</span>
-              <div class="item-arrow">
-                <mat-icon>chevron_right</mat-icon>
-              </div>
+              <span>Profile</span>
             </a>
-            <a routerLink="/settings" class="user-dropdown-item">
+            <a routerLink="/settings" class="dropdown-item" role="menuitem">
               <mat-icon>settings</mat-icon>
-              <span>Cài Đặt</span>
-              <div class="item-arrow">
-                <mat-icon>chevron_right</mat-icon>
-              </div>
-            </a>
-            <a routerLink="/userlist" class="user-dropdown-item">
-              <mat-icon>people</mat-icon>
-              <span>Quản Lý Người Dùng</span>
-              <div class="item-arrow">
-                <mat-icon>chevron_right</mat-icon>
-              </div>
-            </a>
-            <a routerLink="/role-index" class="user-dropdown-item">
-              <mat-icon>security</mat-icon>
-              <span>Quản Lý Quyền</span>
-              <div class="item-arrow">
-                <mat-icon>chevron_right</mat-icon>
-              </div>
+              <span>Settings</span>
             </a>
             <div class="dropdown-divider"></div>
-            <button class="user-dropdown-item logout-btn" (click)="logout()">
+            <button class="dropdown-item logout-btn" (click)="logout()" role="menuitem">
               <mat-icon>exit_to_app</mat-icon>
-              <span>Đăng Xuất</span>
-              <div class="item-arrow">
-                <mat-icon>chevron_right</mat-icon>
-              </div>
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -193,180 +69,130 @@
 
       <ng-template #notLoggedIn>
         <div class="auth-buttons">
-          <a routerLink="/login" class="btn btn-outline ocean-btn">
-            <mat-icon>login</mat-icon>
-            <span>Đăng Nhập</span>
-            <div class="ripple-effect"></div>
+          <a routerLink="/login" class="btn btn-outline">
+            <span>Login</span>
           </a>
-          <a routerLink="/register" class="btn btn-primary ocean-btn">
-            <mat-icon>person_add</mat-icon>
-            <span>Đăng Ký</span>
-            <div class="ripple-effect"></div>
+          <a routerLink="/register" class="btn btn-primary">
+            <span>Register</span>
           </a>
         </div>
       </ng-template>
     </div>
   </div>
 
-  <!-- Enhanced Navigation Bar -->
-  <div class="nav-bar">
+  <!-- Navigation Bar -->
+  <nav class="nav-bar" role="navigation" aria-label="Main navigation">
     <div class="nav-container">
-      <nav class="header-nav">
-        <div class="nav-dropdown">
-          <button class="nav-button ocean-btn" type="button">
-            <mat-icon>people</mat-icon>
-            <span>Học Sinh</span>
-            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a routerLink="/student" class="nav-dropdown-item">
-              <mat-icon>people</mat-icon>
-              <span>Tất Cả Học Sinh</span>
-              <div class="item-count">1,234</div>
-            </a>
-            <a routerLink="/student/add" class="nav-dropdown-item">
-              <mat-icon>person_add</mat-icon>
-              <span>Thêm Học Sinh</span>
-            </a>
-            <a routerLink="/student/reports" class="nav-dropdown-item">
-              <mat-icon>assessment</mat-icon>
-              <span>Báo Cáo Học Sinh</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown">
-          <button class="nav-button ocean-btn" type="button">
-            <mat-icon>group</mat-icon>
-            <span>Nhân Viên</span>
-            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a routerLink="/departments" class="nav-dropdown-item">
-              <mat-icon>business</mat-icon>
-              <span>Phòng Ban</span>
-              <div class="item-count">12</div>
-            </a>
-            <a routerLink="/staff-list" class="nav-dropdown-item">
-              <mat-icon>group</mat-icon>
-              <span>Danh Sách Nhân Viên</span>
-              <div class="item-count">156</div>
-            </a>
-            <a routerLink="/staff-salaries" class="nav-dropdown-item">
-              <mat-icon>attach_money</mat-icon>
-              <span>Lương</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown">
-          <button class="nav-button ocean-btn" type="button">
-            <mat-icon>assignment</mat-icon>
-            <span>Học Tập</span>
-            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a routerLink="/subjects" class="nav-dropdown-item">
-              <mat-icon>book</mat-icon>
-              <span>Môn Học</span>
-              <div class="item-count">24</div>
-            </a>
-            <a routerLink="/standards" class="nav-dropdown-item">
-              <mat-icon>class</mat-icon>
-              <span>Lớp Học</span>
-              <div class="item-count">36</div>
-            </a>
-            <a routerLink="/attendanceList" class="nav-dropdown-item">
-              <mat-icon>event_available</mat-icon>
-              <span>Điểm Danh</span>
-            </a>
-            <a routerLink="/marksentrynewList" class="nav-dropdown-item">
-              <mat-icon>grade</mat-icon>
-              <span>Điểm Số</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown">
-          <button class="nav-button ocean-btn" type="button">
-            <mat-icon>payment</mat-icon>
-            <span>Tài Chính</span>
-            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a routerLink="/fee-types" class="nav-dropdown-item">
-              <mat-icon>list_alt</mat-icon>
-              <span>Loại Học Phí</span>
-              <div class="item-count">8</div>
-            </a>
-            <a routerLink="/fees" class="nav-dropdown-item">
-              <mat-icon>attach_money</mat-icon>
-              <span>Học Phí</span>
-            </a>
-            <a routerLink="/monthlypayment" class="nav-dropdown-item">
-              <mat-icon>event</mat-icon>
-              <span>Thanh Toán Hàng Tháng</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown">
-          <button class="nav-button ocean-btn" type="button">
-            <mat-icon>analytics</mat-icon>
-            <span>Báo Cáo</span>
-            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <div class="ripple-effect"></div>
-          </button>
-          <div class="nav-dropdown-menu">
-            <a routerLink="/reports/academic" class="nav-dropdown-item">
-              <mat-icon>school</mat-icon>
-              <span>Báo Cáo Học Tập</span>
-            </a>
-            <a routerLink="/reports/financial" class="nav-dropdown-item">
-              <mat-icon>account_balance</mat-icon>
-              <span>Báo Cáo Tài Chính</span>
-            </a>
-            <a routerLink="/reports/attendance" class="nav-dropdown-item">
-              <mat-icon>event_note</mat-icon>
-              <span>Báo Cáo Điểm Danh</span>
-            </a>
-          </div>
-        </div>
-      </nav>
-    </div>
-  </div>
-
-  <!-- Mobile Search Overlay -->
-  <div class="mobile-search-overlay" [class.visible]="isMobileSearchOpen">
-    <div class="mobile-search-container">
-      <div class="mobile-search-header">
-        <mat-icon>search</mat-icon>
-        <input type="text" class="mobile-search-input" placeholder="Tìm kiếm..." #mobileSearchInput>
-        <button class="mobile-search-close" (click)="toggleMobileSearch()">
-          <mat-icon>close</mat-icon>
+      <!-- Students Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('students')"
+          [attr.aria-expanded]="activeDropdown === 'students'">
+          <mat-icon>people</mat-icon>
+          <span>Students</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
         </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'students'" role="menu">
+          <a routerLink="/student" class="nav-dropdown-item" role="menuitem">
+            <span>All Students</span>
+          </a>
+          <a routerLink="/student/add" class="nav-dropdown-item" role="menuitem">
+            <span>Add Student</span>
+          </a>
+          <a routerLink="/student/reports" class="nav-dropdown-item" role="menuitem">
+            <span>Student Reports</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Staff Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('staff')"
+          [attr.aria-expanded]="activeDropdown === 'staff'">
+          <mat-icon>group</mat-icon>
+          <span>Staff</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'staff'" role="menu">
+          <a routerLink="/departments" class="nav-dropdown-item" role="menuitem">
+            <span>Departments</span>
+          </a>
+          <a routerLink="/staff-list" class="nav-dropdown-item" role="menuitem">
+            <span>Staff List</span>
+          </a>
+          <a routerLink="/staff-salaries" class="nav-dropdown-item" role="menuitem">
+            <span>Salaries</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Academic Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('academic')"
+          [attr.aria-expanded]="activeDropdown === 'academic'">
+          <mat-icon>assignment</mat-icon>
+          <span>Academic</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'academic'" role="menu">
+          <a routerLink="/subjects" class="nav-dropdown-item" role="menuitem">
+            <span>Subjects</span>
+          </a>
+          <a routerLink="/standards" class="nav-dropdown-item" role="menuitem">
+            <span>Classes</span>
+          </a>
+          <a routerLink="/attendanceList" class="nav-dropdown-item" role="menuitem">
+            <span>Attendance</span>
+          </a>
+          <a routerLink="/marksentrynewList" class="nav-dropdown-item" role="menuitem">
+            <span>Marks</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Finance Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('finance')"
+          [attr.aria-expanded]="activeDropdown === 'finance'">
+          <mat-icon>payment</mat-icon>
+          <span>Finance</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'finance'" role="menu">
+          <a routerLink="/fee-types" class="nav-dropdown-item" role="menuitem">
+            <span>Fee Types</span>
+          </a>
+          <a routerLink="/fees" class="nav-dropdown-item" role="menuitem">
+            <span>Fees</span>
+          </a>
+          <a routerLink="/monthlypayment" class="nav-dropdown-item" role="menuitem">
+            <span>Monthly Payment</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Reports Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('reports')"
+          [attr.aria-expanded]="activeDropdown === 'reports'">
+          <mat-icon>analytics</mat-icon>
+          <span>Reports</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'reports'" role="menu">
+          <a routerLink="/reports/academic" class="nav-dropdown-item" role="menuitem">
+            <span>Academic Reports</span>
+          </a>
+          <a routerLink="/reports/financial" class="nav-dropdown-item" role="menuitem">
+            <span>Financial Reports</span>
+          </a>
+          <a routerLink="/reports/attendance" class="nav-dropdown-item" role="menuitem">
+            <span>Attendance Reports</span>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
+  </nav>
 
-  <!-- Mobile Navigation Menu -->
-  <div class="mobile-nav" [class.visible]="isMobileMenuOpen">
-    <div class="mobile-nav-header">
-      <span>Điều Hướng</span>
-      <button class="mobile-nav-close" (click)="toggleMobileMenu()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <div class="mobile-nav-content">
-      <!-- Mobile nav items here -->
-    </div>
-  </div>
-
-  <!-- Mobile Menu Overlay -->
-  <div class="mobile-nav-overlay" [class.visible]="isMobileMenuOpen" (click)="toggleMobileMenu()">
-  </div>
+  <!-- Mobile overlay for closing dropdowns -->
+  <div class="mobile-overlay" [class.visible]="activeDropdown" (click)="closeAllDropdowns()"></div>
 </header>
