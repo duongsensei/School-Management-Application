@@ -48,7 +48,7 @@ export class StudentEditComponent implements OnInit {
         this.students = student;
         this.students.imageUpload = new ImageUpload();
         if (student.imagePath) {
-          this.students.imageUpload.imageData = student.imagePath;
+          this.students.imageUpload.ImageData = student.imagePath;
         }
       },
       error: error => {

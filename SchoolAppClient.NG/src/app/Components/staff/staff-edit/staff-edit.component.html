@@ -15,7 +15,8 @@
     <!--Staff Name-->
     <div class="form-group">
       <label for="staffName">Staff Name</label>
-      <input type="text" class="form-control" id="staffName" name="staffName" #staffName="ngModel" [(ngModel)]="staff.staffName" required>
+      <input type="text" class="form-control" id="staffName" name="staffName" #staffName="ngModel"
+        [(ngModel)]="staff.staffName" required>
       <div *ngIf="staffName.invalid  || staffName.untouched || staffName.touched" class="text-danger">
         Staff Name is required
       </div>
@@ -24,25 +25,19 @@
 
     <div>
       <label class=" " for="upload">Choose a file</label>
-      <input type="file" #imageInput
-             (change)="uploadImage(imageInput)"
-             accept="image/*"
-             [multiple]="false"
-             class="form-control" />
+      <input type="file" #imageInput (change)="uploadImage(imageInput)" accept="image/*" [multiple]="false"
+        class="form-control" />
       <figure *ngIf="staff.imageUpload">
-        <img [src]="staff.imageUpload.imageData" width="300" />
-        <figcaption>{{staff.imageUpload.imageName}}</figcaption>
+        <img [src]="staff.imageUpload.ImageData" width="300" />
+        <figcaption>{{staff.imageUpload.ImageName}}</figcaption>
       </figure>
     </div>
 
     <!--Department-->
     <div class="form-group">
       <label for="department">Department</label>
-      <select class="form-control"
-              id="department"
-              name="departmentId" #departmentId="ngModel"
-              [(ngModel)]="staff.departmentId"
-              required>
+      <select class="form-control" id="department" name="departmentId" #departmentId="ngModel"
+        [(ngModel)]="staff.departmentId" required>
         <option value="" disabled selected>Select Department</option>
         <option *ngFor="let dept of departments" [value]="dept.departmentId">{{ dept.departmentName }}</option>
       </select>
@@ -55,9 +50,11 @@
     <!--Staff Salary-->
     <div class="form-group">
       <label for="staffSalary">Staff Salary</label>
-      <select class="form-control" id="staffSalary" name="staffSalaryId" [(ngModel)]="staff.staffSalaryId" #staffSalaryId="ngModel" required>
+      <select class="form-control" id="staffSalary" name="staffSalaryId" [(ngModel)]="staff.staffSalaryId"
+        #staffSalaryId="ngModel" required>
         <option value="" disabled selected>Select Staff Salary</option>
-        <option *ngFor="let salary of salaries" [value]="salary.staffSalaryId">{{ salary.staffName }} - Basic Salary: ${{ salary.basicSalary }}</option>
+        <option *ngFor="let salary of salaries" [value]="salary.staffSalaryId">{{ salary.staffName }} - Basic Salary:
+          ${{ salary.basicSalary }}</option>
       </select>
       <div *ngIf="staffSalaryId.invalid || staffSalaryId.untouched || staffSalaryId.touched" class="text-danger">
         Staff Salary is required
@@ -67,8 +64,11 @@
 
     <div class="form-group">
       <label for="uniqueStaffAttendanceNumber">uniqueStaffAttendanceNumber</label>
-      <input type="number" class="form-control" id="uniqueStaffAttendanceNumber" name="uniqueStaffAttendanceNumber" #uniqueStaffAttendanceNumber="ngModel" [(ngModel)]="staff.uniqueStaffAttendanceNumber" required>
-      <div *ngIf="uniqueStaffAttendanceNumber.invalid || uniqueStaffAttendanceNumber.touched || uniqueStaffAttendanceNumber.untouched" class="text-danger">
+      <input type="number" class="form-control" id="uniqueStaffAttendanceNumber" name="uniqueStaffAttendanceNumber"
+        #uniqueStaffAttendanceNumber="ngModel" [(ngModel)]="staff.uniqueStaffAttendanceNumber" required>
+      <div
+        *ngIf="uniqueStaffAttendanceNumber.invalid || uniqueStaffAttendanceNumber.touched || uniqueStaffAttendanceNumber.untouched"
+        class="text-danger">
         Unique Staff Attendance Number is required
       </div>
     </div>
@@ -98,7 +98,8 @@
 
     <div class="form-group">
       <label for="designation">Designation</label>
-      <select class="form-control" id="designation" name="designation" #designation="ngModel" [(ngModel)]="staff.designation" required>
+      <select class="form-control" id="designation" name="designation" #designation="ngModel"
+        [(ngModel)]="staff.designation" required>
         <option value="" disabled selected>Select Designation</option>
         <option value="Superintendent">Superintendent</option>
         <option value="Headmaster">Headmaster</option>
@@ -114,7 +115,8 @@
 
     <div class="form-group">
       <label for="fatherName">Father Name</label>
-      <input type="text" class="form-control" id="fatherName" name="fatherName" #fatherName="ngModel" [(ngModel)]="staff.fatherName">
+      <input type="text" class="form-control" id="fatherName" name="fatherName" #fatherName="ngModel"
+        [(ngModel)]="staff.fatherName">
       <!--<div *ngIf="fatherName.invalid || fatherName.touched || fatherName.untouched" class="text-danger">
       Father Name is required
     </div>-->
@@ -122,7 +124,8 @@
 
     <div class="form-group">
       <label for="motherName">Mother Name</label>
-      <input type="text" class="form-control" id="motherName" name="motherName" #motherName="ngModel" [(ngModel)]="staff.motherName">
+      <input type="text" class="form-control" id="motherName" name="motherName" #motherName="ngModel"
+        [(ngModel)]="staff.motherName">
       <!--<div *ngIf="motherName.invalid || motherName.touched || motherName.untouched" class="text-danger">
       Mother Name is required
     </div>-->
@@ -130,7 +133,8 @@
 
     <div class="form-group">
       <label for="temporaryAddress">Temporary Address</label>
-      <input type="text" class="form-control" id="temporaryAddress" name="temporaryAddress" #temporaryAddress="ngModel" [(ngModel)]="staff.temporaryAddress">
+      <input type="text" class="form-control" id="temporaryAddress" name="temporaryAddress" #temporaryAddress="ngModel"
+        [(ngModel)]="staff.temporaryAddress">
       <!--<div *ngIf="temporaryAddress.invalid || temporaryAddress.touched || temporaryAddress.untouched" class="text-danger">
       Temporary Address is required
     </div>-->
@@ -138,7 +142,8 @@
 
     <div class="form-group">
       <label for="permanentAddress">Permanent Address</label>
-      <input type="text" class="form-control" id="permanentAddress" name="permanentAddress" #permanentAddress="ngModel" [(ngModel)]="staff.permanentAddress">
+      <input type="text" class="form-control" id="permanentAddress" name="permanentAddress" #permanentAddress="ngModel"
+        [(ngModel)]="staff.permanentAddress">
       <!--<div *ngIf="permanentAddress.invalid || permanentAddress.touched || permanentAddress.untouched" class="text-danger">
       Permanent Address is required
     </div>-->
@@ -146,7 +151,8 @@
 
     <div class="form-group">
       <label for="contactNumber1">Contact Number</label>
-      <input type="text" class="form-control" id="contactNumber1" name="contactNumber1" #contactNumber1="ngModel" [(ngModel)]="staff.contactNumber1">
+      <input type="text" class="form-control" id="contactNumber1" name="contactNumber1" #contactNumber1="ngModel"
+        [(ngModel)]="staff.contactNumber1">
       <!--<div *ngIf="contactNumber1.invalid || contactNumber1.touched || contactNumber1.untouched" class="text-danger">
       Contact Number is required
     </div>-->
@@ -162,7 +168,8 @@
 
     <div class="form-group">
       <label for="qualifications">Qualifications</label>
-      <input type="text" class="form-control" id="qualifications" name="qualifications" #qualifications="ngModel" [(ngModel)]="staff.qualifications" required>
+      <input type="text" class="form-control" id="qualifications" name="qualifications" #qualifications="ngModel"
+        [(ngModel)]="staff.qualifications" required>
       <div *ngIf="qualifications.invalid || qualifications.touched || qualifications.untouched" class="text-danger">
         Qualifications is required
       </div>
@@ -171,7 +178,8 @@
 
     <div class="form-group">
       <label for="joiningDate">Joining Date</label>
-      <input type="date" class="form-control" id="joiningDate" name="joiningDate" #joiningDate="ngModel" [(ngModel)]="staff.joiningDate" required>
+      <input type="date" class="form-control" id="joiningDate" name="joiningDate" #joiningDate="ngModel"
+        [(ngModel)]="staff.joiningDate" required>
       <div *ngIf="joiningDate.invalid || joiningDate.untouched || joiningDate.touched" class="text-danger">
         Joining Date is required
       </div>
@@ -179,7 +187,8 @@
 
     <div class="form-group">
       <label for="bankName">Bank Name</label>
-      <input type="text" class="form-control" id="bankName" name="bankName" #bankName="ngModel" [(ngModel)]="staff.bankName">
+      <input type="text" class="form-control" id="bankName" name="bankName" #bankName="ngModel"
+        [(ngModel)]="staff.bankName">
       <!--<div *ngIf="bankName.invalid || bankName.touched || bankName.untouched" class="text-danger">
       Bank Name is required
     </div>-->
@@ -187,7 +196,8 @@
 
     <div class="form-group">
       <label for="bankAccountName">Bank Account Name</label>
-      <input type="text" class="form-control" id="bankAccountName" name="bankAccountName" #bankAccountName="ngModel" [(ngModel)]="staff.bankAccountName">
+      <input type="text" class="form-control" id="bankAccountName" name="bankAccountName" #bankAccountName="ngModel"
+        [(ngModel)]="staff.bankAccountName">
       <!--<div *ngIf="bankAccountName.invalid || bankAccountName.touched || bankAccountName.untouched" class="text-danger">
       Bank Account Name
     </div>-->
@@ -195,7 +205,8 @@
 
     <div class="form-group">
       <label for="bankAccountNumber">Bank Account Number</label>
-      <input type="text" class="form-control" id="bankAccountNumber" name="bankAccountNumber" #bankAccountNumber="ngModel" [(ngModel)]="staff.bankAccountNumber">
+      <input type="text" class="form-control" id="bankAccountNumber" name="bankAccountNumber"
+        #bankAccountNumber="ngModel" [(ngModel)]="staff.bankAccountNumber">
       <!--<div *ngIf="bankAccountNumber.invalid || bankAccountNumber.touched || bankAccountNumber.untouched" class="text-danger">
       Bank Account Number is required
     </div>-->
@@ -250,7 +261,8 @@
         <!-- Company Name -->
         <div class="form-group">
           <label for="companyName{{i}}">Company Name</label>
-          <input type="text" class="form-control" id="companyName{{i}}" name="companyName{{i}}" [(ngModel)]="staff.staffExperiences[i].companyName" #companyName="ngModel" required>
+          <input type="text" class="form-control" id="companyName{{i}}" name="companyName{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].companyName" #companyName="ngModel" required>
 
           <div *ngIf="companyName.invalid || companyName.untouched || companyName.touched" class="text-danger">
             Company Name is required
@@ -262,7 +274,8 @@
         <!--Designation-->
         <div class="form-group">
           <label for="designation{{i}}">Designation</label>
-          <input type="text" class="form-control" id="designation{{i}}" name="designation{{i}}" [(ngModel)]="staff.staffExperiences[i].designation">
+          <input type="text" class="form-control" id="designation{{i}}" name="designation{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].designation">
         </div>
 
         <!--Joining Date-->
@@ -273,7 +286,8 @@
 
         <div class="form-group">
           <label for="joiningDate{{i}}">Joining Date</label>
-          <input type="date" class="form-control" id="joiningDate{{i}}" name="joiningDate{{i}}" [(ngModel)]="staff.staffExperiences[i].joiningDate" #joiningDate="ngModel" required>
+          <input type="date" class="form-control" id="joiningDate{{i}}" name="joiningDate{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].joiningDate" #joiningDate="ngModel" required>
           <div *ngIf="joiningDate.invalid || joiningDate.untouched || joiningDate.touched" class="text-danger">
             Joining Date is required
           </div>
@@ -289,7 +303,8 @@
 
         <div class="form-group">
           <label for="leavingDate{{i}}">Leaving Date</label>
-          <input type="date" class="form-control" id="leavingDate{{i}}" name="leavingDate{{i}}" [(ngModel)]="staff.staffExperiences[i].leavingDate" #leavingDate="ngModel" required>
+          <input type="date" class="form-control" id="leavingDate{{i}}" name="leavingDate{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].leavingDate" #leavingDate="ngModel" required>
 
           <div *ngIf="leavingDate.invalid || leavingDate.untouched || leavingDate.touched" class="text-danger">
             Leaving Date is required
@@ -301,13 +316,15 @@
         <!--Responsibilities-->
         <div class="form-group">
           <label for="responsibilities{{i}}">Responsibilities</label>
-          <textarea class="form-control" id="responsibilities{{i}}" name="responsibilities{{i}}" [(ngModel)]="staff.staffExperiences[i].responsibilities"></textarea>
+          <textarea class="form-control" id="responsibilities{{i}}" name="responsibilities{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].responsibilities"></textarea>
         </div>
 
         <!--Achievements-->
         <div class="form-group">
           <label for="achievements{{i}}">Achievements</label>
-          <textarea class="form-control" id="achievements{{i}}" name="achievements{{i}}" [(ngModel)]="staff.staffExperiences[i].achievements"></textarea>
+          <textarea class="form-control" id="achievements{{i}}" name="achievements{{i}}"
+            [(ngModel)]="staff.staffExperiences[i].achievements"></textarea>
         </div>
 
       </div>

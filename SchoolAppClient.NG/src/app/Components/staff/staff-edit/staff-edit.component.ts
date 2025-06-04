@@ -56,7 +56,7 @@ export class StaffEditComponent implements OnInit {
         this.staff = staff;
         this.staff.imageUpload = new ImageUpload();
         if (staff.imagePath) {
-          this.staff.imageUpload.imageData = staff.imagePath;
+          this.staff.imageUpload.ImageData = staff.imagePath;
         }
 
 
@@ -102,7 +102,7 @@ export class StaffEditComponent implements OnInit {
     this.staff.imageUpload.getBase64(file);
 
   }
- 
+
   DeleteExperience(index: number) {
 
     const remItem = this.staff.staffExperiences.splice(index, 1);
