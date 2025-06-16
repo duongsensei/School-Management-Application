@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolApiService.Services;
 using SchoolApp.DAL.SchoolContext;
 using SchoolApp.Models.DataModels.SecurityModels;
+using System.Text.RegularExpressions;
 
 namespace SchoolApiService.Controllers
 {
@@ -31,103 +32,243 @@ namespace SchoolApiService.Controllers
             _tokenService = tokenService;
         }
 
-
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register(RegistrationRequest request)
         {
-            //student register
-            //if (!request.Role.Any(r => r == "Student"))
-
-            //	request.Role.Add("Student");
-
-
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-
-            foreach (var role in request.Role)
-            {
-
-                if (await this._roleManager.RoleExistsAsync(role))
+                // Basic model validation
+                if (!ModelState.IsValid)
                 {
-
+                    return BadRequest(new { 
+                        Success = false, 
+                        Message = "Dữ liệu không hợp lệ", 
+                        Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) 
+                    });
                 }
-                else
+
+                // Additional business logic validation
+                if (string.IsNullOrWhiteSpace(request.Email))
                 {
-                    await this._roleManager.CreateAsync(new IdentityRole(role));
+                    return BadRequest(new { Success = false, Message = "Email không được để trống" });
                 }
+
+                if (string.IsNullOrWhiteSpace(request.Username))
+                {
+                    return BadRequest(new { Success = false, Message = "Tên người dùng không được để trống" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Password))
+                {
+                    return BadRequest(new { Success = false, Message = "Mật khẩu không được để trống" });
+                }
+
+                // Check if email already exists
+                var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email);
+                if (existingUserByEmail != null)
+                {
+                    return BadRequest(new { Success = false, Message = "Email đã được sử dụng" });
+                }
+
+                // Check if username already exists
+                var existingUserByUsername = await _userManager.FindByNameAsync(request.Username);
+                if (existingUserByUsername != null)
+                {
+                    return BadRequest(new { Success = false, Message = "Tên người dùng đã được sử dụng" });
+                }
+
+                // Validate password strength
+                if (!IsPasswordStrong(request.Password))
+                {
+                    return BadRequest(new { 
+                        Success = false, 
+                        Message = "Mật khẩu phải chứa ít nhất: 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt, tối thiểu 8 ký tự" 
+                    });
+                }
+
+                // Validate password confirmation
+                if (request.Password != request.ConfirmPassword)
+                {
+                    return BadRequest(new { Success = false, Message = "Mật khẩu xác nhận không khớp" });
+                }
+
+                // Ensure default roles exist
+                var defaultRoles = new[] { "Student", "Teacher", "Admin", "Manager", "Operator" };
+                foreach (var role in defaultRoles)
+                {
+                    if (!await _roleManager.RoleExistsAsync(role))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+
+                // Validate roles
+                if (request.Role == null || !request.Role.Any())
+                {
+                    request.Role = new List<string> { "Student" }; // Default role
+                }
+
+                foreach (var role in request.Role)
+                {
+                    if (!await _roleManager.RoleExistsAsync(role))
+                    {
+                        return BadRequest(new { Success = false, Message = $"Vai trò '{role}' không hợp lệ" });
+                    }
+                }
+
+                // Create user
+                var user = new ApplicationUser 
+                { 
+                    UserName = request.Username, 
+                    Email = request.Email, 
+                    Role = request.Role,
+                    EmailConfirmed = true // For demo purposes
+                };
+
+                var result = await _userManager.CreateAsync(user, request.Password);
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRolesAsync(user, request.Role);
+                    
+                    return Ok(new { 
+                        Success = true, 
+                        Message = "Đăng ký thành công",
+                        Data = new { 
+                            Email = request.Email, 
+                            Username = request.Username, 
+                            Roles = request.Role 
+                        }
+                    });
+                }
+
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return BadRequest(new { 
+                    Success = false, 
+                    Message = "Đăng ký thất bại", 
+                    Errors = errors 
+                });
             }
-
-
-            var user = new ApplicationUser { UserName = request.Username, Email = request.Email, Role = request.Role };
-
-            var result = await _userManager.CreateAsync(
-                 user,
-                request.Password!
-            );
-
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                await _userManager.AddToRolesAsync(user, request.Role);
-                request.Password = "";
-                return CreatedAtAction(nameof(Register), new { email = request.Email, role = request.Role }, request);
+                return StatusCode(500, new { 
+                    Success = false, 
+                    Message = "Có lỗi xảy ra trong quá trình đăng ký",
+                    Error = ex.Message 
+                });
             }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(error.Code, error.Description);
-            }
-
-            return BadRequest(ModelState);
         }
 
-
-
-
-
-
-        [HttpPost()]//https://domain.com/api/users/login
-        [Route("login")]//https://domain.com/login
+        [HttpPost()]
+        [Route("login")]
         public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                // Basic model validation
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { 
+                        Success = false, 
+                        Message = "Dữ liệu không hợp lệ", 
+                        Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) 
+                    });
+                }
+
+                // Additional validation
+                if (string.IsNullOrWhiteSpace(request.Email))
+                {
+                    return BadRequest(new { Success = false, Message = "Email không được để trống" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Password))
+                {
+                    return BadRequest(new { Success = false, Message = "Mật khẩu không được để trống" });
+                }
+
+                // Find user by email
+                var managedUser = await _userManager.FindByEmailAsync(request.Email);
+                if (managedUser == null)
+                {
+                    return BadRequest(new { Success = false, Message = "Email hoặc mật khẩu không đúng" });
+                }
+
+                // Check if user is locked out
+                if (await _userManager.IsLockedOutAsync(managedUser))
+                {
+                    return BadRequest(new { Success = false, Message = "Tài khoản đã bị khóa. Vui lòng thử lại sau." });
+                }
+
+                // Validate password
+                var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, request.Password);
+                if (!isPasswordValid)
+                {
+                    // Increment failed login attempts
+                    await _userManager.AccessFailedAsync(managedUser);
+                    return BadRequest(new { Success = false, Message = "Email hoặc mật khẩu không đúng" });
+                }
+
+                // Reset failed login attempts on successful login
+                await _userManager.ResetAccessFailedCountAsync(managedUser);
+
+                // Find user in database
+                var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                if (userInDb == null)
+                {
+                    return BadRequest(new { Success = false, Message = "Người dùng không tồn tại" });
+                }
+
+                // Generate token
+                var accessToken = _tokenService.CreateToken(userInDb);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Đăng nhập thành công",
+                    Data = new AuthResponse
+                    {
+                        Username = userInDb.UserName,
+                        Email = userInDb.Email,
+                        Token = accessToken,
+                        Roles = userInDb.Role.ToArray()
+                    }
+                });
             }
-
-            var managedUser = await _userManager.FindByEmailAsync(request.Email!);
-
-            if (managedUser == null)
+            catch (Exception ex)
             {
-                return BadRequest("Bad credentials");
+                return StatusCode(500, new { 
+                    Success = false, 
+                    Message = "Có lỗi xảy ra trong quá trình đăng nhập",
+                    Error = ex.Message 
+                });
             }
+        }
 
-            var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, request.Password!);
+        // Private helper method for password strength validation
+        private bool IsPasswordStrong(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                return false;
 
-            if (!isPasswordValid)
-            {
-                return BadRequest("Bad credentials");
-            }
+            // At least one uppercase letter
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+                return false;
 
-            var userInDb = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+            // At least one lowercase letter
+            if (!Regex.IsMatch(password, @"[a-z]"))
+                return false;
 
-            if (userInDb is null)
-            {
-                return Unauthorized(request);
-            }
+            // At least one digit
+            if (!Regex.IsMatch(password, @"\d"))
+                return false;
 
-            var accessToken = _tokenService.CreateToken(userInDb);
-            await _context.SaveChangesAsync();
+            // At least one special character
+            if (!Regex.IsMatch(password, @"[@$!%*?&]"))
+                return false;
 
-            return Ok(new AuthResponse
-            {
-                Username = userInDb.UserName,
-                Email = userInDb.Email,
-                Token = accessToken,
-                Roles = userInDb.Role.ToArray()
-            });
+            return true;
         }
 
         [HttpGet]

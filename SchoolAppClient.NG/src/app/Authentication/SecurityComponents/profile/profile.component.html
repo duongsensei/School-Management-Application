@@ -1,0 +1,253 @@
+<!-- Professional User Profile Page -->
+<div class="profile-container">
+  <!-- Profile Header -->
+  <section class="profile-header">
+    <div class="container">
+      <div class="profile-header-content">
+        <div class="profile-avatar">
+          <div class="avatar-circle">
+            <i class="fas fa-user"></i>
+          </div>
+          <button class="avatar-edit-btn" (click)="onEditAvatar()">
+            <i class="fas fa-camera"></i>
+          </button>
+        </div>
+        
+        <div class="profile-info">
+          <h1 class="profile-name">{{ getCurrentUser()?.email?.split('@')[0] || 'Người dùng' }}</h1>
+          <p class="profile-email">{{ getCurrentUser()?.email || 'email@example.com' }}</p>
+          <div class="profile-role">
+            <span class="role-badge" [ngClass]="getRoleClass()">
+              <i [class]="getRoleIcon()"></i>
+              {{ getUserRoleDisplay() }}
+            </span>
+          </div>
+          <div class="profile-status">
+            <span class="status-indicator active"></span>
+            <span class="status-text">Đang hoạt động</span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn btn-primary" (click)="onEditProfile()">
+            <i class="fas fa-edit"></i>
+            Chỉnh sửa hồ sơ
+          </button>
+          <button class="btn btn-outline" (click)="onChangePassword()">
+            <i class="fas fa-key"></i>
+            Đổi mật khẩu
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Profile Content -->
+  <section class="profile-content">
+    <div class="container">
+      <div class="content-grid">
+        
+        <!-- Personal Information Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-user-circle"></i>
+              Thông tin cá nhân
+            </h3>
+            <button class="edit-btn" (click)="onEditPersonalInfo()">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+          
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-item">
+                <label class="info-label">Họ và tên</label>
+                <p class="info-value">{{ personalInfo.fullName || 'Chưa cập nhật' }}</p>
+              </div>
+              
+              <div class="info-item">
+                <label class="info-label">Số điện thoại</label>
+                <p class="info-value">{{ personalInfo.phone || 'Chưa cập nhật' }}</p>
+              </div>
+              
+              <div class="info-item">
+                <label class="info-label">Ngày sinh</label>
+                <p class="info-value">{{ personalInfo.birthDate || 'Chưa cập nhật' }}</p>
+              </div>
+              
+              <div class="info-item">
+                <label class="info-label">Giới tính</label>
+                <p class="info-value">{{ personalInfo.gender || 'Chưa cập nhật' }}</p>
+              </div>
+              
+              <div class="info-item full-width">
+                <label class="info-label">Địa chỉ</label>
+                <p class="info-value">{{ personalInfo.address || 'Chưa cập nhật' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Security Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-shield-alt"></i>
+              Bảo mật tài khoản
+            </h3>
+          </div>
+          
+          <div class="card-body">
+            <div class="security-items">
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="security-content">
+                  <h4>Xác thực email</h4>
+                  <p>Email của bạn đã được xác thực</p>
+                </div>
+                <div class="security-status verified">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+              </div>
+
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-lock"></i>
+                </div>
+                <div class="security-content">
+                  <h4>Mật khẩu</h4>
+                  <p>Lần thay đổi cuối: {{ lastPasswordChange || 'Chưa thay đổi' }}</p>
+                </div>
+                <button class="security-action" (click)="onChangePassword()">
+                  Thay đổi
+                </button>
+              </div>
+
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="security-content">
+                  <h4>Xác thực 2 bước</h4>
+                  <p>Bảo vệ tài khoản với xác thực 2 bước</p>
+                </div>
+                <button class="security-action" (click)="onSetup2FA()">
+                  Thiết lập
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Log Card -->
+        <div class="info-card full-width">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-history"></i>
+              Hoạt động gần đây
+            </h3>
+            <select class="filter-select">
+              <option>7 ngày qua</option>
+              <option>30 ngày qua</option>
+              <option>3 tháng qua</option>
+            </select>
+          </div>
+          
+          <div class="card-body">
+            <div class="activity-list">
+              <div class="activity-item" *ngFor="let activity of recentActivities">
+                <div class="activity-icon" [ngClass]="activity.type">
+                  <i [class]="'fas fa-' + activity.icon"></i>
+                </div>
+                <div class="activity-content">
+                  <h4>{{ activity.title }}</h4>
+                  <p>{{ activity.description }}</p>
+                  <span class="activity-time">{{ activity.time }}</span>
+                </div>
+                <div class="activity-device">
+                  <i [class]="'fas fa-' + activity.device"></i>
+                  <span>{{ activity.location }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferences Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-cog"></i>
+              Tùy chọn
+            </h3>
+          </div>
+          
+          <div class="card-body">
+            <div class="preferences-list">
+              <div class="preference-item">
+                <div class="preference-content">
+                  <h4>Thông báo email</h4>
+                  <p>Nhận thông báo qua email</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="preferences.emailNotifications">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="preference-item">
+                <div class="preference-content">
+                  <h4>Chế độ tối</h4>
+                  <p>Giao diện tối cho mắt</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="preferences.darkMode">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="preference-item">
+                <div class="preference-content">
+                  <h4>Ngôn ngữ</h4>
+                  <p>Chọn ngôn ngữ hiển thị</p>
+                </div>
+                <select class="preference-select" [(ngModel)]="preferences.language">
+                  <option value="vi">Tiếng Việt</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Statistics Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-chart-bar"></i>
+              Thống kê nhanh
+            </h3>
+          </div>
+          
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat-item" *ngFor="let stat of userStats">
+                <div class="stat-icon" [style.background]="stat.color">
+                  <i [class]="'fas fa-' + stat.icon"></i>
+                </div>
+                <div class="stat-content">
+                  <h4>{{ stat.value }}</h4>
+                  <p>{{ stat.label }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div> 

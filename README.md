@@ -1,423 +1,245 @@
-# School Management System
+# 🏫 School Management Application
 
-Hệ thống quản lý trường học toàn diện được xây dựng với ASP.NET Core 8.0 Web API và Angular 17, sử dụng Entity Framework Core và SQL Server.
+Hệ thống quản lý trường học hiện đại với giao diện chuyên nghiệp và tính năng đầy đủ.
 
-## 📋 Tổng quan dự án
+## ✨ Tính năng mới nhất (Updated 2024)
 
-### Tính năng chính
-- 🎓 **Quản lý học sinh**: Thông tin cá nhân, lịch sử học tập, điểm số
-- 👨‍🏫 **Quản lý giáo viên**: Hồ sơ, phân công giảng dạy, lương
-- 📚 **Quản lý khóa học**: Môn học, lớp học, thời khóa biểu
-- ✅ **Điểm danh**: Theo dõi tình hình đi học của học sinh
-- 📊 **Báo cáo và thống kê**: Báo cáo học tập, tài chính
-- 🔐 **Xác thực và phân quyền**: JWT Authentication với vai trò người dùng
-- 💰 **Quản lý học phí**: Theo dõi thu chi, thông báo
-- 📅 **Lịch thi**: Quản lý kỳ thi và kết quả
+### 🔐 Authentication & Authorization
+- **Đăng ký người dùng nâng cao** với validation mạnh mẽ
+- **Đăng nhập bảo mật** với remember me và error handling
+- **Xác thực JWT** với refresh token
+- **Phân quyền theo vai trò**: Admin, Manager, Teacher, Student, Operator
+- **Profile người dùng** với quản lý thông tin cá nhân
 
-### Kiến trúc hệ thống
-```
-📦 SchoolManagementSystem
-├── 🌐 SchoolApiService (ASP.NET Core 8.0 Web API)
-├── 🗄️ SchoolApp.DAL (Data Access Layer - Entity Framework Core)
-├── 📋 SchoolApp.Models (Domain Models)
-└── 🎨 SchoolAppClient.NG (Angular 17 Frontend)
-```
+### 🎨 Modern UI/UX Design
+- **Gradient backgrounds** và animations mượt mà
+- **Responsive design** tối ưu cho mọi thiết bị
+- **Dark mode support** (planning)
+- **Real-time validation** với visual feedback
+- **Password strength indicator** với color coding
+- **Professional card layouts** và hover effects
 
-## 🔧 Yêu cầu hệ thống
+### 📊 Professional Dashboard
+- **Real-time statistics** hiển thị số liệu quan trọng
+- **Quick actions** cho các tác vụ thường dùng
+- **Recent activities** và notifications
+- **Charts và graphs** (planning)
+- **User profile integration**
 
-### Phần mềm bắt buộc
-1. **Visual Studio 2022** (Community, Professional hoặc Enterprise)
-   - Workload: ASP.NET and web development
-   - Workload: .NET desktop development
-2. **.NET 8.0 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-3. **Node.js 18.x** hoặc cao hơn - [Download](https://nodejs.org/)
-4. **SQL Server LocalDB** (đi kèm với Visual Studio)
-5. **Git** - [Download](https://git-scm.com/)
+### 🔧 Technical Improvements
+- **Enhanced form validation** với regex patterns
+- **Improved error handling** với Vietnamese messages
+- **Better routing** với guards và redirects
+- **Optimized bundle size** với lazy loading
+- **FontAwesome icons** và Google Fonts
+- **TypeScript improvements** với interfaces
 
-### Kiểm tra cài đặt
-Mở **Developer PowerShell** trong Visual Studio và chạy:
-```powershell
-# Kiểm tra .NET SDK
-dotnet --version
+## 🛠️ Công nghệ sử dụng
 
-# Kiểm tra Node.js
-node --version
+### Backend
+- **ASP.NET Core 8.0** - Web API Framework
+- **Entity Framework Core** - ORM
+- **SQL Server LocalDB** - Database
+- **JWT Authentication** - Security
+- **AutoMapper** - Object mapping
+- **Swagger/OpenAPI** - API Documentation
 
-# Kiểm tra npm
-npm --version
+### Frontend
+- **Angular 17** - Frontend Framework
+- **TypeScript** - Programming Language
+- **Bootstrap 5** - CSS Framework
+- **FontAwesome 6** - Icons
+- **Angular Material** - UI Components
+- **RxJS** - Reactive Programming
 
-# Kiểm tra Git
-git --version
-```
+### Development Tools
+- **Visual Studio 2022** - IDE
+- **VS Code** - Code Editor
+- **Git** - Version Control
+- **npm** - Package Manager
+- **Angular CLI** - Development Tools
 
-## 🚀 Hướng dẫn cài đặt từ đầu
+## 🚀 Hướng dẫn cài đặt
 
-### Bước 1: Clone dự án từ GitHub
-```powershell
-# Mở Git Bash hoặc Command Prompt
-git clone https://github.com/blanatole/School-Management-Application.git
-cd SchoolManagementSystem
-```
+### Prerequisites
+- **.NET 8.0 SDK**
+- **Node.js 18+**
+- **SQL Server LocalDB**
+- **Git**
 
-### Bước 2: Mở dự án trong Visual Studio
-
-1. **Khởi động Visual Studio 2022**
-2. Chọn **"Open a project or solution"**
-3. Duyệt đến thư mục dự án và chọn file `SchoolManagementSystem.sln`
-4. Nhấn **Open**
-
-### Bước 3: Cấu hình Solution trong Visual Studio
-
-#### 3.1 Kiểm tra Solution Explorer
-Đảm bảo bạn thấy các project sau:
-- 📁 **SchoolApiService** (ASP.NET Core Web API)
-- 📁 **SchoolApp.DAL** (Class Library)
-- 📁 **SchoolApp.Models** (Class Library)
-- 📁 **SchoolAppClient.NG** (Angular Project)
-
-#### 3.2 Restore NuGet Packages
-1. **Right-click** vào Solution trong Solution Explorer
-2. Chọn **"Restore NuGet Packages"**
-3. Đợi quá trình hoàn tất (check Output window)
-
-### Bước 4: Cấu hình Database
-
-#### 4.1 Kiểm tra Connection String
-1. Mở file `SchoolApiService/appsettings.json`
-2. Kiểm tra connection string (mặc định sử dụng LocalDB):
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=SchoolManagementDB;Trusted_Connection=true;MultipleActiveResultSets=true"
-  }
-}
+### 1. Clone Repository
+```bash
+git clone https://github.com/yourusername/School-Management-Application.git
+cd School-Management-Application
 ```
 
-#### 4.2 Cài đặt Entity Framework Tools
-1. Mở **Package Manager Console** (View → Other Windows → Package Manager Console)
-2. Chạy lệnh:
-```powershell
-dotnet tool install --global dotnet-ef
+### 2. Setup Backend
+```bash
+# Restore NuGet packages
+dotnet restore
+
+# Update database
+dotnet ef database update --project SchoolApiService
+
+# Run backend server
+dotnet run --project SchoolApiService
 ```
+Backend sẽ chạy tại: `http://localhost:5257`
 
-#### 4.3 Tạo Database
-1. Trong **Package Manager Console**, đảm bảo **Default project** là `SchoolApp.DAL`
-2. Chạy lệnh để tạo database:
-```powershell
-Update-Database
-```
-
-### Bước 5: Cấu hình Angular Frontend
-
-#### 5.1 Mở Terminal trong Visual Studio
-1. **Right-click** vào project `SchoolAppClient.NG`
-2. Chọn **"Open in Terminal"**
-
-#### 5.2 Cài đặt Angular CLI
-```powershell
-npm install -g @angular/cli@17
-```
-
-#### 5.3 Cài đặt Dependencies
-```powershell
-# Trong thư mục SchoolAppClient.NG
-npm install
-```
-
-### Bước 6: Cấu hình Startup Projects
-
-#### 6.1 Thiết lập Multiple Startup Projects
-1. **Right-click** vào Solution trong Solution Explorer
-2. Chọn **"Properties"**
-3. Trong **Common Properties → Startup Project**
-4. Chọn **"Multiple startup projects"**
-5. Cấu hình như sau:
-   - `SchoolApiService`: **Start**
-   - `SchoolAppClient.NG`: **Start**
-   - Các project khác: **None**
-6. Nhấn **OK**
-
-## 🏃‍♂️ Chạy ứng dụng
-
-### Phương pháp 1: Chạy cả Backend và Frontend cùng lúc
-
-1. Nhấn **F5** hoặc click **Start Debugging** trong Visual Studio
-2. Visual Studio sẽ tự động:
-   - Khởi động API Server tại `https://localhost:7125`
-   - Khởi động Angular dev server tại `http://localhost:4200`
-3. Trình duyệt sẽ tự động mở Angular application
-
-### Phương pháp 2: Chạy riêng từng phần
-
-#### Chạy Backend (API)
-1. **Right-click** vào `SchoolApiService`
-2. Chọn **"Set as Startup Project"**
-3. Nhấn **F5**
-4. API sẽ chạy tại `https://localhost:7125`
-5. Swagger UI sẽ mở tại `https://localhost:7125/swagger`
-
-#### Chạy Frontend (Angular)
-1. **Right-click** vào `SchoolAppClient.NG`
-2. Chọn **"Open in Terminal"**
-3. Chạy lệnh:
-```powershell
-npm start
-```
-4. Angular app sẽ chạy tại `http://localhost:4200`
-
-## 🔗 URLs quan trọng
-
-- **Frontend**: http://localhost:4200
-- **Backend API**: https://localhost:7125
-- **Swagger Documentation**: https://localhost:7125/swagger
-- **API Health Check**: https://localhost:7125/health
-
-## 🗄️ Quản lý Database
-
-### Xem Database trong Visual Studio
-1. Mở **View → SQL Server Object Explorer**
-2. Expand **(localdb)\MSSQLLocalDB**
-3. Tìm database **SchoolManagementDB**
-
-### Migrations và Schema Updates
-```powershell
-# Tạo migration mới
-Add-Migration "TenMigration" -Project SchoolApp.DAL
-
-# Áp dụng migration
-Update-Database -Project SchoolApp.DAL
-
-# Rollback migration
-Update-Database "TenMigrationTruoc" -Project SchoolApp.DAL
-```
-
-### Reset Database hoàn toàn
-```powershell
-# Xóa database hiện tại
-Drop-Database -Project SchoolApp.DAL
-
-# Tạo lại từ đầu
-Update-Database -Project SchoolApp.DAL
-```
-
-## 🛠️ Debugging và Development
-
-### Debug Backend
-1. Đặt breakpoint trong Controller hoặc Service
-2. Nhấn **F5** để chạy với debugging
-3. Gọi API từ frontend hoặc Swagger để trigger breakpoint
-
-### Debug Frontend
-1. Mở **Developer Tools** trong browser (F12)
-2. Sử dụng **Sources tab** để debug TypeScript
-3. Hoặc debug trực tiếp trong Visual Studio Code
-
-### Live Reload
-- **Backend**: Tự động reload khi save file .cs
-- **Frontend**: Tự động reload khi save file .ts, .html, .css
-
-## 📦 Quản lý Dependencies
-
-### Backend Dependencies (NuGet)
-- Microsoft.EntityFrameworkCore
-- Microsoft.AspNetCore.Authentication.JwtBearer
-- Microsoft.EntityFrameworkCore.SqlServer
-- Microsoft.EntityFrameworkCore.Tools
-
-### Frontend Dependencies (npm)
-- @angular/core ^17.0.0
-- @angular/material
-- @syncfusion/ej2-angular-grids
-- bootstrap
-- font-awesome
-
-### Cập nhật Dependencies
-```powershell
-# Backend - trong Package Manager Console
-Update-Package
-
-# Frontend - trong terminal
-npm update
-```
-
-## 🔧 Troubleshooting
-
-### Lỗi thường gặp và cách khắc phục
-
-#### "Cannot connect to database"
-```powershell
-# Kiểm tra SQL Server LocalDB
-sqllocaldb info
-sqllocaldb start mssqllocaldb
-```
-
-#### "Port already in use"
-1. Thay đổi port trong `launchSettings.json`
-2. Hoặc kill process đang sử dụng port:
-```powershell
-netstat -ano | findstr :7125
-taskkill /PID [PID_NUMBER] /F
-```
-
-#### "Node modules not found"
-```powershell
+### 3. Setup Frontend
+```bash
+# Navigate to Angular project
 cd SchoolAppClient.NG
-rm -rf node_modules
+
+# Install npm packages
 npm install
+
+# Run development server
+ng serve
 ```
+Frontend sẽ chạy tại: `http://localhost:4200`
 
-#### "Migration pending"
-```powershell
-Update-Database -Project SchoolApp.DAL
-```
+## 📱 Screenshots
 
-## 📁 Cấu trúc Project chi tiết
+### Login Page
+![Login](./docs/images/login.png)
+*Modern login form với gradient background và validation*
 
-```
-SchoolManagementSystem/
-├── 📁 SchoolApiService/           # ASP.NET Core Web API
-│   ├── 📁 Controllers/            # API Controllers
-│   │   ├── AuthController.cs      # Authentication
-│   │   ├── StudentsController.cs  # Student management
-│   │   ├── TeachersController.cs  # Teacher management
-│   │   └── ...
-│   ├── 📁 Services/               # Business Logic
-│   ├── 📁 ViewModels/            # DTOs
-│   ├── 📁 Reports/               # Report templates
-│   ├── 📄 appsettings.json       # Configuration
-│   └── 📄 Program.cs             # Entry point
-│
-├── 📁 SchoolApp.DAL/             # Data Access Layer
-│   ├── 📁 SchoolContext/         # DbContext
-│   ├── 📁 Migrations/            # EF Migrations
-│   ├── 📁 SecurityModels/        # Identity models
-│   └── 📁 Configurations/        # Entity configurations
-│
-├── 📁 SchoolApp.Models/          # Domain Models
-│   ├── 📄 Student.cs
-│   ├── 📄 Teacher.cs
-│   ├── 📄 Course.cs
-│   └── ...
-│
-└── 📁 SchoolAppClient.NG/        # Angular Frontend
-    ├── 📁 src/
-    │   ├── 📁 app/
-    │   │   ├── 📁 components/     # Angular components
-    │   │   ├── 📁 services/      # Angular services
-    │   │   ├── 📁 models/        # TypeScript models
-    │   │   └── 📁 guards/        # Route guards
-    │   ├── 📁 assets/            # Static files
-    │   └── 📁 environments/      # Environment configs
-    ├── 📄 angular.json
-    ├── 📄 package.json
-    └── 📄 tsconfig.json
-```
+### Registration Page
+![Registration](./docs/images/register.png)
+*Registration form với password strength indicator*
 
-## 🎯 Tính năng chính của hệ thống
+### Dashboard
+![Dashboard](./docs/images/dashboard.png)
+*Professional dashboard với real-time stats*
 
-### Authentication & Authorization
-- JWT Token authentication
-- Role-based access control (Admin, Teacher, Student)
-- Password hashing với bcrypt
-- Session management
+### Profile Page
+![Profile](./docs/images/profile.png)
+*User profile với security settings*
 
-### Student Management
+## 🎯 Tính năng chính
+
+### Quản lý học sinh
 - Đăng ký học sinh mới
-- Quản lý thông tin cá nhân
-- Theo dõi lịch sử học tập
+- Cập nhật thông tin học sinh
+- Theo dõi tiến độ học tập
 - Quản lý điểm số
 
-### Teacher Management
-- Hồ sơ giáo viên
+### Quản lý giáo viên
+- Thêm giáo viên mới
 - Phân công môn học
-- Quản lý lương và phụ cấp
-- Lịch giảng dạy
+- Quản lý lương
+- Đánh giá hiệu suất
 
-### Course & Class Management
-- Tạo và quản lý khóa học
-- Phân chia lớp học
-- Thời khóa biểu
-- Quản lý phòng học
+### Quản lý điểm số
+- Nhập điểm theo môn học
+- Báo cáo thành tích
+- Thống kê điểm trung bình
+- Export kết quả
 
-### Attendance System
-- Điểm danh hàng ngày
-- Báo cáo vắng mặt
-- Thông báo cho phụ huynh
-- Thống kê tỷ lệ đi học
-
-### Fee Management
-- Quản lý học phí
-- Theo dõi thanh toán
-- Thông báo nộp phí
+### Quản lý học phí
+- Thu học phí hàng tháng
+- Quản lý các khoản phí khác
 - Báo cáo tài chính
+- In hóa đơn
 
-### Exam & Grading
-- Tạo lịch thi
-- Nhập điểm số
-- Tính điểm trung bình
-- Xếp loại học lực
+### Quản lý chuyên cần
+- Điểm danh hàng ngày
+- Theo dõi tỷ lệ vắng mặt
+- Báo cáo chuyên cần
+- Thông báo phụ huynh
 
-## 🔐 Bảo mật
+## 🔐 Phân quyền người dùng
 
-### API Security
-- JWT Token với expiration
-- CORS configuration
-- Request validation
-- SQL Injection prevention
+| Vai trò | Quyền hạn |
+|---------|-----------|
+| **Admin** | Quản lý toàn bộ hệ thống, tạo tài khoản, phân quyền |
+| **Manager** | Quản lý giáo viên, học sinh, báo cáo tổng hợp |
+| **Teacher** | Quản lý lớp học, nhập điểm, điểm danh |
+| **Student** | Xem điểm số, lịch học, thông báo |
+| **Operator** | Hỗ trợ kỹ thuật, backup dữ liệu |
 
-### Frontend Security
-- Route guards
-- Token storage trong localStorage
-- XSS protection
-- Input sanitization
+## 🧪 Testing
 
-## 📊 Performance
-
-### Backend Optimizations
-- Entity Framework query optimization
-- Caching với MemoryCache
-- Async/await patterns
-- Connection pooling
-
-### Frontend Optimizations
-- Lazy loading modules
-- OnPush change detection
-- TrackBy functions
-- Image optimization
-
-## 🚀 Deployment
-
-### Development Environment
-Môi trường phát triển với Visual Studio như hướng dẫn trên.
-
-### Production Deployment
-- Backend: Deploy to IIS hoặc Azure App Service
-- Frontend: Build production và deploy to static hosting
-- Database: SQL Server hoặc Azure SQL Database
-
-### Build Commands
-```powershell
-# Backend
-dotnet publish -c Release -o ./publish
-
-# Frontend
-ng build --prod
+### Backend Testing
+```bash
+dotnet test
 ```
 
-## 📞 Hỗ trợ
+### Frontend Testing
+```bash
+cd SchoolAppClient.NG
+ng test
+ng e2e
+```
 
-Nếu gặp vấn đề trong quá trình cài đặt hoặc chạy dự án:
+## 📝 API Documentation
 
-1. **Kiểm tra lại các bước cài đặt**
-2. **Xem phần Troubleshooting**
-3. **Kiểm tra Console/Terminal output để tìm lỗi cụ thể**
-4. **Đảm bảo tất cả dependencies đã được cài đặt đúng**
+API documentation có sẵn tại: `http://localhost:5257/swagger`
+
+### Main Endpoints
+- `POST /api/users/register` - Đăng ký người dùng
+- `POST /api/users/login` - Đăng nhập
+- `GET /api/users/profile` - Lấy thông tin profile
+- `GET /api/dashboard/stats` - Thống kê dashboard
+
+## 🤝 Đóng góp
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Mở Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👥 Team
+
+- **Developer**: [Your Name]
+- **UI/UX Designer**: [Your Name]
+- **Project Manager**: [Your Name]
+
+## 📞 Liên hệ
+
+- **Email**: your.email@example.com
+- **GitHub**: [@yourusername](https://github.com/yourusername)
+- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+
+## 🎉 Changelog
+
+### Version 2.0.0 (Current)
+- ✅ Enhanced authentication system
+- ✅ Modern UI redesign
+- ✅ Professional dashboard
+- ✅ User profile management
+- ✅ Improved security
+- ✅ Better validation
+- ✅ Responsive design
+
+### Version 1.0.0
+- ✅ Basic CRUD operations
+- ✅ Student management
+- ✅ Teacher management
+- ✅ Grade management
+- ✅ Fee management
+- ✅ Attendance tracking
+
+## 🔮 Roadmap
+
+### Upcoming Features
+- [ ] Real-time notifications
+- [ ] Mobile app (Flutter)
+- [ ] Advanced reporting
+- [ ] AI-powered analytics
+- [ ] Multi-language support
+- [ ] Parent portal
+- [ ] Online learning integration
 
 ---
 
-**🎉 Chúc bạn thành công với School Management System!**
-
-*Dự án này được xây dựng với mục tiêu tạo ra một hệ thống quản lý trường học hiện đại, dễ sử dụng và có thể mở rộng.*
+⭐ **Don't forget to star this repository if you found it helpful!**
 
 ```
 MIT License
