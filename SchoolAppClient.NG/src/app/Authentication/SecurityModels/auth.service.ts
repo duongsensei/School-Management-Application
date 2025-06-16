@@ -39,25 +39,23 @@ export class AuthService {
   }
 
 
-  login(user: AuthRequest): Observable<AuthResponse> {
+  login(user: AuthRequest): Observable<any> {
     return this.http
-      .post<AuthResponse>(api + 'login', user)
+      .post<any>(api + 'login', user)
       .pipe(
-        tap((response: AuthResponse) => {
+        tap((response: any) => {
           console.info(response);
-          this.doLoginUser(response);
-          //this.changeDetectorRef.detectChanges();
-          //this.router.navigate(['/']);
-          //this.router.navigate(['']);
-
-          this.userSubject.next(response);
+          if (response.success && response.data) {
+            this.doLoginUser(response.data);
+            this.userSubject.next(response.data);
+          }
         })
       );
   }
 
   register(userNew: AuthRegRequest): Observable<any> {
     return this.http
-      .post(api + 'register', userNew);
+      .post<any>(api + 'register', userNew);
   }
   roleEntry(role: AppRole): Observable<any> {
 

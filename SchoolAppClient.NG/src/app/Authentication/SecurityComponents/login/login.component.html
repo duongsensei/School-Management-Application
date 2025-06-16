@@ -1,21 +1,135 @@
-<h1>Login</h1>
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="logo-container">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h2 class="auth-title">Chào mừng trở lại</h2>
+      <p class="auth-subtitle">Đăng nhập vào hệ thống quản lý trường học</p>
+    </div>
 
-<form (submit)="login($event)">
-  <div>
-    <input type="email" class="form-control" name="email" placeholder="Email" [(ngModel)]="model.email" />
-  </div>
-  <div>
-    <input type="password"
-           class="form-control"
-           name="model.password"
-           placeholder="Password"
-           [(ngModel)]="model.password" required minlength="4" #inputPass="ngModel" />
-    <ul *ngIf="inputPass.invalid && inputPass.touched" class="text-danger">
-      <li *ngIf="inputPass.errors?.['required']">Password is required</li>
-      <li *ngIf="inputPass.errors?.['minlength']">Minimum Password length is 6</li>
-    </ul>
-  </div>
+    <!-- Login Form -->
+    <form #loginForm="ngForm" (ngSubmit)="login($event)" class="auth-form">
+      
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="fas fa-envelope"></i>
+          Email
+        </label>
+        <input 
+          type="email" 
+          id="email"
+          name="email" 
+          class="form-control"
+          [class.is-invalid]="!isEmailValid() && model.email.length > 0"
+          [class.is-valid]="isEmailValid() && model.email.length > 0"
+          placeholder="example@email.com"
+          [(ngModel)]="model.email" 
+          required
+          #emailInput="ngModel"
+          autocomplete="email"
+          autofocus>
+        
+        <div class="invalid-feedback" *ngIf="!isEmailValid() && model.email.length > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          Email không đúng định dạng
+        </div>
+        <div class="valid-feedback" *ngIf="isEmailValid() && model.email.length > 0">
+          <i class="fas fa-check-circle"></i>
+          Email hợp lệ
+        </div>
+      </div>
 
-  <button type="submit" class="btn btn-outline-success">Login</button>
-  <a class="btn btn-link text-dark" routerLink="/register">New?</a>
-</form>
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="fas fa-lock"></i>
+          Mật khẩu
+        </label>
+        <div class="password-container">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password"
+            name="password" 
+            class="form-control"
+            [class.is-invalid]="!isPasswordValid() && model.password.length > 0"
+            [class.is-valid]="isPasswordValid() && model.password.length > 0"
+            placeholder="Nhập mật khẩu"
+            [(ngModel)]="model.password" 
+            required
+            #passwordInput="ngModel"
+            autocomplete="current-password">
+          
+          <button 
+            type="button" 
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
+            <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        
+        <div class="invalid-feedback" *ngIf="!isPasswordValid() && model.password.length > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          Mật khẩu phải có ít nhất 4 ký tự
+        </div>
+        <div class="valid-feedback" *ngIf="isPasswordValid() && model.password.length > 0">
+          <i class="fas fa-check-circle"></i>
+          Mật khẩu hợp lệ
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <label class="checkbox-container">
+          <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe">
+          <span class="checkmark"></span>
+          <span class="checkbox-text">Ghi nhớ đăng nhập</span>
+        </label>
+        <a href="#" class="forgot-password" (click)="onForgotPassword($event)">
+          Quên mật khẩu?
+        </a>
+      </div>
+
+      <!-- Error Messages -->
+      <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Success Messages -->
+      <div class="alert alert-success" *ngIf="successMessage" role="alert">
+        <i class="fas fa-check-circle"></i>
+        {{ successMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-auth"
+        [disabled]="isLoading || !isFormValid()"
+        [class.loading]="isLoading">
+        <span *ngIf="!isLoading">
+          <i class="fas fa-sign-in-alt"></i>
+          Đăng nhập
+        </span>
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Đang xử lý...
+        </span>
+      </button>
+
+      <!-- Register Link -->
+      <div class="auth-footer">
+        <p>Chưa có tài khoản? 
+          <a routerLink="/register" class="auth-link">
+            <i class="fas fa-user-plus"></i>
+            Đăng ký ngay
+          </a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -45,7 +45,8 @@ import { MarksnewEntryListComponent } from './Components/marks-new/marksnew-entr
 import { MarkEntryCreateComponent } from './Components/marks-new/marksnew-entry-create/marksnew-entry-create.component';
 import { MarkEntryDetailsComponent } from './Components/marks-new/marksnew-entry-details/marksnew-entry-details.component';
 import { MarksnewEntryDeleteComponent } from './Components/marks-new/marksnew-entry-delete/marksnew-entry-delete.component';
-import { DashboardComponent } from './Components/dashboard/dashboard-grid/dashboard-grid.component';
+import { DashboardComponent as DashboardGridComponent } from './Components/dashboard/dashboard-grid/dashboard-grid.component';
+import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { ExamscheduleListComponent } from './Components/examschedule/examschedule-list/examschedule-list.component';
 import { ExamscheduleAddComponent } from './Components/examschedule/examschedule-add/examschedule-add.component';
 import { ExamscheduleEditComponent } from './Components/examschedule/examschedule-edit/examschedule-edit.component';
@@ -65,6 +66,7 @@ import { AssignRoleComponent } from './Authentication/SecurityComponents/assign-
 import { RolesComponent } from './Authentication/SecurityComponents/roles/roles.component';
 import { UsersComponent } from './Authentication/SecurityComponents/users/users.component';
 import { RegisterComponent } from './Authentication/SecurityComponents/register/register.component';
+import { ProfileComponent } from './Authentication/SecurityComponents/profile/profile.component';
 
 
 const routes: Routes = [
@@ -72,12 +74,13 @@ const routes: Routes = [
 
   /*{ path: "", redirectTo: "/marksentrynewList", pathMatch: "full" },*/
 
-  { path: "", redirectTo: "/home", pathMatch: "full" },
+  { path: "", redirectTo: "/dashboard", pathMatch: "full" },
 
 
 
   { path: "register", component: RegisterComponent, },
   { path: "login", component: LoginComponent, },
+  { path: "profile", component: ProfileComponent, canActivate: [AuthGuard] },
   { path: "userlist", component: UsersComponent, canActivate: [AuthGuard], data: { roles: ['Admin', 'Operator'] } },
   { path: "role-index", component: RolesComponent, canActivate: [AuthGuard], data: { roles: ['Admin', 'Operator'] } },
   { path: "assignrole/:id", component: AssignRoleComponent, canActivate: [AuthGuard], data: { roles: ['Admin', 'Operator'] } },
@@ -180,7 +183,8 @@ const routes: Routes = [
 
   { path: 'pmaymentdetails', component: PaymentDetailsPerStudentComponent },
 
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard-grid', component: DashboardGridComponent },
 
   { path: 'student', component: ListStudentComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'student/create', component: StudentAddComponent },
