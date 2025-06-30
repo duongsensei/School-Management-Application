@@ -1,0 +1,347 @@
+<!-- Enhanced Ocean-Themed Homepage -->
+<div class="homepage-container">
+  <!-- Header Section with Enhanced Design -->
+  <section class="header-section">
+    <div class="ocean-wave"></div>
+    <div class="floating-bubbles">
+      <div class="bubble bubble-1"></div>
+      <div class="bubble bubble-2"></div>
+      <div class="bubble bubble-3"></div>
+      <div class="bubble bubble-4"></div>
+      <div class="bubble bubble-5"></div>
+    </div>
+    <div class="container">
+      <div class="page-header">
+        <div class="header-content">
+          <div class="header-icon">
+            <mat-icon>waves</mat-icon>
+          </div>
+          <h1 class="page-title">Hệ Thống Quản Lý Trường Học</h1>
+          <p class="page-description">Quản lý giáo dục hiệu quả và thông minh</p>
+          <div class="header-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ getCurrentDate() }}</span>
+              <span class="stat-label">Hôm nay</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">{{ getCurrentTime() }}</span>
+              <span class="stat-label">Hiện tại</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Welcome Message -->
+  <section class="welcome-section">
+    <div class="container">
+      <div class="welcome-card">
+        <div class="welcome-icon">
+          <mat-icon>waving_hand</mat-icon>
+        </div>
+        <div class="welcome-content">
+          <h2>Chào mừng bạn đến với hệ thống!</h2>
+          <p>Khám phá các tính năng quản lý hiện đại và hiệu quả</p>
+        </div>
+        <div class="welcome-decoration">
+          <div class="decoration-circle"></div>
+          <div class="decoration-circle"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Functions with Enhanced Design -->
+  <section class="functions-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Chức Năng Chính</h2>
+        <div class="title-underline"></div>
+        <p class="section-description">Truy cập nhanh các module quản lý quan trọng</p>
+      </div>
+
+      <div class="functions-grid">
+        <!-- Student Management -->
+        <a class="function-card featured" routerLink="/student">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-badge">Phổ biến</div>
+          <div class="function-icon">
+            <mat-icon>school</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Học Sinh</h3>
+            <p>Quản lý thông tin học sinh, đăng ký và theo dõi học tập</p>
+            <div class="function-tags">
+              <span class="tag">Đăng ký</span>
+              <span class="tag">Hồ sơ</span>
+              <span class="tag">Theo dõi</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+
+        <!-- Staff Management -->
+        <a class="function-card" routerLink="/staff-list">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Giáo Viên</h3>
+            <p>Quản lý thông tin giáo viên và nhân viên nhà trường</p>
+            <div class="function-tags">
+              <span class="tag">Giáo viên</span>
+              <span class="tag">Lương</span>
+              <span class="tag">Chức vụ</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+
+        <!-- Grade Management -->
+        <a class="function-card" routerLink="/marksentrynewList">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-icon">
+            <mat-icon>grade</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Điểm</h3>
+            <p>Nhập điểm, xem kết quả học tập và báo cáo thành tích</p>
+            <div class="function-tags">
+              <span class="tag">Nhập điểm</span>
+              <span class="tag">Báo cáo</span>
+              <span class="tag">Thống kê</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+
+        <!-- Fee Management -->
+        <a class="function-card" routerLink="/fees">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-icon">
+            <mat-icon>payment</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Học Phí</h3>
+            <p>Thu học phí, quản lý các khoản thu chi của trường</p>
+            <div class="function-tags">
+              <span class="tag">Thu phí</span>
+              <span class="tag">Hóa đơn</span>
+              <span class="tag">Báo cáo</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+
+        <!-- Attendance Management -->
+        <a class="function-card" routerLink="/attendanceList">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-icon">
+            <mat-icon>fact_check</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Điểm Danh</h3>
+            <p>Điểm danh học sinh và theo dõi tình hình chuyên cần</p>
+            <div class="function-tags">
+              <span class="tag">Điểm danh</span>
+              <span class="tag">Chuyên cần</span>
+              <span class="tag">Báo cáo</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+
+        <!-- Exam Management -->
+        <a class="function-card" routerLink="/examSchedule">
+          <div class="card-wave"></div>
+          <div class="card-glow"></div>
+          <div class="function-icon">
+            <mat-icon>quiz</mat-icon>
+          </div>
+          <div class="function-content">
+            <h3>Quản Lý Lịch Thi</h3>
+            <p>Lập lịch thi, quản lý kỳ thi và xếp phòng thi</p>
+            <div class="function-tags">
+              <span class="tag">Lịch thi</span>
+              <span class="tag">Phòng thi</span>
+              <span class="tag">Kỳ thi</span>
+            </div>
+          </div>
+          <div class="function-arrow">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enhanced Quick Actions -->
+  <section class="quick-actions-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Thao Tác Nhanh</h2>
+        <div class="title-underline"></div>
+        <p class="section-description">Các tác vụ thường được sử dụng hàng ngày</p>
+      </div>
+
+      <div class="quick-actions-grid">
+        <button class="quick-action-btn" routerLink="/student/create">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>person_add</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Thêm Học Sinh</span>
+            <span class="btn-description">Đăng ký học sinh mới</span>
+          </div>
+        </button>
+
+        <button class="quick-action-btn" routerLink="/staff-create">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>group_add</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Thêm Giáo Viên</span>
+            <span class="btn-description">Thêm nhân viên mới</span>
+          </div>
+        </button>
+
+        <button class="quick-action-btn" routerLink="/examType/create">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>quiz</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Tạo Kỳ Thi</span>
+            <span class="btn-description">Lập lịch thi mới</span>
+          </div>
+        </button>
+
+        <button class="quick-action-btn" routerLink="/attendance/add">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>fact_check</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Điểm Danh</span>
+            <span class="btn-description">Điểm danh lớp học</span>
+          </div>
+        </button>
+
+        <button class="quick-action-btn" routerLink="/fees/create">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>receipt</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Thu Học Phí</span>
+            <span class="btn-description">Xử lý thanh toán</span>
+          </div>
+        </button>
+
+        <button class="quick-action-btn" routerLink="/marksentrynew/create">
+          <div class="btn-ripple"></div>
+          <div class="btn-icon">
+            <mat-icon>grade</mat-icon>
+          </div>
+          <div class="btn-content">
+            <span class="btn-title">Nhập Điểm</span>
+            <span class="btn-description">Cập nhật kết quả</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enhanced System Status -->
+  <section class="status-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Trạng Thái Hệ Thống</h2>
+        <div class="title-underline"></div>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="status-wave"></div>
+          <div class="status-content">
+            <div class="status-item">
+              <div class="status-icon active">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="status-text">
+                <span class="status-label">Hệ thống</span>
+                <span class="status-value">Hoạt động bình thường</span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <div class="status-icon">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <div class="status-text">
+                <span class="status-label">Cập nhật lần cuối</span>
+                <span class="status-value">{{ getCurrentTime() }}</span>
+              </div>
+            </div>
+
+            <div class="status-item">
+              <div class="status-icon">
+                <mat-icon>people</mat-icon>
+              </div>
+              <div class="status-text">
+                <span class="status-label">Người dùng online</span>
+                <span class="status-value">{{ getOnlineUsers() }} người</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-header">
+            <mat-icon>info</mat-icon>
+            <span>Thông Tin Hữu Ích</span>
+          </div>
+          <div class="info-list">
+            <div class="info-item">
+              <mat-icon>lightbulb</mat-icon>
+              <span>Sử dụng tìm kiếm nhanh để tiết kiệm thời gian</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>security</mat-icon>
+              <span>Dữ liệu được bảo mật và sao lưu định kỳ</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>support</mat-icon>
+              <span>Hỗ trợ 24/7 qua hotline: 1900-xxxx</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Wave -->
+  <section class="footer-wave">
+    <div class="wave-animation"></div>
+  </section>
+</div>

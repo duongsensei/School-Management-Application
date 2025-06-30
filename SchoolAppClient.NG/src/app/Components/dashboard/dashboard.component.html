@@ -1,0 +1,267 @@
+<!-- Professional School Management Dashboard -->
+<div class="dashboard-container">
+  <!-- Header with User Info -->
+  <section class="dashboard-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="welcome-section">
+          <h1 class="welcome-title">Chào mừng trở lại!</h1>
+          <p class="welcome-subtitle">{{ getWelcomeMessage() }}</p>
+          <div class="user-info">
+            <div class="user-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+              <span class="user-name">{{ getCurrentUser()?.email || 'Admin' }}</span>
+              <span class="user-role">{{ getCurrentUser()?.roles || 'Quản trị viên' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="date-time-section">
+          <div class="current-time">
+            <i class="fas fa-clock"></i>
+            <span>{{ getCurrentTime() }}</span>
+          </div>
+          <div class="current-date">
+            <i class="fas fa-calendar"></i>
+            <span>{{ getCurrentDate() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Overview -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card students">
+          <div class="stat-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">1,247</h3>
+            <p class="stat-label">Học sinh</p>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+12% so với tháng trước</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card teachers">
+          <div class="stat-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">85</h3>
+            <p class="stat-label">Giáo viên</p>
+            <div class="stat-trend stable">
+              <i class="fas fa-minus"></i>
+              <span>Không thay đổi</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card classes">
+          <div class="stat-icon">
+            <i class="fas fa-door-open"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">42</h3>
+            <p class="stat-label">Lớp học</p>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+2 lớp mới</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card revenue">
+          <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">2.4 tỷ</h3>
+            <p class="stat-label">Doanh thu (VNĐ)</p>
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+8.5% so với tháng trước</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions-section">
+    <div class="container">
+      <h2 class="section-title">Thao tác nhanh</h2>
+      <div class="actions-grid">
+        <a class="action-card" routerLink="/student/create">
+          <div class="action-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div class="action-content">
+            <h4>Thêm học sinh mới</h4>
+            <p>Đăng ký học sinh vào hệ thống</p>
+          </div>
+        </a>
+
+        <a class="action-card" routerLink="/marksentrynewList">
+          <div class="action-icon">
+            <i class="fas fa-edit"></i>
+          </div>
+          <div class="action-content">
+            <h4>Nhập điểm</h4>
+            <p>Cập nhật điểm số cho học sinh</p>
+          </div>
+        </a>
+
+        <a class="action-card" routerLink="/attendanceList">
+          <div class="action-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="action-content">
+            <h4>Điểm danh</h4>
+            <p>Theo dõi chuyên cần học sinh</p>
+          </div>
+        </a>
+
+        <a class="action-card" routerLink="/fees">
+          <div class="action-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="action-content">
+            <h4>Thu học phí</h4>
+            <p>Quản lý thanh toán học phí</p>
+          </div>
+        </a>
+
+        <a class="action-card" routerLink="/staff-create">
+          <div class="action-icon">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="action-content">
+            <h4>Thêm giáo viên</h4>
+            <p>Đăng ký giáo viên mới</p>
+          </div>
+        </a>
+
+        <a class="action-card" routerLink="/examSchedule">
+          <div class="action-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="action-content">
+            <h4>Lịch thi</h4>
+            <p>Xem và quản lý lịch thi</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Activities -->
+  <section class="activities-section">
+    <div class="container">
+      <div class="section-grid">
+        <div class="activities-card">
+          <div class="card-header">
+            <h3 class="card-title">Hoạt động gần đây</h3>
+            <a class="view-all-link" href="#">Xem tất cả</a>
+          </div>
+          <div class="activities-list">
+            <div class="activity-item" *ngFor="let activity of recentActivities">
+              <div class="activity-icon">
+                <i [class]="'fas fa-' + activity.icon"></i>
+              </div>
+              <div class="activity-content">
+                <p class="activity-text">{{ activity.title }}</p>
+                <span class="activity-time">{{ activity.time }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="announcements-card">
+          <div class="card-header">
+            <h3 class="card-title">Thông báo quan trọng</h3>
+            <a class="view-all-link" href="#">Xem tất cả</a>
+          </div>
+          <div class="announcements-list">
+            <div class="announcement-item">
+              <div class="announcement-priority high">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+              <div class="announcement-content">
+                <h4>Họp phụ huynh cuối kỳ</h4>
+                <p>Thời gian: 15/12/2023 - 8:00 AM</p>
+                <span class="announcement-date">Đăng: 2 giờ trước</span>
+              </div>
+            </div>
+
+            <div class="announcement-item">
+              <div class="announcement-priority medium">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div class="announcement-content">
+                <h4>Đăng ký môn học kỳ 2</h4>
+                <p>Hạn chót: 20/12/2023</p>
+                <span class="announcement-date">Đăng: 1 ngày trước</span>
+              </div>
+            </div>
+
+            <div class="announcement-item">
+              <div class="announcement-priority low">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="announcement-content">
+                <h4>Thay đổi thời khóa biểu</h4>
+                <p>Áp dụng từ tuần sau</p>
+                <span class="announcement-date">Đăng: 2 ngày trước</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chart Section -->
+  <section class="charts-section">
+    <div class="container">
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="card-header">
+            <h3 class="card-title">Điểm số trung bình theo môn</h3>
+            <select class="chart-filter">
+              <option>Tháng này</option>
+              <option>Tháng trước</option>
+              <option>Học kỳ này</option>
+            </select>
+          </div>
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-bar"></i>
+            <p>Biểu đồ sẽ được hiển thị ở đây</p>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-header">
+            <h3 class="card-title">Tỷ lệ chuyên cần</h3>
+            <select class="chart-filter">
+              <option>7 ngày qua</option>
+              <option>30 ngày qua</option>
+              <option>Học kỳ này</option>
+            </select>
+          </div>
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-pie"></i>
+            <p>Biểu đồ sẽ được hiển thị ở đây</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div> 

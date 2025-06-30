@@ -1,0 +1,668 @@
+<!-- Enhanced Marks List Component with Advanced Features -->
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">Dashboard</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Academic</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Marks Management</span>
+        </div>
+        <h1 class="page-title">
+          <mat-icon class="title-icon">assessment</mat-icon>
+          Marks Management
+        </h1>
+        <p class="page-description">Track and manage student marks, grades, and academic performance with advanced
+          analytics</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="refreshData()" title="Refresh" [disabled]="isLoading">
+          <mat-icon [class.spinning]="isLoading">refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-secondary" (click)="exportData()" title="Export">
+          <mat-icon>file_download</mat-icon>
+          <span>Export</span>
+        </button>
+        <button class="btn btn-secondary" (click)="generateReport()" title="Generate Report">
+          <mat-icon>bar_chart</mat-icon>
+          <span>Analytics</span>
+        </button>
+        <button class="btn btn-primary" routerLink="/marks/add">
+          <mat-icon>add</mat-icon>
+          <span>Add Mark</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Enhanced Statistics Section -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>assignment</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ filteredMarks.length || 0 }}</div>
+              <div class="stat-label">Total Records</div>
+              <div class="stat-change positive" *ngIf="getTotalChangePercent() > 0">
+                <mat-icon>trending_up</mat-icon>
+                <span>+{{ getTotalChangePercent() }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart" [style.width.%]="(filteredMarks.length / marks.length) * 100"></div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getPassedCount() }}</div>
+              <div class="stat-label">Passed Students</div>
+              <div class="stat-percentage">{{ getPassedPercentage() }}% Pass Rate</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart success" [style.width.%]="getPassedPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card danger">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>cancel</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getFailedCount() }}</div>
+              <div class="stat-label">Failed Students</div>
+              <div class="stat-percentage">{{ getFailedPercentage() }}% Fail Rate</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart danger" [style.width.%]="getFailedPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getAverageScore() }}%</div>
+              <div class="stat-label">Average Score</div>
+              <div class="stat-grade">Grade: {{ getAverageGrade() }}</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart info" [style.width.%]="getAverageScore()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>star</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getTopPerformersCount() }}</div>
+              <div class="stat-label">Top Performers</div>
+              <div class="stat-percentage">Grade A Students</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart warning" [style.width.%]="getTopPerformersPercentage()"></div>
+          </div>
+        </div>
+
+        <div class="stat-card purple">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ getUniqueSubjects().length }}</div>
+              <div class="stat-label">Subjects</div>
+              <div class="stat-percentage">{{ getUniqueStudents().length }} Students</div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart purple" [style.width.%]="(getUniqueSubjects().length / 10) * 100"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade Distribution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <mat-icon>pie_chart</mat-icon>
+            Grade Distribution
+          </h3>
+          <div class="chart-actions">
+            <button class="btn btn-sm btn-secondary" (click)="toggleChartType()">
+              <mat-icon>{{ chartType === 'pie' ? 'bar_chart' : 'pie_chart' }}</mat-icon>
+              <span>{{ chartType === 'pie' ? 'Bar Chart' : 'Pie Chart' }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-content">
+          <div class="grade-distribution">
+            <div *ngFor="let grade of getGradeDistribution()" class="grade-bar"
+              [class]="'grade-' + grade.grade.toLowerCase()">
+              <div class="grade-info">
+                <span class="grade-label">Grade {{ grade.grade }}</span>
+                <span class="grade-count">{{ grade.count }} students</span>
+                <span class="grade-percentage">{{ grade.percentage }}%</span>
+              </div>
+              <div class="grade-progress">
+                <div class="grade-fill" [style.width.%]="grade.percentage"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Advanced Filters Section -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <mat-icon>filter_list</mat-icon>
+          Advanced Filters & Search
+        </h3>
+        <div class="filters-actions">
+          <button class="btn btn-sm btn-secondary" (click)="toggleAdvancedFilters()">
+            <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+            <span>{{ showAdvancedFilters ? 'Less' : 'More' }} Filters</span>
+          </button>
+          <button class="btn btn-sm btn-secondary" (click)="clearAllFilters()" *ngIf="hasActiveFilters()">
+            <mat-icon>clear_all</mat-icon>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+      <div class="filters-content">
+        <div class="filter-row primary">
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Search by student name, enrollment number, subject, or staff..."
+              class="search-input" #searchInput (keyup)="onSearch(searchInput.value)" [value]="searchTerm"
+              (keydown.enter)="onSearch(searchInput.value)">
+            <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="gradeFilter">Grade:</label>
+            <select class="filter-select" id="gradeFilter" (change)="onGradeFilter($event)" [value]="selectedGrade">
+              <option value="">All Grades</option>
+              <option value="A">Grade A (90-100%)</option>
+              <option value="B">Grade B (80-89%)</option>
+              <option value="C">Grade C (70-79%)</option>
+              <option value="D">Grade D (60-69%)</option>
+              <option value="E">Grade E (50-59%)</option>
+              <option value="F">Grade F (&lt;50%)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="statusFilter">Status:</label>
+            <select class="filter-select" id="statusFilter" (change)="onStatusFilter($event)" [value]="selectedStatus">
+              <option value="">All Status</option>
+              <option value="Passed">✅ Passed</option>
+              <option value="Failed">❌ Failed</option>
+              <option value="UnderConsideration">⏳ Under Consideration</option>
+              <option value="SpecialConsideration">⭐ Special Consideration</option>
+              <option value="Withdrawn">🚫 Withdrawn</option>
+              <option value="UnderJurisdiction">⚖️ Under Jurisdiction</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="subjectFilter">Subject:</label>
+            <select class="filter-select" id="subjectFilter" (change)="onSubjectFilter($event)"
+              [value]="selectedSubject">
+              <option value="">All Subjects ({{ getUniqueSubjects().length }})</option>
+              <option *ngFor="let subject of getUniqueSubjects()" [value]="subject">
+                📚 {{ subject }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Filters Row -->
+        <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+          <div class="filter-group">
+            <label class="filter-label" for="scoreRangeFilter">Score Range:</label>
+            <select class="filter-select" id="scoreRangeFilter" (change)="onScoreRangeFilter($event)"
+              [value]="selectedScoreRange">
+              <option value="">All Scores</option>
+              <option value="90-100">🏆 Excellent (90-100%)</option>
+              <option value="80-89">🥇 Very Good (80-89%)</option>
+              <option value="70-79">🥈 Good (70-79%)</option>
+              <option value="60-69">🥉 Satisfactory (60-69%)</option>
+              <option value="50-59">⚠️ Poor (50-59%)</option>
+              <option value="0-49">❌ Very Poor (&lt;50%)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="dateRangeFilter">Date Range:</label>
+            <select class="filter-select" id="dateRangeFilter" (change)="onDateRangeFilter($event)"
+              [value]="selectedDateRange">
+              <option value="">All Dates</option>
+              <option value="today">📅 Today</option>
+              <option value="week">📅 This Week</option>
+              <option value="month">📅 This Month</option>
+              <option value="quarter">📅 This Quarter</option>
+              <option value="year">📅 This Year</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="staffFilter">Staff:</label>
+            <select class="filter-select" id="staffFilter" (change)="onStaffFilter($event)" [value]="selectedStaff">
+              <option value="">All Staff ({{ getUniqueStaff().length }})</option>
+              <option *ngFor="let staff of getUniqueStaff()" [value]="staff">
+                👨‍🏫 {{ staff }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="sortFilter">Sort By:</label>
+            <select class="filter-select" id="sortFilter" (change)="onSortFilter($event)" [value]="selectedSort">
+              <option value="">Default Order</option>
+              <option value="student-asc">👤 Student A-Z</option>
+              <option value="student-desc">👤 Student Z-A</option>
+              <option value="score-asc">📈 Score Low-High</option>
+              <option value="score-desc">📉 Score High-Low</option>
+              <option value="date-asc">📅 Date Old-New</option>
+              <option value="date-desc">📅 Date New-Old</option>
+              <option value="subject-asc">📚 Subject A-Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" *ngIf="selectedMarks.length > 0">
+      <div class="bulk-info">
+        <mat-icon>check_box</mat-icon>
+        <span>{{ selectedMarks.length }} record(s) selected</span>
+      </div>
+      <div class="bulk-actions">
+        <button class="btn btn-sm btn-secondary" (click)="bulkExport()">
+          <mat-icon>file_download</mat-icon>
+          <span>Export Selected</span>
+        </button>
+        <button class="btn btn-sm btn-warning" (click)="bulkEdit()">
+          <mat-icon>edit</mat-icon>
+          <span>Bulk Edit</span>
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+          <mat-icon>delete</mat-icon>
+          <span>Delete Selected</span>
+        </button>
+        <button class="btn btn-sm btn-secondary" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          <span>Clear Selection</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table Section -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <div class="data-card-title-section">
+          <h3 class="data-card-title">
+            <mat-icon>table_view</mat-icon>
+            Marks Records
+            <span class="record-count">({{ filteredMarks.length }} records)</span>
+          </h3>
+          <div class="data-card-subtitle">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredMarks.length)
+            }} of {{ filteredMarks.length }} records
+          </div>
+        </div>
+        <div class="data-card-actions">
+          <div class="page-size-selector">
+            <label for="pageSizeSelect">Show:</label>
+            <select id="pageSizeSelect" class="page-size-select" (change)="onPageSizeChange($event)" [value]="pageSize">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span>per page</span>
+          </div>
+          <div class="view-toggle">
+            <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')"
+              title="Table View">
+              <mat-icon>table_view</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')"
+              title="Card View">
+              <mat-icon>view_module</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'compact'" (click)="setViewMode('compact')"
+              title="Compact View">
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading marks records...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage && !isLoading" class="error-state">
+          <div class="error-state-content">
+            <div class="error-state-icon">
+              <mat-icon>error</mat-icon>
+            </div>
+            <h3 class="error-state-title">Error Loading Data</h3>
+            <p class="error-state-description">{{ errorMessage }}</p>
+            <button class="btn btn-primary" (click)="refreshData()">
+              <mat-icon>refresh</mat-icon>
+              <span>Try Again</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && !errorMessage && (!filteredMarks || filteredMarks.length === 0)" class="empty-state">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>assignment</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No marks records found</h3>
+            <p class="empty-state-description">
+              {{ searchTerm || selectedGrade || selectedStatus || selectedSubject ? 'Try adjusting your search criteria
+              or filters' : 'Get started by adding your first mark record' }}
+            </p>
+            <button *ngIf="!searchTerm && !selectedGrade && !selectedStatus && !selectedSubject" class="btn btn-primary"
+              routerLink="/marks/add">
+              <mat-icon>add</mat-icon>
+              <span>Add First Mark</span>
+            </button>
+            <button *ngIf="searchTerm || selectedGrade || selectedStatus || selectedSubject" class="btn btn-secondary"
+              (click)="clearAllFilters()">
+              <mat-icon>clear</mat-icon>
+              <span>Clear Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div *ngIf="!isLoading && !errorMessage && filteredMarks && filteredMarks.length > 0 && viewMode === 'table'"
+          class="marks-table-container">
+          <div class="marks-table">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="header-cell student-column">Student</div>
+              <div class="header-cell subject-column">Subject</div>
+              <div class="header-cell scores-column">Scores</div>
+              <div class="header-cell grade-column">Grade</div>
+              <div class="header-cell status-column">Status</div>
+              <div class="header-cell staff-column">Staff</div>
+              <div class="header-cell date-column">Date</div>
+              <div class="header-cell actions-column">Actions</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="table-body">
+              <div *ngFor="let mark of paginatedMarks; let i = index" class="table-row" [class.even]="i % 2 === 1">
+                <div class="table-cell student-column">
+                  <div class="student-info">
+                    <span class="student-name">{{ mark.student.studentName }}</span>
+                    <span class="enrollment-number">{{ mark.student.enrollmentNo }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell subject-column">
+                  <span class="subject-name">{{ mark.subject.subjectName }}</span>
+                </div>
+
+                <div class="table-cell scores-column">
+                  <div class="scores-info">
+                    <div class="score-item">
+                      <span class="score-label">Obtained:</span>
+                      <span class="score-value obtained">{{ mark.obtainedScore }}</span>
+                    </div>
+                    <div class="score-item">
+                      <span class="score-label">Total:</span>
+                      <span class="score-value total">{{ mark.totalMarks }}</span>
+                    </div>
+                    <div class="score-item">
+                      <span class="score-label">Pass:</span>
+                      <span class="score-value pass">{{ mark.passMarks }}</span>
+                    </div>
+                    <div class="score-percentage">{{ getScorePercentage(mark) }}%</div>
+                  </div>
+                </div>
+
+                <div class="table-cell grade-column">
+                  <span class="grade-badge" [class]="'grade-' + mark.grade.toLowerCase()">{{ mark.grade }}</span>
+                </div>
+
+                <div class="table-cell status-column">
+                  <span class="status-badge" [class.passed]="mark.passStatus === 'Passed'"
+                    [class.failed]="mark.passStatus === 'Failed'"
+                    [class.other]="mark.passStatus !== 'Passed' && mark.passStatus !== 'Failed'">
+                    <mat-icon>{{ getStatusIcon(mark.passStatus) }}</mat-icon>
+                    <span>{{ getStatusLabel(mark.passStatus) }}</span>
+                  </span>
+                </div>
+
+                <div class="table-cell staff-column">
+                  <span class="staff-name">{{ mark.staff.staffName }}</span>
+                </div>
+
+                <div class="table-cell date-column">
+                  <div class="date-info">
+                    <span class="date-value">{{ mark.markEntryDate | date:'MMM dd, yyyy' }}</span>
+                    <span class="time-value">{{ mark.markEntryDate | date:'HH:mm' }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell actions-column">
+                  <div class="action-buttons">
+                    <button class="action-btn view-btn" title="View Details" (click)="viewMarkDetails(mark)">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button class="action-btn edit-btn" [routerLink]="['/marks/edit', mark.markId]" title="Edit Mark">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="deleteMark(mark.markId)" title="Delete Mark">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card View -->
+        <div *ngIf="!isLoading && !errorMessage && filteredMarks && filteredMarks.length > 0 && viewMode === 'card'"
+          class="marks-cards-container">
+          <div class="marks-cards-grid">
+            <div *ngFor="let mark of paginatedMarks" class="marks-card">
+              <div class="marks-card-header">
+                <div class="card-student">
+                  <span class="student-name">{{ mark.student.studentName }}</span>
+                  <span class="enrollment-number">{{ mark.student.enrollmentNo }}</span>
+                </div>
+                <div class="card-grade">
+                  <span class="grade-badge" [class]="'grade-' + mark.grade.toLowerCase()">{{ mark.grade }}</span>
+                </div>
+              </div>
+
+              <div class="marks-card-content">
+                <div class="card-field">
+                  <label for="subject-{{mark.markId}}">Subject:</label>
+                  <span id="subject-{{mark.markId}}">{{ mark.subject.subjectName }}</span>
+                </div>
+
+                <div class="card-field">
+                  <label for="scores-{{mark.markId}}">Scores:</label>
+                  <div class="scores-display" id="scores-{{mark.markId}}">
+                    <span class="score-text">{{ mark.obtainedScore }}/{{ mark.totalMarks }}</span>
+                    <span class="percentage-text">({{ getScorePercentage(mark) }}%)</span>
+                  </div>
+                </div>
+
+                <div class="card-field">
+                  <label for="status-{{mark.markId}}">Status:</label>
+                  <span class="status-badge" id="status-{{mark.markId}}" [class.passed]="mark.passStatus === 'Passed'"
+                    [class.failed]="mark.passStatus === 'Failed'"
+                    [class.other]="mark.passStatus !== 'Passed' && mark.passStatus !== 'Failed'">
+                    <mat-icon>{{ getStatusIcon(mark.passStatus) }}</mat-icon>
+                    <span>{{ getStatusLabel(mark.passStatus) }}</span>
+                  </span>
+                </div>
+
+                <div class="card-field">
+                  <label for="staff-{{mark.markId}}">Staff:</label>
+                  <span id="staff-{{mark.markId}}">{{ mark.staff.staffName }}</span>
+                </div>
+
+                <div class="card-field">
+                  <label for="date-{{mark.markId}}">Date:</label>
+                  <span id="date-{{mark.markId}}">{{ mark.markEntryDate | date:'MMM dd, yyyy HH:mm' }}</span>
+                </div>
+
+                <div class="card-field" *ngIf="mark.feedback">
+                  <label for="feedback-{{mark.markId}}">Feedback:</label>
+                  <span class="feedback-text" id="feedback-{{mark.markId}}">{{ mark.feedback }}</span>
+                </div>
+              </div>
+
+              <div class="marks-card-actions">
+                <button class="action-btn view-btn" title="View Details" (click)="viewMarkDetails(mark)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button class="action-btn edit-btn" [routerLink]="['/marks/edit', mark.markId]" title="Edit Mark">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="action-btn delete-btn" (click)="deleteMark(mark.markId)" title="Delete Mark">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && !errorMessage && filteredMarks && filteredMarks.length > 0"
+          class="pagination-container">
+          <div class="pagination-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} -
+            {{ Math.min(currentPage * pageSize, filteredMarks.length) }}
+            of {{ filteredMarks.length }} records
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"
+              title="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+
+            <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"
+              title="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<div class="container">
+    <h1>Marks List</h1>
+
+    <br />
+    <hr />
+
+    <a routerLink="/marks/add" class="btn btn-primary mb-3">Add New Mark</a>
+
+    <div class="container">
+      <h1>Marks List</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mark ID</th>
+            <th>Total Marks</th>
+            <th>Pass Marks</th>
+            <th>Obtained Score</th>
+            <th>Grade</th>
+            <th>Pass Status</th>
+            <th>Mark Entry Date</th>
+            <th>Feedback</th>
+            <th>Staff Name</th>
+            <th>Student Name</th>
+            <th>Subject Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let mark of marks">
+            <td>{{ mark.markId }}</td>
+            <td>{{ mark.totalMarks }}</td>
+            <td>{{ mark.passMarks }}</td>
+            <td>{{ mark.obtainedScore }}</td>
+            <td>{{ mark.grade }}</td>
+            <td>{{ mark.passStatus }}</td>
+            <td>{{ mark.markEntryDate | date:'medium' }}</td>
+            <td>{{ mark.feedback }}</td>
+            <td>{{ mark.staffId }}</td>
+            <td>{{ mark.studentId }}</td>
+            <td>{{ mark.subjectId }}</td>
+            <td><a routerLink="/marks/edit/{{ mark.markId }}" class="btn btn-primary">Edit</a></td>
+            <td><a routerLink="/marks/delete/{{ mark.markId }}" class="btn btn-danger">Delete</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>-->

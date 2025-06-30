@@ -1,0 +1,494 @@
+<!-- Enhanced Role Management Component -->
+<div class="page-container">
+  <!-- Modern Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <span class="breadcrumb-item">School Management</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">System</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Roles</span>
+        </nav>
+
+        <!-- Page Title -->
+        <h1 class="page-title">
+          <mat-icon class="title-icon">security</mat-icon>
+          Role Management
+        </h1>
+        <p class="page-description">
+          Manage system roles and permissions for access control
+        </p>
+      </div>
+
+      <!-- Page Actions -->
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="LoadData()" [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        <button class="btn btn-secondary" (click)="exportRoles()" [disabled]="!roles || roles.length === 0">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+        <button class="btn btn-primary" (click)="createNew()">
+          <mat-icon>add</mat-icon>
+          Add New Role
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage" (click)="clearMessage()">
+    <div class="error-content">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+      <button class="error-close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>security</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getTotalRoles() }}</div>
+          <div class="stat-label">Total Roles</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getAdminRoles() }}</div>
+          <div class="stat-label">Admin Roles</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>group</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getUserRoles() }}</div>
+          <div class="stat-label">User Roles</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getActiveRoles() }}</div>
+          <div class="stat-label">Active Roles</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="controls-section" *ngIf="state === 'list'">
+      <div class="controls-card">
+        <div class="controls-header">
+          <h3 class="controls-title">
+            <mat-icon>tune</mat-icon>
+            Search & Filter
+          </h3>
+        </div>
+        <div class="controls-content">
+          <div class="controls-grid">
+            <!-- Search Input -->
+            <div class="control-group">
+              <label class="control-label">
+                <mat-icon>search</mat-icon>
+                Search Roles
+              </label>
+              <input type="text" class="form-input" placeholder="Search by role name or ID..." [(ngModel)]="searchTerm"
+                (input)="performSearch()">
+</div>
+
+            <!-- Role Type Filter -->
+            <div class="control-group">
+              <label class="control-label">
+                <mat-icon>filter_list</mat-icon>
+                Filter by Type
+              </label>
+              <select class="form-select" [(ngModel)]="selectedRoleType" (change)="applyFilters()">
+                <option value="">All Types</option>
+                <option value="admin">Admin Roles</option>
+                <option value="user">User Roles</option>
+                <option value="teacher">Teacher Roles</option>
+                <option value="student">Student Roles</option>
+              </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="control-group actions-group">
+              <button class="btn btn-outline" (click)="clearAllFilters()">
+                <mat-icon>clear_all</mat-icon>
+                Clear Filters
+              </button>
+              <button class="btn btn-outline" (click)="exportRoles()" [disabled]="!roles || roles.length === 0">
+                <mat-icon>download</mat-icon>
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="content-card">
+        <!-- List View -->
+        <div *ngIf="state === 'list'">
+          <!-- Content Header -->
+          <div class="content-header">
+            <div class="content-title-section">
+              <h3 class="content-title">
+                <mat-icon>list</mat-icon>
+                System Roles
+              </h3>
+              <p class="content-subtitle">
+                {{ getFilteredRoles().length }} roles found
+              </p>
+            </div>
+            <div class="content-actions">
+              <!-- View Toggle -->
+              <div class="view-toggle">
+                <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')">
+                  <mat-icon>view_module</mat-icon>
+                  Cards
+                </button>
+                <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')">
+                  <mat-icon>table_chart</mat-icon>
+                  Table
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-state" *ngIf="isLoading">
+            <div class="loading-content">
+              <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+              <h3>Loading Roles...</h3>
+              <p>Please wait while we fetch the data</p>
+            </div>
+          </div>
+
+          <!-- Card View -->
+          <div class="role-cards-container" *ngIf="!isLoading && viewMode === 'card'">
+            <div class="role-cards-grid" *ngIf="getFilteredRoles().length > 0">
+              <div class="role-card" *ngFor="let role of getPaginatedRoles(); let i = index; trackBy: trackByRoleId"
+                [style.animation-delay]="(i * 100) + 'ms'">
+                <!-- Card Header -->
+                <div class="role-card-header">
+                  <div class="role-icon">
+                    <mat-icon>{{ getRoleIcon(role.name) }}</mat-icon>
+                  </div>
+                  <div class="role-basic-info">
+                    <h4 class="role-name">{{ role.name }}</h4>
+                    <span class="role-id">ID: {{ role.id }}</span>
+                  </div>
+                </div>
+
+                <!-- Role Type Badge -->
+                <div class="role-type-section">
+                  <div class="role-type-badge" [class]="getRoleTypeClass(role.name)">
+                    <mat-icon>{{ getRoleTypeIcon(role.name) }}</mat-icon>
+                    <span>{{ getRoleType(role.name) }}</span>
+                  </div>
+                </div>
+
+                <!-- Role Description -->
+                <div class="role-description">
+                  <p>{{ getRoleDescription(role.name) }}</p>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="role-card-actions">
+                  <button class="action-btn btn-info" (click)="viewRoleDetails(role)" title="View Details">
+                    <mat-icon>visibility</mat-icon>
+                    View
+                  </button>
+                  <button class="action-btn btn-warning" (click)="editRole(role)" title="Edit Role">
+                    <mat-icon>edit</mat-icon>
+                    Edit
+                  </button>
+                  <button class="action-btn btn-danger" (click)="confirmDeleteRole(role.id)" title="Delete Role">
+                    <mat-icon>delete</mat-icon>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table View -->
+          <div class="table-container" *ngIf="!isLoading && viewMode === 'table'">
+            <table class="modern-table" *ngIf="getFilteredRoles().length > 0">
+              <thead>
+                <tr>
+                  <th>Role Information</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th class="actions-column">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let role of getPaginatedRoles(); trackBy: trackByRoleId" class="table-row">
+                  <td class="role-cell">
+                    <div class="role-info">
+                      <div class="role-icon-small">
+                        <mat-icon>{{ getRoleIcon(role.name) }}</mat-icon>
+                      </div>
+                      <div class="role-details">
+                        <div class="role-name">{{ role.name }}</div>
+                        <div class="role-id">ID: {{ role.id }}</div>
+                        <div class="role-description-short">{{ getRoleDescription(role.name) }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="type-cell">
+                    <div class="role-type-badge" [class]="getRoleTypeClass(role.name)">
+                      <mat-icon>{{ getRoleTypeIcon(role.name) }}</mat-icon>
+                      <span>{{ getRoleType(role.name) }}</span>
+                    </div>
+                  </td>
+                  <td class="status-cell">
+                    <div class="status-badge active">
+                      <mat-icon>check_circle</mat-icon>
+                      Active
+                    </div>
+                  </td>
+                  <td class="actions-cell">
+                    <div class="action-buttons">
+                      <button class="action-btn btn-info" (click)="viewRoleDetails(role)" title="View Details">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button class="action-btn btn-warning" (click)="editRole(role)" title="Edit Role">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button class="action-btn btn-danger" (click)="confirmDeleteRole(role.id)" title="Delete Role">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-container" *ngIf="getTotalPages() > 1">
+            <div class="pagination-info">
+              Showing {{ getPaginationStart() }}-{{ getPaginationEnd() }} of
+              {{ getFilteredRoles().length }} roles
+            </div>
+            <div class="pagination-controls">
+              <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                <mat-icon>chevron_left</mat-icon>
+                Previous
+              </button>
+
+              <div class="page-numbers">
+                <button *ngFor="let page of getPageNumbers()" class="page-btn" [class.active]="page === currentPage"
+                  (click)="goToPageNumber(page)" [disabled]="page === '...'">
+                  {{ page }}
+                </button>
+              </div>
+
+              <button class="pagination-btn" [disabled]="currentPage === getTotalPages()"
+                (click)="goToPage(currentPage + 1)">
+                Next
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="!isLoading && getFilteredRoles().length === 0">
+            <div class="empty-state-content">
+              <div class="empty-state-icon">
+                <mat-icon>security</mat-icon>
+              </div>
+              <h3 class="empty-state-title">
+                {{ (roles && roles.length === 0) ? 'No Roles Found' : 'No Results Found' }}
+              </h3>
+              <p class="empty-state-description" *ngIf="roles && roles.length === 0">
+                Get started by creating your first role. Roles help control access 
+                to different parts of the system.
+              </p>
+              <p class="empty-state-description" *ngIf="roles && roles.length > 0">
+                No roles match your current search criteria.
+                Try adjusting your filters or search terms.
+              </p>
+              <div class="empty-state-actions">
+                <button class="btn btn-primary" (click)="createNew()" *ngIf="roles && roles.length === 0">
+                  <mat-icon>add</mat-icon>
+                  Create First Role
+                </button>
+                <button class="btn btn-secondary" (click)="clearAllFilters()" *ngIf="roles && roles.length > 0">
+                  <mat-icon>clear_all</mat-icon>
+                  Clear Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create/Edit Form -->
+        <div *ngIf="state === 'entry'" class="form-container">
+          <!-- Form Header -->
+          <div class="form-header">
+            <div class="form-title-section">
+              <h3 class="form-title">
+                <mat-icon>{{ model.id ? 'edit' : 'add' }}</mat-icon>
+                {{ model.id ? 'Edit Role' : 'Create New Role' }}
+              </h3>
+              <p class="form-subtitle">
+                {{ model.id ? 'Update role information' : 'Add a new role to the system' }}
+              </p>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" (click)="cancel()">
+                <mat-icon>close</mat-icon>
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="form-content">
+            <form (submit)="submitData($event)" class="role-form">
+              <!-- Role ID (hidden for new roles) -->
+              <div class="form-group" *ngIf="model.id">
+                <label class="form-label">
+                  <mat-icon>fingerprint</mat-icon>
+                  Role ID
+                </label>
+                <input type="text" class="form-input" name="id" readonly [(ngModel)]="model.id" />
+                <div class="form-help">This field is automatically generated and cannot be modified.</div>
+              </div>
+
+              <!-- Role Name -->
+              <div class="form-group">
+                <label class="form-label">
+                  <mat-icon>security</mat-icon>
+                  Role Name *
+                </label>
+      <input type="text"
+                       class="form-input"
+             name="model.name"
+                       placeholder="Enter role name (e.g., Admin, Teacher, Student)"
+                       [(ngModel)]="model.name" 
+                       required 
+                       minlength="3" 
+                       #inputRole="ngModel"
+                       [class.error]="inputRole.invalid && inputRole.touched" />
+                <div class="form-help">Choose a descriptive name for this role (minimum 3 characters).</div>
+                <ul *ngIf="inputRole.invalid && inputRole.touched" class="form-errors">
+                  <li *ngIf="inputRole.errors?.['required']">
+                    <mat-icon>error</mat-icon>
+                    Role name is required
+                  </li>
+                  <li *ngIf="inputRole.errors?.['minlength']">
+                    <mat-icon>error</mat-icon>
+                    Role name must be at least 3 characters long
+                  </li>
+      </ul>
+              </div>
+
+              <!-- Role Description -->
+              <div class="form-group">
+                <label class="form-label">
+                  <mat-icon>description</mat-icon>
+                  Description
+                </label>
+                <textarea class="form-textarea" 
+                          name="description"
+                          placeholder="Describe the purpose and permissions of this role..."
+                          [(ngModel)]="roleDescription"
+                          rows="4"></textarea>
+                <div class="form-help">Provide a clear description of what this role can do in the system.</div>
+              </div>
+
+              <!-- Role Type -->
+              <div class="form-group">
+                <label class="form-label">
+                  <mat-icon>category</mat-icon>
+                  Role Type
+                </label>
+                <select class="form-select" name="roleType" [(ngModel)]="roleType">
+                  <option value="admin">Administrator</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="student">Student</option>
+                  <option value="staff">Staff</option>
+                  <option value="user">General User</option>
+                </select>
+                <div class="form-help">Select the category that best describes this role.</div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions-bottom">
+                <button type="button" class="btn btn-secondary" (click)="cancel()">
+                  <mat-icon>close</mat-icon>
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="inputRole.invalid">
+                  <mat-icon>{{ model.id ? 'update' : 'add' }}</mat-icon>
+                  {{ model.id ? 'Update Role' : 'Create Role' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <mat-icon>warning</mat-icon>
+        Confirm Delete
+      </h3>
+      <button class="modal-close" (click)="closeDeleteModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this role?</p>
+      <p class="modal-warning">
+        <mat-icon>info</mat-icon>
+        This action cannot be undone and may affect users assigned to this role.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeDeleteModal()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      <button class="btn btn-danger" (click)="deleteRole(roleToDelete)">
+        <mat-icon>delete</mat-icon>
+        Delete Role
+      </button>
+    </div>
+  </div>
+</div>

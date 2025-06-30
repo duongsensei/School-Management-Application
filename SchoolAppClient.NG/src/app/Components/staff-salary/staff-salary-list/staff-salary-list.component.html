@@ -1,0 +1,482 @@
+<!-- Enhanced Staff Salary List Component -->
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <span class="breadcrumb-item">School Management</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">Human Resources</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Staff Salaries</span>
+        </nav>
+
+        <!-- Page Title -->
+        <h1 class="page-title">
+          <mat-icon class="title-icon">payments</mat-icon>
+          Staff Salary Management
+        </h1>
+        <p class="page-description">
+          Manage and track staff salary information, allowances, and compensation details
+        </p>
+      </div>
+
+      <!-- Page Actions -->
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="loadStaffSalaries()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        <a routerLink="/staff-salaries-create" class="btn btn-primary">
+          <mat-icon>add</mat-icon>
+          Add Salary Record
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Section -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>group</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">{{ totalStaffCount }}</div>
+              <div class="stat-label">Total Staff</div>
+              <div class="stat-change positive">
+                <mat-icon>trending_up</mat-icon>
+                Active employees
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart" [style.width.%]="100"></div>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">${{ totalPayroll | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Payroll</div>
+              <div class="stat-change">
+                <mat-icon>info</mat-icon>
+                Monthly total
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart success" [style.width.%]="85"></div>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">${{ averageSalary | number:'1.0-0' }}</div>
+              <div class="stat-label">Average Salary</div>
+              <div class="stat-change">
+                <mat-icon>calculate</mat-icon>
+                Per employee
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart warning" [style.width.%]="70"></div>
+          </div>
+        </div>
+
+        <div class="stat-card info">
+          <div class="stat-card-content">
+            <div class="stat-icon">
+              <mat-icon>savings</mat-icon>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value">${{ totalDeductions | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Deductions</div>
+              <div class="stat-change">
+                <mat-icon>remove_circle</mat-icon>
+                Taxes & funds
+              </div>
+            </div>
+          </div>
+          <div class="stat-chart">
+            <div class="mini-chart info" [style.width.%]="40"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <mat-icon>filter_list</mat-icon>
+          Filters & Search
+        </h3>
+        <div class="filters-actions">
+          <button class="btn btn-sm btn-secondary" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+          <button class="btn btn-sm btn-primary" (click)="toggleAdvancedFilters()">
+            <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+            {{ showAdvancedFilters ? 'Less' : 'More' }}
+          </button>
+        </div>
+      </div>
+      <div class="filters-content">
+        <div class="filter-row primary">
+          <!-- Search -->
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" class="search-input" placeholder="Search by staff name..." [(ngModel)]="searchTerm"
+              (input)="onSearch()">
+            <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Salary Range Filter -->
+          <div class="filter-group">
+            <label class="filter-label">Salary Range</label>
+            <select class="filter-select" [(ngModel)]="salaryRangeFilter" (change)="applyFilters()">
+              <option value="">All Ranges</option>
+              <option value="low">$0 - $50,000</option>
+              <option value="medium">$50,001 - $100,000</option>
+              <option value="high">$100,001+</option>
+            </select>
+          </div>
+
+          <!-- Sort By -->
+          <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select class="filter-select" [(ngModel)]="sortBy" (change)="applySorting()">
+              <option value="name">Staff Name</option>
+              <option value="salary-high">Salary (High to Low)</option>
+              <option value="salary-low">Salary (Low to High)</option>
+              <option value="net-salary">Net Salary</option>
+            </select>
+          </div>
+
+          <!-- Records per page -->
+          <div class="filter-group">
+            <label class="filter-label">Show</label>
+            <select class="filter-select" [(ngModel)]="pageSize" (change)="updatePageSize()">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+          <div class="filter-group">
+            <label class="filter-label">Min Basic Salary</label>
+            <input type="number" class="filter-select" [(ngModel)]="minBasicSalary" (input)="applyFilters()"
+              placeholder="0">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Max Basic Salary</label>
+            <input type="number" class="filter-select" [(ngModel)]="maxBasicSalary" (input)="applyFilters()"
+              placeholder="200000">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Has Allowances</label>
+            <select class="filter-select" [(ngModel)]="hasAllowancesFilter" (change)="applyFilters()">
+              <option value="">All</option>
+              <option value="yes">With Allowances</option>
+              <option value="no">No Allowances</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Export Options</label>
+            <button class="btn btn-sm btn-secondary" (click)="exportToCSV()">
+              <mat-icon>download</mat-icon>
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" *ngIf="selectedSalaries.length > 0">
+      <div class="bulk-info">
+        <mat-icon>check_circle</mat-icon>
+        {{ selectedSalaries.length }} salary record(s) selected
+      </div>
+      <div class="bulk-actions">
+        <button class="btn btn-sm btn-secondary" (click)="clearSelection()">
+          <mat-icon>clear</mat-icon>
+          Clear Selection
+        </button>
+        <button class="btn btn-sm btn-warning" (click)="bulkEdit()">
+          <mat-icon>edit</mat-icon>
+          Bulk Edit
+        </button>
+        <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+          <mat-icon>delete</mat-icon>
+          Delete Selected
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Card -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <div class="data-card-title-section">
+          <h3 class="data-card-title">
+            <mat-icon>table_view</mat-icon>
+            Salary Records
+            <span class="record-count">({{ filteredSalaries.length }} of {{ staffSalaries.length }})</span>
+          </h3>
+          <p class="data-card-subtitle">Manage staff compensation and payroll information</p>
+        </div>
+        <div class="data-card-actions">
+          <div class="page-size-selector">
+            <label>Items per page:</label>
+            <select class="page-size-select" [(ngModel)]="pageSize" (change)="updatePageSize()">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="toggle-btn" [class.active]="currentView === 'table'" (click)="setView('table')">
+              <mat-icon>table_rows</mat-icon>
+            </button>
+            <button class="toggle-btn" [class.active]="currentView === 'cards'" (click)="setView('cards')">
+              <mat-icon>view_module</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div class="loading-overlay" *ngIf="loading">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading salary data...</p>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-container" *ngIf="currentView === 'table' && !loading">
+          <table class="modern-table">
+    <thead>
+      <tr>
+                <th class="checkbox-column">
+                  <input type="checkbox" class="form-check" [checked]="isAllSelected()" (change)="toggleSelectAll()">
+                </th>
+                <th>Staff Member</th>
+        <th>Basic Salary</th>
+                <th>Allowances</th>
+                <th>Deductions</th>
+        <th>Net Salary</th>
+                <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+              <tr *ngFor="let salary of paginatedSalaries; let i = index" class="table-row">
+                <td class="checkbox-cell">
+                  <input type="checkbox" class="form-check" [checked]="isSelected(salary)"
+                    (change)="toggleSelection(salary)">
+                </td>
+                <td class="staff-cell">
+                  <div class="staff-info">
+                    <div class="staff-name">{{ salary.staffName }}</div>
+                    <div class="staff-meta">ID: #{{ salary.staffSalaryId }}</div>
+                  </div>
+                </td>
+                <td class="salary-cell">
+                  <div class="salary-amount primary">${{ salary.basicSalary | number:'1.2-2' }}</div>
+                  <div class="salary-label">Base</div>
+                </td>
+                <td class="allowances-cell">
+                  <div class="allowance-summary">
+                    <div class="allowance-total success">${{ getTotalAllowances(salary) | number:'1.2-2' }}</div>
+                    <div class="allowance-breakdown">
+                      <span *ngIf="salary.festivalBonus" class="allowance-item">Festival: ${{ salary.festivalBonus
+                        }}</span>
+                      <span *ngIf="salary.medicalAllowance" class="allowance-item">Medical: ${{ salary.medicalAllowance
+                        }}</span>
+                      <span *ngIf="salary.housingAllowance" class="allowance-item">Housing: ${{ salary.housingAllowance
+                        }}</span>
+                      <span *ngIf="salary.transportationAllowance" class="allowance-item">Transport: ${{
+                        salary.transportationAllowance }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="deductions-cell">
+                  <div class="deduction-summary">
+                    <div class="deduction-total warning">${{ getTotalDeductions(salary) | number:'1.2-2' }}</div>
+                    <div class="deduction-breakdown">
+                      <span *ngIf="salary.savingFund" class="deduction-item">Savings: ${{ salary.savingFund }}</span>
+                      <span *ngIf="salary.taxes" class="deduction-item">Taxes: ${{ salary.taxes }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="net-salary-cell">
+                  <div class="net-salary-amount">${{ salary.netSalary | number:'1.2-2' }}</div>
+                  <div class="net-salary-label">Take Home</div>
+                </td>
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <button class="action-btn btn-info" (click)="viewSalaryDetails(salary)" title="View Details">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <a class="action-btn btn-warning" [routerLink]="['/staff-salaries-edit', salary.staffSalaryId]"
+                      title="Edit Salary">
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                    <button class="action-btn btn-danger" (click)="deleteSalary(salary)" title="Delete Salary">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+        <!-- Card View -->
+        <div class="cards-container" *ngIf="currentView === 'cards' && !loading">
+          <div class="salary-grid">
+            <div class="salary-card" *ngFor="let salary of paginatedSalaries">
+              <div class="card-checkbox">
+                <input type="checkbox" class="form-check" [checked]="isSelected(salary)"
+                  (change)="toggleSelection(salary)">
+              </div>
+
+              <div class="card-header">
+                <div class="staff-info-large">
+                  <h4 class="staff-name">{{ salary.staffName }}</h4>
+                  <span class="staff-id">ID: #{{ salary.staffSalaryId }}</span>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <div class="salary-breakdown">
+                  <div class="breakdown-item primary">
+                    <span class="label">Basic Salary</span>
+                    <span class="value">${{ salary.basicSalary | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="breakdown-item success">
+                    <span class="label">Total Allowances</span>
+                    <span class="value">${{ getTotalAllowances(salary) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="breakdown-item warning">
+                    <span class="label">Total Deductions</span>
+                    <span class="value">${{ getTotalDeductions(salary) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="breakdown-item net-salary">
+                    <span class="label">Net Salary</span>
+                    <span class="value large">${{ salary.netSalary | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn btn-sm btn-info" (click)="viewSalaryDetails(salary)">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </button>
+                <a class="btn btn-sm btn-warning" [routerLink]="['/staff-salaries-edit', salary.staffSalaryId]">
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </a>
+                <button class="btn btn-sm btn-danger" (click)="deleteSalary(salary)">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!loading && staffSalaries.length === 0">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>payments</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No Salary Records Found</h3>
+            <p class="empty-state-description">
+              Get started by creating salary records for your staff members. You can add compensation details,
+              allowances, and deductions.
+            </p>
+            <div class="empty-state-actions">
+              <a routerLink="/staff-salaries-create" class="btn btn-primary">
+                <mat-icon>add</mat-icon>
+                Add First Salary Record
+              </a>
+              <button class="btn btn-secondary" (click)="loadStaffSalaries()">
+                <mat-icon>refresh</mat-icon>
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Pagination -->
+        <div class="custom-pagination" *ngIf="!loading && staffSalaries.length > 0">
+          <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+            <mat-icon>chevron_left</mat-icon>
+            Previous
+          </button>
+
+          <div class="pagination-info">
+            Showing {{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ filteredSalaries.length }} records
+          </div>
+
+          <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+            Next
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div class="confirmation-overlay" *ngIf="showDeleteConfirmation" (click)="cancelDelete()">
+  <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <div class="dialog-icon warning">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="dialog-content">
+        <h3 class="dialog-title">Confirm Deletion</h3>
+        <p class="dialog-message">
+          Are you sure you want to delete the salary record for <strong>{{ salaryToDelete?.staffName }}</strong>? This
+          action cannot be undone.
+        </p>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+      <button class="btn btn-danger" (click)="confirmDelete()">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

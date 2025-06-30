@@ -1,0 +1,240 @@
+<div class="student-details-page" *ngIf="student">
+  <!-- Page Header -->
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()" type="button">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back</span>
+    </button>
+    <div class="header-title">
+      <h1>Student Details</h1>
+      <p>View complete student information</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <!-- Student Profile Section -->
+    <div class="profile-section">
+      <div class="profile-card">
+        <div class="avatar-container">
+          <img 
+            *ngIf="student.imagePath" 
+            [src]="student.imagePath" 
+            [alt]="student.studentName + ' Photo'"
+            class="student-avatar"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="avatar-placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+        </div>
+        <div class="profile-info">
+          <h2 class="student-name">{{ student.studentName }}</h2>
+          <div class="student-badges">
+            <span class="badge student-id">ID: {{ student.studentId }}</span>
+            <span class="badge enrollment" *ngIf="student.enrollmentNo">
+              Enrollment: {{ student.enrollmentNo }}
+            </span>
+            <span class="badge class-info" *ngIf="student.standard">
+              Class: {{ student.standard.standardName }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Information Sections -->
+    <div class="info-sections">
+      <!-- Personal Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <mat-icon>person</mat-icon>
+          <h3>Personal Information</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Full Name</label>
+            <span>{{ student.studentName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Date of Birth</label>
+            <span>{{ student.studentDOB | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Gender</label>
+            <span>{{ student.studentGender }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentReligion">
+            <label>Religion</label>
+            <span>{{ student.studentReligion }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentNationality">
+            <label>Nationality</label>
+            <span>{{ student.studentNationality }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentBloodGroup">
+            <label>Blood Group</label>
+            <span class="blood-group">{{ student.studentBloodGroup }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentNIDNumber">
+            <label>NID Number</label>
+            <span>{{ student.studentNIDNumber }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <mat-icon>contact_phone</mat-icon>
+          <h3>Contact Information</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="student.studentEmail">
+            <label>Email Address</label>
+            <span class="email">{{ student.studentEmail }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentContactNumber1">
+            <label>Primary Contact</label>
+            <span class="phone">{{ student.studentContactNumber1 }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.studentContactNumber2">
+            <label>Secondary Contact</label>
+            <span class="phone">{{ student.studentContactNumber2 }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.permanentAddress">
+            <label>Permanent Address</label>
+            <span>{{ student.permanentAddress }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.temporaryAddress">
+            <label>Temporary Address</label>
+            <span>{{ student.temporaryAddress }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <mat-icon>school</mat-icon>
+          <h3>Academic Information</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item" *ngIf="student.standard">
+            <label>Current Class</label>
+            <span class="class-name">{{ student.standard.standardName }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.admissionNo">
+            <label>Admission Number</label>
+            <span>{{ student.admissionNo }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.enrollmentNo">
+            <label>Enrollment Number</label>
+            <span>{{ student.enrollmentNo }}</span>
+          </div>
+          <div class="info-item" *ngIf="student.uniqueStudentAttendanceNumber">
+            <label>Attendance Number</label>
+            <span>{{ student.uniqueStudentAttendanceNumber }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Family Information -->
+      <div class="info-section">
+        <div class="section-header">
+          <mat-icon>family_restroom</mat-icon>
+          <h3>Family Information</h3>
+        </div>
+        
+        <!-- Father's Information -->
+        <div class="family-subsection" *ngIf="student.fatherName">
+          <h4>Father's Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name</label>
+              <span>{{ student.fatherName }}</span>
+            </div>
+            <div class="info-item" *ngIf="student.fatherNID">
+              <label>NID Number</label>
+              <span>{{ student.fatherNID }}</span>
+            </div>
+            <div class="info-item" *ngIf="student.fatherContactNumber">
+              <label>Contact Number</label>
+              <span class="phone">{{ student.fatherContactNumber }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mother's Information -->
+        <div class="family-subsection" *ngIf="student.motherName">
+          <h4>Mother's Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name</label>
+              <span>{{ student.motherName }}</span>
+            </div>
+            <div class="info-item" *ngIf="student.motherNID">
+              <label>NID Number</label>
+              <span>{{ student.motherNID }}</span>
+            </div>
+            <div class="info-item" *ngIf="student.motherContactNumber">
+              <label>Contact Number</label>
+              <span class="phone">{{ student.motherContactNumber }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Local Guardian Information -->
+        <div class="family-subsection" *ngIf="student.localGuardianName">
+          <h4>Local Guardian</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name</label>
+              <span>{{ student.localGuardianName }}</span>
+            </div>
+            <div class="info-item" *ngIf="student.localGuardianContactNumber">
+              <label>Contact Number</label>
+              <span class="phone">{{ student.localGuardianContactNumber }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <button class="action-btn primary" [routerLink]="['/student', student.studentId, 'edit']">
+        <mat-icon>edit</mat-icon>
+        <span>Edit Student</span>
+      </button>
+      <button class="action-btn secondary" onclick="window.print()">
+        <mat-icon>print</mat-icon>
+        <span>Print Details</span>
+      </button>
+      <button class="action-btn secondary" [routerLink]="['/student']">
+        <mat-icon>list</mat-icon>
+        <span>All Students</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Message -->
+<div class="error-container" *ngIf="errorMessage">
+  <div class="error-card">
+    <mat-icon>error_outline</mat-icon>
+    <h3>Error Loading Student Details</h3>
+    <p>{{ errorMessage }}</p>
+    <button class="retry-btn" (click)="getStudentDetails()">
+      <mat-icon>refresh</mat-icon>
+      <span>Try Again</span>
+    </button>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="!student && !errorMessage">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <p>Loading student details...</p>
+  </div>
+</div>

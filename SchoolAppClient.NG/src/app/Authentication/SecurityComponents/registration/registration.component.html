@@ -1,0 +1,221 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="logo-container">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h2 class="auth-title">Tạo tài khoản mới</h2>
+      <p class="auth-subtitle">Đăng ký để sử dụng hệ thống quản lý trường học</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form #registrationForm="ngForm" (ngSubmit)="register($event)" class="auth-form">
+      
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="fas fa-envelope"></i>
+          Email
+        </label>
+        <input 
+          type="email" 
+          id="email"
+          name="email" 
+          class="form-control"
+          [class.is-invalid]="!model.isEmailValid() && model.email.length > 0"
+          [class.is-valid]="model.isEmailValid() && model.email.length > 0"
+          placeholder="example@email.com"
+          [(ngModel)]="model.email" 
+          required
+          #emailInput="ngModel"
+          autocomplete="email"
+          autofocus>
+        
+        <div class="invalid-feedback" *ngIf="!model.isEmailValid() && model.email.length > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          Email không đúng định dạng
+        </div>
+        <div class="valid-feedback" *ngIf="model.isEmailValid() && model.email.length > 0">
+          <i class="fas fa-check-circle"></i>
+          Email hợp lệ
+        </div>
+      </div>
+
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username" class="form-label">
+          <i class="fas fa-user"></i>
+          Tên người dùng
+        </label>
+        <input 
+          type="text" 
+          id="username"
+          name="username" 
+          class="form-control"
+          [class.is-invalid]="!model.isUsernameValid() && model.username.length > 0"
+          [class.is-valid]="model.isUsernameValid() && model.username.length > 0"
+          placeholder="Nhập tên người dùng"
+          [(ngModel)]="model.username" 
+          required
+          #usernameInput="ngModel"
+          autocomplete="username">
+        
+        <div class="invalid-feedback" *ngIf="!model.isUsernameValid() && model.username.length > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          Tên người dùng phải có 3-50 ký tự, chỉ chứa chữ, số và dấu gạch dưới
+        </div>
+        <div class="valid-feedback" *ngIf="model.isUsernameValid() && model.username.length > 0">
+          <i class="fas fa-check-circle"></i>
+          Tên người dùng hợp lệ
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="fas fa-lock"></i>
+          Mật khẩu
+        </label>
+        <div class="password-container">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password"
+            name="password" 
+            class="form-control"
+            [class.is-invalid]="!model.isPasswordValid() && model.password.length > 0"
+            [class.is-valid]="model.isPasswordValid() && model.password.length > 0"
+            placeholder="Nhập mật khẩu"
+            [(ngModel)]="model.password" 
+            required
+            #passwordInput="ngModel"
+            autocomplete="new-password">
+          
+          <button 
+            type="button" 
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
+            <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        
+        <div class="password-strength" *ngIf="model.password.length > 0">
+          <div class="password-requirements">
+            <div class="requirement" [class.met]="hasMinLength()">
+              <i [class]="hasMinLength() ? 'fas fa-check' : 'fas fa-times'"></i>
+              Ít nhất 8 ký tự
+            </div>
+            <div class="requirement" [class.met]="hasUppercase()">
+              <i [class]="hasUppercase() ? 'fas fa-check' : 'fas fa-times'"></i>
+              Có chữ hoa
+            </div>
+            <div class="requirement" [class.met]="hasLowercase()">
+              <i [class]="hasLowercase() ? 'fas fa-check' : 'fas fa-times'"></i>
+              Có chữ thường
+            </div>
+            <div class="requirement" [class.met]="hasNumber()">
+              <i [class]="hasNumber() ? 'fas fa-check' : 'fas fa-times'"></i>
+              Có số
+            </div>
+            <div class="requirement" [class.met]="hasSpecialChar()">
+              <i [class]="hasSpecialChar() ? 'fas fa-check' : 'fas fa-times'"></i>
+              Có ký tự đặc biệt
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">
+          <i class="fas fa-lock"></i>
+          Xác nhận mật khẩu
+        </label>
+        <div class="password-container">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            id="confirmPassword"
+            name="confirmPassword" 
+            class="form-control"
+            [class.is-invalid]="!model.doPasswordsMatch() && model.confirmPassword.length > 0"
+            [class.is-valid]="model.doPasswordsMatch() && model.confirmPassword.length > 0"
+            placeholder="Nhập lại mật khẩu"
+            [(ngModel)]="model.confirmPassword" 
+            required
+            #confirmPasswordInput="ngModel"
+            autocomplete="new-password">
+          
+          <button 
+            type="button" 
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'">
+            <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        
+        <div class="invalid-feedback" *ngIf="!model.doPasswordsMatch() && model.confirmPassword.length > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          Mật khẩu xác nhận không khớp
+        </div>
+        <div class="valid-feedback" *ngIf="model.doPasswordsMatch() && model.confirmPassword.length > 0">
+          <i class="fas fa-check-circle"></i>
+          Mật khẩu khớp
+        </div>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="form-options">
+        <label class="checkbox-container">
+          <input type="checkbox" [(ngModel)]="agreeToTerms" name="agreeToTerms" required>
+          <span class="checkmark"></span>
+          <span class="checkbox-text">
+            Tôi đồng ý với 
+            <a href="#" class="terms-link" (click)="showTerms($event)">Điều khoản dịch vụ</a>
+            và 
+            <a href="#" class="terms-link" (click)="showPrivacy($event)">Chính sách bảo mật</a>
+          </span>
+        </label>
+      </div>
+
+      <!-- Error Messages -->
+      <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Success Messages -->
+      <div class="alert alert-success" *ngIf="successMessage" role="alert">
+        <i class="fas fa-check-circle"></i>
+        {{ successMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-auth"
+        [disabled]="isLoading || !isFormValid()"
+        [class.loading]="isLoading">
+        <span *ngIf="!isLoading">
+          <i class="fas fa-user-plus"></i>
+          Đăng ký
+        </span>
+        <span *ngIf="isLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+          Đang xử lý...
+        </span>
+      </button>
+
+      <!-- Login Link -->
+      <div class="auth-footer">
+        <p>Đã có tài khoản? 
+          <a routerLink="/login" class="auth-link">
+            <i class="fas fa-sign-in-alt"></i>
+            Đăng nhập ngay
+          </a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

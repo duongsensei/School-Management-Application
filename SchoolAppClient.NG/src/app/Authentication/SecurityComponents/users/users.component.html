@@ -1,0 +1,347 @@
+<!-- Enhanced User Management Component -->
+<div class="page-container">
+  <!-- Modern Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <span class="breadcrumb-item">School Management</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item">System</span>
+          <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          <span class="breadcrumb-item active">Users</span>
+        </nav>
+
+        <!-- Page Title -->
+        <h1 class="page-title">
+          <mat-icon class="title-icon">people</mat-icon>
+          User Management
+        </h1>
+        <p class="page-description">
+          Manage system users, roles, and access permissions
+        </p>
+      </div>
+
+      <!-- Page Actions -->
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="LoadData()" [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        <button class="btn btn-secondary" (click)="exportUsers()" [disabled]="!UserList || UserList.length === 0">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+        <a routerLink="/register" class="btn btn-primary">
+          <mat-icon>person_add</mat-icon>
+          Add New User
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getTotalUsers() }}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getAdminUsers() }}</div>
+          <div class="stat-label">Administrators</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getTeacherUsers() }}</div>
+          <div class="stat-label">Teachers</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>how_to_reg</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ getActiveUsers() }}</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="controls-section">
+      <div class="controls-card">
+        <div class="controls-header">
+          <h3 class="controls-title">
+            <mat-icon>tune</mat-icon>
+            Search & Filter
+          </h3>
+        </div>
+        <div class="controls-content">
+          <div class="controls-grid">
+            <!-- Search Input -->
+            <div class="control-group">
+              <label class="control-label">
+                <mat-icon>search</mat-icon>
+                Search Users
+              </label>
+              <input type="text" class="form-input" placeholder="Search by username or ID..." [(ngModel)]="searchTerm"
+                (input)="performSearch()">
+            </div>
+
+            <!-- Role Filter -->
+            <div class="control-group">
+              <label class="control-label">
+                <mat-icon>security</mat-icon>
+                Filter by Role
+              </label>
+              <select class="form-select" [(ngModel)]="selectedRole" (change)="applyFilters()">
+                <option value="">All Roles</option>
+                <option *ngFor="let role of uniqueRoles" [value]="role">{{ role }}</option>
+              </select>
+            </div>
+
+            <!-- Actions -->
+            <div class="control-group actions-group">
+              <button class="btn btn-outline" (click)="clearAllFilters()">
+                <mat-icon>clear_all</mat-icon>
+                Clear Filters
+              </button>
+              <button class="btn btn-outline" (click)="exportUsers()" [disabled]="!UserList || UserList.length === 0">
+                <mat-icon>download</mat-icon>
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="content-card">
+        <!-- Content Header -->
+        <div class="content-header">
+          <div class="content-title-section">
+            <h3 class="content-title">
+              <mat-icon>list</mat-icon>
+              System Users
+            </h3>
+            <p class="content-subtitle">
+              {{ getFilteredUsers().length }} users found
+            </p>
+          </div>
+          <div class="content-actions">
+            <!-- View Toggle -->
+            <div class="view-toggle">
+              <button class="toggle-btn" [class.active]="viewMode === 'card'" (click)="setViewMode('card')">
+                <mat-icon>view_module</mat-icon>
+                Cards
+              </button>
+              <button class="toggle-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')">
+                <mat-icon>table_chart</mat-icon>
+                Table
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+          <div class="loading-content">
+            <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+            <h3>Loading Users...</h3>
+            <p>Please wait while we fetch the data</p>
+          </div>
+        </div>
+
+        <!-- Card View -->
+        <div class="user-cards-container" *ngIf="!isLoading && viewMode === 'card'">
+          <div class="user-cards-grid" *ngIf="getFilteredUsers().length > 0">
+            <div class="user-card" *ngFor="let user of getPaginatedUsers(); let i = index; trackBy: trackByUserId"
+              [style.animation-delay]="(i * 100) + 'ms'">
+              <!-- Card Header -->
+              <div class="user-card-header">
+                <div class="user-avatar">
+                  <mat-icon>account_circle</mat-icon>
+                </div>
+                <div class="user-basic-info">
+                  <h4 class="user-name">{{ user.userName }}</h4>
+                  <span class="user-id">ID: {{ user.id }}</span>
+                </div>
+              </div>
+
+              <!-- Role Badges -->
+              <div class="roles-section">
+                <div class="roles-header">
+                  <mat-icon>security</mat-icon>
+                  <span>Roles ({{ user.role.length || 0 }})</span>
+                </div>
+                <div class="roles-list">
+                  <span class="role-chip" *ngFor="let role of user.role">
+                    {{ role }}
+                  </span>
+                  <span class="no-roles" *ngIf="!user.role || user.role.length === 0">
+                    No roles assigned
+          </span>
+                </div>
+              </div>
+
+              <!-- Card Actions -->
+              <div class="user-card-actions">
+                <a class="action-btn btn-info" [routerLink]="['/userdetails/', user.id]" title="View Details">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </a>
+                <a class="action-btn btn-warning" [routerLink]="['/assignrole/', user.id]" title="Assign Role">
+                  <mat-icon>security</mat-icon>
+                  Roles
+                </a>
+                <button class="action-btn btn-danger" (click)="deleteUser(user.id)" title="Delete User">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="table-container" *ngIf="!isLoading && viewMode === 'table'">
+          <table class="modern-table" *ngIf="getFilteredUsers().length > 0">
+            <thead>
+              <tr>
+                <th>User Information</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th class="actions-column">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of getPaginatedUsers(); trackBy: trackByUserId" class="table-row">
+                <td class="user-cell">
+                  <div class="user-info">
+                    <div class="user-avatar-small">
+                      <mat-icon>account_circle</mat-icon>
+                    </div>
+                    <div class="user-details">
+                      <div class="user-name">{{ user.userName }}</div>
+                      <div class="user-id">ID: {{ user.id }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="roles-cell">
+                  <div class="roles-tags">
+                    <span class="role-tag" *ngFor="let role of user.role.slice(0, 2)">
+                      {{ role }}
+                    </span>
+                    <span class="more-tag" *ngIf="(user.role.length || 0) > 2">
+                      +{{ (user.role.length || 0) - 2 }}
+                    </span>
+                    <span class="no-roles-tag" *ngIf="!user.role || user.role.length === 0">
+                      No roles
+                    </span>
+                  </div>
+                </td>
+                <td class="status-cell">
+                  <div class="status-badge active">
+                    <mat-icon>check_circle</mat-icon>
+                    Active
+                  </div>
+                </td>
+                <td class="actions-cell">
+                  <div class="action-buttons">
+                    <a class="action-btn btn-info" [routerLink]="['/userdetails/', user.id]" title="View Details">
+                      <mat-icon>visibility</mat-icon>
+                    </a>
+                    <a class="action-btn btn-warning" [routerLink]="['/assignrole/', user.id]" title="Assign Role">
+                      <mat-icon>security</mat-icon>
+                    </a>
+                    <button class="action-btn btn-danger" (click)="deleteUser(user.id)" title="Delete User">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="getTotalPages() > 1">
+          <div class="pagination-info">
+            Showing {{ getPaginationStart() }}-{{ getPaginationEnd() }} of
+            {{ getFilteredUsers().length }} users
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+
+            <div class="page-numbers">
+              <button *ngFor="let page of getPageNumbers()" class="page-btn" [class.active]="page === currentPage"
+                (click)="goToPageNumber(page)" [disabled]="page === '...'">
+                {{ page }}
+              </button>
+            </div>
+
+            <button class="pagination-btn" [disabled]="currentPage === getTotalPages()"
+              (click)="goToPage(currentPage + 1)">
+              Next
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading && getFilteredUsers().length === 0">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <h3 class="empty-state-title">
+              {{ (UserList && UserList.length === 0) ? 'No Users Found' : 'No Results Found' }}
+            </h3>
+            <p class="empty-state-description" *ngIf="UserList && UserList.length === 0">
+              Get started by creating your first user account. Users can be assigned
+              different roles to control access to various parts of the system.
+            </p>
+            <p class="empty-state-description" *ngIf="UserList && UserList.length > 0">
+              No users match your current search criteria.
+              Try adjusting your filters or search terms.
+            </p>
+            <div class="empty-state-actions">
+              <a routerLink="/register" class="btn btn-primary" *ngIf="UserList && UserList.length === 0">
+                <mat-icon>person_add</mat-icon>
+                Create First User
+              </a>
+              <button class="btn btn-secondary" (click)="clearAllFilters()" *ngIf="UserList && UserList.length > 0">
+                <mat-icon>clear_all</mat-icon>
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

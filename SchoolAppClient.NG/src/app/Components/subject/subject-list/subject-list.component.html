@@ -1,0 +1,186 @@
+<!-- Enhanced Subject List Component -->
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-section">
+        <h1 class="page-title">Subjects Management</h1>
+        <p class="page-description">Manage and view all subject information</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" (click)="refreshData()" title="Refresh">
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-secondary" (click)="exportData()" title="Export">
+          <mat-icon>download</mat-icon>
+          <span>Export</span>
+        </button>
+        <button class="btn btn-primary" routerLink="/subject/add">
+          <mat-icon>add</mat-icon>
+          <span>Add Subject</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Statistics Section -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon">
+            <mat-icon>book</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ subjects.length || 0 }}</div>
+            <div class="stat-label">Total Subjects</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon success">
+            <mat-icon>school</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getActiveSubjects() }}</div>
+            <div class="stat-label">Active Subjects</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-content">
+          <div class="stat-icon warning">
+            <mat-icon>class</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getUniqueStandards() }}</div>
+            <div class="stat-label">Standards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Table Section -->
+    <div class="data-card">
+      <div class="data-card-header">
+        <h3 class="data-card-title">Subject Directory</h3>
+        <div class="data-card-actions">
+          <div class="search-container">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Search subjects..." class="search-input" #searchInput
+              (keyup)="onSearch(searchInput.value)" [value]="searchTerm">
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card-content">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading subjects...</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && (!filteredSubjects || filteredSubjects.length === 0)" class="empty-state">
+          <div class="empty-state-content">
+            <div class="empty-state-icon">
+              <mat-icon>book_outline</mat-icon>
+            </div>
+            <h3 class="empty-state-title">No subjects found</h3>
+            <p class="empty-state-description">
+              {{ searchTerm ? 'Try adjusting your search criteria' : 'Get started by adding your first subject' }}
+            </p>
+            <button *ngIf="!searchTerm" class="btn btn-primary" routerLink="/subject/add">
+              <mat-icon>add</mat-icon>
+              <span>Add First Subject</span>
+            </button>
+            <button *ngIf="searchTerm" class="btn btn-secondary" (click)="onSearch('')">
+              <mat-icon>clear</mat-icon>
+              <span>Clear Search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Subjects Table -->
+        <div *ngIf="!isLoading && filteredSubjects && filteredSubjects.length > 0" class="subjects-table-container">
+          <div class="subjects-table">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="header-cell id-column">ID</div>
+              <div class="header-cell name-column">Subject Name</div>
+              <div class="header-cell code-column">Subject Code</div>
+              <div class="header-cell standard-column">Standard</div>
+              <div class="header-cell actions-column">Actions</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="table-body">
+              <div *ngFor="let subject of paginatedSubjects; let i = index" class="table-row"
+                [class.even]="i % 2 === 1">
+                <div class="table-cell id-column">
+                  <span class="cell-content">{{ subject.subjectId }}</span>
+                </div>
+
+                <div class="table-cell name-column">
+                  <div class="subject-name-cell">
+                    <span class="subject-name">{{ subject.subjectName }}</span>
+                  </div>
+                </div>
+
+                <div class="table-cell code-column">
+                  <span class="subject-code-badge">{{ subject.subjectCode }}</span>
+                </div>
+
+                <div class="table-cell standard-column">
+                  <span class="standard-badge">{{ subject.standard?.standardName || 'N/A' }}</span>
+                </div>
+
+                <div class="table-cell actions-column">
+                  <div class="action-buttons">
+                    <button class="action-btn btn-warning" [routerLink]="['/subject', subject.subjectId, 'edit']"
+                      title="Edit Subject">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn btn-danger" (click)="deleteSubject(subject.subjectId)"
+                      title="Delete Subject">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && filteredSubjects && filteredSubjects.length > 0" class="pagination-container">
+          <div class="pagination-info">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} -
+            {{ Math.min(currentPage * pageSize, filteredSubjects.length) }}
+            of {{ filteredSubjects.length }} subjects
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"
+              title="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+
+            <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"
+              title="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

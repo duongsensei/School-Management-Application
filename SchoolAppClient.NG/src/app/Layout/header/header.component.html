@@ -1,0 +1,198 @@
+<header class="simple-header" role="banner">
+  <!-- Main Header Container -->
+  <div class="header-container">
+    <!-- Left Section: Menu Toggle and Logo -->
+    <div class="header-left">
+      <button class="menu-toggle" (click)="toggleSidebar()" type="button" aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="false">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="logo" routerLink="/dashboard" role="link" tabindex="0">
+        <div class="logo-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="logo-content">
+          <span class="logo-text">School MS</span>
+          <span class="logo-subtitle">MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Section: Search Bar -->
+    <div class="header-center">
+      <div class="search-container" role="search">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" class="search-input" placeholder="Search students, staff, subjects..." #searchInput
+          (input)="onSearchInput($event)" (focus)="onSearchFocus()" (blur)="onSearchBlur()"
+          aria-label="Search in system" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Right Section: User Menu -->
+    <div class="header-right">
+      <ng-container *ngIf="login; else notLoggedIn">
+        <div class="user-dropdown">
+          <button class="user-button" type="button" (click)="toggleUserMenu()" aria-label="User menu"
+            [attr.aria-expanded]="showUserMenu">
+            <div class="user-avatar">
+              <img [src]="getUserAvatar()" [alt]="'Avatar of ' + user.username" (error)="onAvatarError($event)">
+              <div class="avatar-fallback">
+                <mat-icon>account_circle</mat-icon>
+              </div>
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ user.username }}</span>
+              <span class="user-role">{{ user.roles.join(', ') }}</span>
+            </div>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+          </button>
+
+          <!-- User Dropdown Menu -->
+          <div class="user-dropdown-menu" [class.visible]="showUserMenu" role="menu">
+            <a routerLink="/profile" class="dropdown-item" role="menuitem">
+              <mat-icon>person</mat-icon>
+              <span>Profile</span>
+            </a>
+            <a routerLink="/settings" class="dropdown-item" role="menuitem">
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item logout-btn" (click)="logout()" role="menuitem">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #notLoggedIn>
+        <div class="auth-buttons">
+          <a routerLink="/login" class="btn btn-outline">
+            <span>Login</span>
+          </a>
+          <a routerLink="/register" class="btn btn-primary">
+            <span>Register</span>
+          </a>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="nav-bar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <!-- Students Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('students')"
+          [attr.aria-expanded]="activeDropdown === 'students'">
+          <mat-icon>people</mat-icon>
+          <span>Students</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'students'" role="menu">
+          <a routerLink="/student" class="nav-dropdown-item" role="menuitem">
+            <span>All Students</span>
+          </a>
+          <a routerLink="/student/add" class="nav-dropdown-item" role="menuitem">
+            <span>Add Student</span>
+          </a>
+          <a routerLink="/student/reports" class="nav-dropdown-item" role="menuitem">
+            <span>Student Reports</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Staff Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('staff')"
+          [attr.aria-expanded]="activeDropdown === 'staff'">
+          <mat-icon>group</mat-icon>
+          <span>Staff</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'staff'" role="menu">
+          <a routerLink="/departments" class="nav-dropdown-item" role="menuitem">
+            <span>Departments</span>
+          </a>
+          <a routerLink="/staff-list" class="nav-dropdown-item" role="menuitem">
+            <span>Staff List</span>
+          </a>
+          <a routerLink="/staff-salaries" class="nav-dropdown-item" role="menuitem">
+            <span>Salaries</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Academic Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('academic')"
+          [attr.aria-expanded]="activeDropdown === 'academic'">
+          <mat-icon>assignment</mat-icon>
+          <span>Academic</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'academic'" role="menu">
+          <a routerLink="/subjects" class="nav-dropdown-item" role="menuitem">
+            <span>Subjects</span>
+          </a>
+          <a routerLink="/standards" class="nav-dropdown-item" role="menuitem">
+            <span>Classes</span>
+          </a>
+          <a routerLink="/attendanceList" class="nav-dropdown-item" role="menuitem">
+            <span>Attendance</span>
+          </a>
+          <a routerLink="/marksentrynewList" class="nav-dropdown-item" role="menuitem">
+            <span>Marks</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Finance Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('finance')"
+          [attr.aria-expanded]="activeDropdown === 'finance'">
+          <mat-icon>payment</mat-icon>
+          <span>Finance</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'finance'" role="menu">
+          <a routerLink="/fee-types" class="nav-dropdown-item" role="menuitem">
+            <span>Fee Types</span>
+          </a>
+          <a routerLink="/fees" class="nav-dropdown-item" role="menuitem">
+            <span>Fees</span>
+          </a>
+          <a routerLink="/monthlypayment" class="nav-dropdown-item" role="menuitem">
+            <span>Monthly Payment</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Reports Menu -->
+      <div class="nav-item">
+        <button class="nav-button" type="button" (click)="toggleDropdown('reports')"
+          [attr.aria-expanded]="activeDropdown === 'reports'">
+          <mat-icon>analytics</mat-icon>
+          <span>Reports</span>
+          <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+        </button>
+        <div class="nav-dropdown" [class.visible]="activeDropdown === 'reports'" role="menu">
+          <a routerLink="/reports/academic" class="nav-dropdown-item" role="menuitem">
+            <span>Academic Reports</span>
+          </a>
+          <a routerLink="/reports/financial" class="nav-dropdown-item" role="menuitem">
+            <span>Financial Reports</span>
+          </a>
+          <a routerLink="/reports/attendance" class="nav-dropdown-item" role="menuitem">
+            <span>Attendance Reports</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile overlay for closing dropdowns -->
+  <div class="mobile-overlay" [class.visible]="activeDropdown" (click)="closeAllDropdowns()"></div>
+</header>

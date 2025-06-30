@@ -1,0 +1,495 @@
+<!-- Enhanced Staff List Component -->
+<div class="page-container">
+    <!-- Modern Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="page-title-section">
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item">Dashboard</span>
+                    <span class="breadcrumb-separator">→</span>
+                    <span class="breadcrumb-item">Human Resources</span>
+                    <span class="breadcrumb-separator">→</span>
+                    <span class="breadcrumb-item active">Staff</span>
+                </div>
+                <h1 class="page-title">
+                    <mat-icon class="title-icon">people</mat-icon>
+                    Staff Management
+                </h1>
+                <p class="page-description">Manage your school staff members and their information</p>
+            </div>
+
+            <div class="page-actions">
+                <button class="btn btn-secondary" (click)="exportStaff()">
+                    <mat-icon>download</mat-icon>
+                    Export
+                </button>
+                <button class="btn btn-secondary" (click)="loadStaffList()">
+                    <mat-icon>refresh</mat-icon>
+                    Refresh
+                </button>
+                <button class="btn btn-primary" routerLink="/staff-create">
+                    <mat-icon>person_add</mat-icon>
+                    Add New Staff
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Enhanced Statistics Cards -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-card-content">
+                        <div class="stat-icon">
+                            <mat-icon>people</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ getTotalStaff() }}</div>
+                            <div class="stat-label">Total Staff</div>
+                            <div class="stat-change positive">
+                                <mat-icon>trending_up</mat-icon>
+                                Active members
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-chart">
+                        <div class="mini-chart" [style.width]="'100%'"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-card-content">
+                        <div class="stat-icon">
+                            <mat-icon>school</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ getTeachersCount() }}</div>
+                            <div class="stat-label">Teachers</div>
+                            <div class="stat-percentage">
+                                <mat-icon>info</mat-icon>
+                                {{ getTeachersPercentage() }}% of total
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-chart">
+                        <div class="mini-chart success" [style.width]="getTeachersPercentage() + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-card-content">
+                        <div class="stat-icon">
+                            <mat-icon>business_center</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ getAdminCount() }}</div>
+                            <div class="stat-label">Administrative</div>
+                            <div class="stat-percentage">
+                                <mat-icon>work</mat-icon>
+                                {{ getAdminPercentage() }}% of total
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-chart">
+                        <div class="mini-chart info" [style.width]="getAdminPercentage() + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-card-content">
+                        <div class="stat-icon">
+                            <mat-icon>checklist</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">{{ selectedStaff.length }}</div>
+                            <div class="stat-label">Selected Items</div>
+                            <div class="stat-percentage">
+                                <mat-icon>timeline</mat-icon>
+                                {{ getSelectionPercentage() }}% selected
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-chart">
+                        <div class="mini-chart warning" [style.width]="getSelectionPercentage() + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Filters Card -->
+        <div class="filters-card">
+            <div class="filters-header">
+                <h3 class="filters-title">
+                    <mat-icon>filter_list</mat-icon>
+                    Search & Filter
+                </h3>
+                <div class="filters-actions">
+                    <button class="btn btn-sm btn-outline" (click)="toggleAdvancedFilters()"
+                        [class.active]="showAdvancedFilters">
+                        <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        {{ showAdvancedFilters ? 'Hide' : 'Show' }} Advanced
+                    </button>
+                    <button class="btn btn-sm btn-warning" (click)="clearAllFilters()" *ngIf="hasActiveFilters()">
+                        <mat-icon>clear</mat-icon>
+                        Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters-content">
+                <!-- Primary Filter Row -->
+                <div class="filter-row primary">
+                    <div class="search-container">
+                        <mat-icon class="search-icon">search</mat-icon>
+                        <input type="text" class="search-input" placeholder="Search staff..." [(ngModel)]="searchTerm"
+                            (input)="performSearch()">
+                        <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()" type="button">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Department</label>
+                        <select class="filter-select" [(ngModel)]="selectedDepartment" (change)="applyFilters()">
+                            <option value="">All Departments</option>
+                            <option *ngFor="let dept of departments" [value]="dept.departmentId">{{ dept.departmentName
+                                }}</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Staff Type</label>
+                        <select class="filter-select" [(ngModel)]="selectedStaffType" (change)="applyFilters()">
+                            <option value="">All Types</option>
+                            <option value="teacher">Teachers</option>
+                            <option value="admin">Administrative</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Show</label>
+                        <select class="filter-select" [(ngModel)]="pageSettings.pageSize" (change)="updatePageSize()">
+                            <option [value]="5">5</option>
+                            <option [value]="10">10</option>
+                            <option [value]="25">25</option>
+                            <option [value]="50">50</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Advanced Filters -->
+                <div class="filter-row advanced" *ngIf="showAdvancedFilters">
+                    <div class="filter-group">
+                        <label class="filter-label">Sort By</label>
+                        <select class="filter-select" [(ngModel)]="selectedSort" (change)="applySorting()">
+                            <option value="">Default Order</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="id-asc">ID (Low to High)</option>
+                            <option value="id-desc">ID (High to Low)</option>
+                        </select>
+  </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <select class="filter-select">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Actions</label>
+                        <button class="btn btn-sm btn-primary" (click)="applyAdvancedFilters()">
+                            <mat-icon>search</mat-icon>
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions Bar -->
+        <div class="bulk-actions-bar" *ngIf="selectedStaff.length > 0">
+            <div class="bulk-info">
+                <mat-icon>checklist</mat-icon>
+                <span>{{ selectedStaff.length }} staff member(s) selected</span>
+            </div>
+            <div class="bulk-actions">
+                <button class="btn btn-sm btn-secondary" (click)="bulkExport()">
+                    <mat-icon>download</mat-icon>
+                    Export Selected
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="bulkDelete()">
+                    <mat-icon>delete</mat-icon>
+                    Delete Selected
+                </button>
+                <button class="btn btn-sm btn-outline" (click)="clearSelection()">
+                    <mat-icon>clear</mat-icon>
+                    Clear Selection
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced Data Card -->
+        <div class="data-card">
+            <div class="data-card-header">
+                <div class="data-card-title-section">
+                    <h3 class="data-card-title">
+                        <mat-icon>list</mat-icon>
+                        Staff Directory
+                        <span class="record-count">({{ getFilteredStaff().length }} records)</span>
+                    </h3>
+                    <p class="data-card-subtitle">
+                        Showing {{ getDisplayedRecordsStart() }}-{{ getDisplayedRecordsEnd() }} of {{
+                        getFilteredStaff().length }} staff members
+                    </p>
+                </div>
+
+                <div class="data-card-actions">
+                    <div class="view-toggle btn-group">
+                        <button class="btn btn-sm toggle-btn" [class.active]="viewMode === 'table'"
+                            (click)="setViewMode('table')">
+                            <mat-icon>table_chart</mat-icon>
+                        </button>
+                        <button class="btn btn-sm toggle-btn" [class.active]="viewMode === 'card'"
+                            (click)="setViewMode('card')">
+                            <mat-icon>grid_view</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Content -->
+            <div class="data-card-content">
+                <!-- Loading State -->
+                <div class="loading-overlay" *ngIf="loading">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <p>Loading staff...</p>
+                    </div>
+                </div>
+
+                <!-- Table View -->
+                <div *ngIf="!loading && viewMode === 'table'">
+                    <ejs-grid #grid [dataSource]="getFilteredStaff()" [allowPaging]="true" [pageSettings]="pageSettings"
+                        [allowSorting]="true" [allowFiltering]="false" [height]="'auto'" class="modern-grid">
+                        <e-columns>
+                            <e-column width="50" [allowSorting]="false">
+                                <ng-template #headerTemplate>
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" class="form-check" [checked]="selectAll"
+                                            (change)="toggleSelectAll($event)">
+                                    </div>
+                                </ng-template>
+                                <ng-template #template let-data>
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" class="form-check" [checked]="isSelected(data)"
+                                            (change)="toggleSelectStaff(data, $event)">
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column field="staffId" headerText="ID" width="80" [allowSorting]="true">
+                                <ng-template #template let-data>
+                                    <div class="id-cell">
+                                        <span class="id-badge">{{ data.staffId }}</span>
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column headerText="Staff Member" width="300" [allowSorting]="true">
+                                <ng-template #template let-data>
+                                    <div class="staff-cell">
+                                        <div class="staff-avatar">
+                                            <img *ngIf="data.imagePath" [src]="data.imagePath" [alt]="data.staffName">
+                                            <mat-icon *ngIf="!data.imagePath">person</mat-icon>
+                                        </div>
+                                        <div class="staff-info">
+                                            <span class="staff-name">{{ data.staffName }}</span>
+                                            <span class="staff-meta">{{ getStaffType(data) }}</span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column headerText="Department" width="200" [allowSorting]="true">
+                                <ng-template #template let-data>
+                                    <div class="department-cell">
+                                        <span class="department-badge" *ngIf="data.department">
+                                            {{ data.department.departmentName }}
+                                        </span>
+                                        <span class="department-badge unassigned" *ngIf="!data.department">
+                                            Unassigned
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column headerText="Contact" width="180" [allowSorting]="false">
+                                <ng-template #template let-data>
+                                    <div class="contact-cell">
+                                        <div class="contact-item" *ngIf="data.email">
+                                            <mat-icon>email</mat-icon>
+                                            <span>{{ data.email }}</span>
+                                        </div>
+                                        <div class="contact-item" *ngIf="data.phone">
+                                            <mat-icon>phone</mat-icon>
+                                            <span>{{ data.phone }}</span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column headerText="Status" width="120" [allowSorting]="false">
+                                <ng-template #template let-data>
+                                    <div class="status-cell">
+                                        <span class="status-badge status-active">
+                                            <mat-icon>check_circle</mat-icon>
+                                            Active
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </e-column>
+
+                            <e-column headerText="Actions" width="200" [allowSorting]="false">
+                                <ng-template #template let-data>
+                                    <div class="actions-cell">
+                                        <div class="action-buttons">
+                                            <button class="action-btn btn-info"
+                                                [routerLink]="['/staff-details/', data.staffId]" title="View Details">
+                                                <mat-icon>visibility</mat-icon>
+                                            </button>
+                                            <button class="action-btn btn-warning"
+                                                [routerLink]="['/staff-edit/', data.staffId]" title="Edit Staff">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button class="action-btn btn-danger"
+                                                [routerLink]="['/staff-delete/', data.staffId]" title="Delete Staff">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+            </div>
+        </ng-template>
+      </e-column>
+    </e-columns>
+  </ejs-grid>
+</div>
+
+                <!-- Card View -->
+                <div *ngIf="!loading && viewMode === 'card'" class="cards-container">
+                    <div class="staff-grid">
+                        <div class="staff-card"
+                            *ngFor="let staff of getPaginatedStaff(); let i = index; trackBy: trackByStaffId"
+                            [style.animation-delay]="(i * 50) + 'ms'">
+                            <div class="card-checkbox">
+                                <input type="checkbox" class="form-check" [checked]="isSelected(staff)"
+                                    (change)="toggleSelectStaff(staff, $event)">
+                            </div>
+
+                            <div class="card-header">
+                                <div class="staff-avatar-large">
+                                    <img *ngIf="staff.imagePath" [src]="staff.imagePath" [alt]="staff.staffName">
+                                    <mat-icon *ngIf="!staff.imagePath">person</mat-icon>
+                                </div>
+                                <div class="card-status">
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+
+                            <div class="card-content">
+                                <h4 class="staff-name">{{ staff.staffName }}</h4>
+                                <div class="staff-meta">
+                                    <span class="meta-item">
+                                        <span class="meta-label">ID:</span>
+                                        <span class="meta-value">{{ staff.staffId }}</span>
+                                    </span>
+                                    <span class="meta-item">
+                                        <span class="meta-label">Type:</span>
+                                        <span class="meta-value">{{ getStaffType(staff) }}</span>
+                                    </span>
+                                    <span class="meta-item">
+                                        <span class="meta-label">Department:</span>
+                                        <span class="meta-value">{{ staff.department?.departmentName || 'Unassigned'
+                                            }}</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-info" [routerLink]="['/staff-details/', staff.staffId]">
+                                    <mat-icon>visibility</mat-icon>
+                                    View
+                                </button>
+                                <button class="btn btn-sm btn-warning" [routerLink]="['/staff-edit/', staff.staffId]">
+                                    <mat-icon>edit</mat-icon>
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" [routerLink]="['/staff-delete/', staff.staffId]">
+                                    <mat-icon>delete</mat-icon>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Pagination for Card View -->
+                    <div class="custom-pagination" *ngIf="getFilteredStaff().length > (pageSettings?.pageSize ?? 10)">
+                        <button class="pagination-btn" [disabled]="currentPage === 1"
+                            (click)="goToPage(currentPage - 1)">
+                            <mat-icon>chevron_left</mat-icon>
+                            Previous
+                        </button>
+
+                        <div class="pagination-info">
+                            Page {{ currentPage }} of {{ getTotalPages() }}
+</div>
+
+                        <button class="pagination-btn" [disabled]="currentPage === getTotalPages()"
+                            (click)="goToPage(currentPage + 1)">
+                            Next
+                            <mat-icon>chevron_right</mat-icon>
+                        </button>
+</div>
+</div>
+
+                <!-- Empty State -->
+                <div class="empty-state" *ngIf="!loading && getFilteredStaff().length === 0">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">
+                            <mat-icon>people</mat-icon>
+</div>
+                        <h3 class="empty-state-title">No staff found</h3>
+                        <p class="empty-state-description">
+                            {{ searchTerm ? 'No staff members match your search criteria.' : 'Get started by adding your
+                            first staff member.' }}
+                        </p>
+                        <div class="empty-state-actions">
+                            <button class="btn btn-primary" routerLink="/staff-create" *ngIf="!searchTerm">
+                                <mat-icon>person_add</mat-icon>
+                                Add First Staff Member
+                            </button>
+                            <button class="btn btn-secondary" (click)="clearSearch()" *ngIf="searchTerm">
+                                <mat-icon>clear</mat-icon>
+                                Clear Search
+                            </button>
+                                  </div>
+                  </div>
+                </div>
+        </div>
+    </div>
+  </div>
+</div>
