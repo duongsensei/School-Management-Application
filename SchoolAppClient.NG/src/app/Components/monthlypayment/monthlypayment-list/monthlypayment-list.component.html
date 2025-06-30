@@ -304,10 +304,10 @@
                                 </td>
                                 <td class="student-cell">
                                     <div class="student-info">
-                                        <div class="student-name">{{ payment.student?.studentName || 'N/A' }}</div>
+                                        <div class="student-name">{{ payment.student.studentName || 'N/A' }}</div>
                                         <div class="student-meta">
                                             <mat-icon>badge</mat-icon>
-                                            {{ payment.student?.enrollmentNo || 'N/A' }}
+                                            {{ payment.student.enrollmentNo || 'N/A' }}
                                         </div>
                                     </div>
                                 </td>
@@ -381,12 +381,12 @@
                             </div>
 
                             <div class="card-content">
-                                <h4 class="student-title">{{ payment.student?.studentName || 'Unknown Student' }}</h4>
+                                <h4 class="student-title">{{ payment.student.studentName || 'Unknown Student' }}</h4>
 
                                 <div class="payment-details">
                                     <div class="detail-item">
                                         <span class="detail-label">Enrollment No:</span>
-                                        <span class="detail-value">{{ payment.student?.enrollmentNo || 'N/A' }}</span>
+                                        <span class="detail-value">{{ payment.student.enrollmentNo || 'N/A' }}</span>
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Status:</span>

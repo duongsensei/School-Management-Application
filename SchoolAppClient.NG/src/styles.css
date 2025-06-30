@@ -1391,3 +1391,152 @@ a:focus {
     display: none;
   }
 }
+
+/* ========================================
+   GLOBAL OVERRIDE - XÓA TẤT CẢ VIỀN MÀU
+   ======================================== */
+
+/* Xóa HOÀN TOÀN mọi outline và box-shadow */
+*,
+*:before,
+*:after,
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Xóa focus states cho tất cả input elements */
+input,
+textarea,
+select,
+button,
+.form-control,
+.btn,
+[contenteditable] {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+input:focus-visible,
+input:focus-within,
+textarea:focus,
+textarea:focus-visible,
+textarea:focus-within,
+select:focus,
+select:focus-visible,
+select:focus-within,
+button:focus,
+button:focus-visible,
+button:focus-within,
+.form-control:focus,
+.form-control:focus-visible,
+.form-control:focus-within,
+.btn:focus,
+.btn:focus-visible,
+.btn:focus-within,
+[contenteditable]:focus,
+[contenteditable]:focus-visible,
+[contenteditable]:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #667eea !important; /* Chỉ giữ border color, không có outline/shadow */
+}
+
+/* Xóa browser defaults */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+input[type="color"]:focus,
+input[type="range"]:focus,
+input[type="file"]:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+input[type="reset"]:focus,
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Xóa WebKit/Blink autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Xóa Mozilla focus ring */
+input:-moz-focusring,
+button:-moz-focusring,
+select:-moz-focusring,
+textarea:-moz-focusring {
+  outline: none !important;
+}
+
+/* Xóa Edge/IE focus styles */
+input::-ms-clear,
+input::-ms-reveal {
+  display: none !important;
+}
+
+/* Override Bootstrap/Material Design focus */
+.form-control,
+.form-select,
+.form-control:focus,
+.form-select:focus,
+.btn:focus,
+.btn.focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Override Syncfusion styles */
+.e-input-group.e-control-wrapper input:focus,
+.e-input-group.e-control-wrapper .e-input:focus,
+.e-input:focus,
+.e-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Override Angular Material styles nếu có */
+.mat-form-field.mat-focused .mat-form-field-outline-thick,
+.mat-form-field.mat-focused .mat-form-field-outline,
+.mat-input-element:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Đảm bảo authentication pages không có viền */
+.auth-container input,
+.auth-container button,
+.auth-container .form-control {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.auth-container input:focus,
+.auth-container button:focus,
+.auth-container .form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #667eea !important;
+}

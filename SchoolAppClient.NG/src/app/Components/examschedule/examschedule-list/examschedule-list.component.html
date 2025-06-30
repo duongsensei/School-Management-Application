@@ -179,14 +179,14 @@
               <div class="standards-overview">
                 <div class="overview-header">
                   <mat-icon>school</mat-icon>
-                  <span>Standards ({{ schedule.examScheduleStandards?.length || 0 }})</span>
+                  <span>Standards ({{ schedule.examScheduleStandards.length || 0 }})</span>
                 </div>
                 <div class="standards-list">
                   <span class="standard-chip" *ngFor="let standard of schedule.examScheduleStandards?.slice(0, 3)">
                     {{ standard.standardName }}
                   </span>
-                  <span class="more-standards" *ngIf="(schedule.examScheduleStandards?.length || 0) > 3">
-                    +{{ (schedule.examScheduleStandards?.length || 0) - 3 }} more
+                  <span class="more-standards" *ngIf="(schedule.examScheduleStandards.length || 0) > 3">
+                    +{{ (schedule.examScheduleStandards.length || 0) - 3 }} more
                   </span>
                 </div>
               </div>
@@ -253,8 +253,8 @@
                     <span class="standard-tag" *ngFor="let standard of schedule.examScheduleStandards?.slice(0, 2)">
                       {{ standard.standardName }}
                     </span>
-                    <span class="more-tag" *ngIf="(schedule.examScheduleStandards?.length || 0) > 2">
-                      +{{ (schedule.examScheduleStandards?.length || 0) - 2 }}
+                    <span class="more-tag" *ngIf="(schedule.examScheduleStandards.length || 0) > 2">
+                      +{{ (schedule.examScheduleStandards.length || 0) - 2 }}
                     </span>
                   </div>
                 </td>

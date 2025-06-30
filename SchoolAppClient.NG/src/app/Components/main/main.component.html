@@ -1,18 +1,23 @@
 <div class="app-layout">
-  <!-- Header -->
-  <div class="app-header">
+  <!-- Header - chỉ hiển thị khi đã đăng nhập -->
+  <div class="app-header" *ngIf="shouldShowMainLayout()">
     <app-header></app-header>
   </div>
 
   <!-- Main Content Area -->
   <div class="app-main">
-    <!-- Sidebar -->
-    <aside class="app-sidebar" [ngClass]="isSidebarVisible ? 'sidebar-visible' : 'sidebar-hidden'">
+    <!-- Sidebar - chỉ hiển thị khi đã đăng nhập -->
+    <aside class="app-sidebar" 
+           *ngIf="shouldShowMainLayout()"
+           [ngClass]="isSidebarVisible ? 'sidebar-visible' : 'sidebar-hidden'">
       <app-sidebar></app-sidebar>
     </aside>
 
     <!-- Content -->
-    <main class="app-content" [ngClass]="isSidebarVisible ? 'content-with-sidebar' : 'content-full-width'">
+    <main class="app-content" 
+          [ngClass]="shouldShowMainLayout() ? 
+                     (isSidebarVisible ? 'content-with-sidebar' : 'content-full-width') : 
+                     'content-auth-mode'">
       <div class="content-wrapper">
         <router-outlet></router-outlet>
       </div>

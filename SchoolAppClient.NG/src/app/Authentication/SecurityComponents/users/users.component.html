@@ -193,7 +193,7 @@
               <div class="roles-section">
                 <div class="roles-header">
                   <mat-icon>security</mat-icon>
-                  <span>Roles ({{ user.role?.length || 0 }})</span>
+                  <span>Roles ({{ user.role.length || 0 }})</span>
                 </div>
                 <div class="roles-list">
                   <span class="role-chip" *ngFor="let role of user.role">
@@ -250,11 +250,11 @@
                 </td>
                 <td class="roles-cell">
                   <div class="roles-tags">
-                    <span class="role-tag" *ngFor="let role of user.role?.slice(0, 2)">
+                    <span class="role-tag" *ngFor="let role of user.role.slice(0, 2)">
                       {{ role }}
                     </span>
-                    <span class="more-tag" *ngIf="(user.role?.length || 0) > 2">
-                      +{{ (user.role?.length || 0) - 2 }}
+                    <span class="more-tag" *ngIf="(user.role.length || 0) > 2">
+                      +{{ (user.role.length || 0) - 2 }}
                     </span>
                     <span class="no-roles-tag" *ngIf="!user.role || user.role.length === 0">
                       No roles

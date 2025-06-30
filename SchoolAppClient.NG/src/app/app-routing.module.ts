@@ -74,11 +74,11 @@ const routes: Routes = [
 
   /*{ path: "", redirectTo: "/marksentrynewList", pathMatch: "full" },*/
 
-  { path: "", redirectTo: "/dashboard", pathMatch: "full" },
+  { path: "", redirectTo: "/login", pathMatch: "full" },
 
 
 
-  { path: "register", component: RegisterComponent, },
+  { path: "register", component: RegistrationComponent, },
   { path: "login", component: LoginComponent, },
   { path: "profile", component: ProfileComponent, canActivate: [AuthGuard] },
   { path: "userlist", component: UsersComponent, canActivate: [AuthGuard], data: { roles: ['Admin', 'Operator'] } },

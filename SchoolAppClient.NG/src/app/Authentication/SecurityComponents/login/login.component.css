@@ -13,22 +13,13 @@
 .auth-card {
   background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 40px;
   width: 100%;
   max-width: 480px;
   position: relative;
   overflow: hidden;
-}
-
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  border: none;
 }
 
 /* Header Styles */
@@ -100,19 +91,21 @@
 .form-control {
   width: 100%;
   padding: 16px 20px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #e2e8f0 !important;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
   background-color: #ffffff;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .form-control:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none !important;
+  border-color: #667eea !important;
+  box-shadow: none !important;
   transform: translateY(-2px);
 }
 
@@ -209,14 +202,15 @@
 }
 
 .checkmark {
+  display: inline-block;
   width: 18px;
   height: 18px;
+  background-color: #ffffff;
   border: 2px solid #e2e8f0;
   border-radius: 4px;
   margin-right: 8px;
   position: relative;
   transition: all 0.3s ease;
-  flex-shrink: 0;
 }
 
 .checkbox-container:hover .checkmark {
@@ -241,17 +235,16 @@
 }
 
 .checkbox-text {
-  color: #4a5568;
   font-size: 14px;
-  font-weight: 500;
+  color: #4a5568;
+  line-height: 1.4;
 }
 
-/* Forgot Password Link */
 .forgot-password {
   color: #667eea;
   text-decoration: none;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   transition: color 0.3s ease;
 }
 
@@ -260,88 +253,86 @@
   text-decoration: underline;
 }
 
-/* Alert Styles */
+/* Alert Messages */
 .alert {
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
   font-weight: 500;
   font-size: 14px;
 }
 
 .alert i {
-  margin-right: 10px;
+  margin-right: 8px;
   font-size: 16px;
 }
 
 .alert-danger {
   background-color: #fed7d7;
-  color: #c53030;
   border: 1px solid #feb2b2;
+  color: #c53030;
 }
 
 .alert-success {
   background-color: #c6f6d5;
-  color: #2f855a;
   border: 1px solid #9ae6b4;
+  color: #2f855a;
 }
 
-/* Button Styles */
+/* Submit Button */
 .btn-auth {
   width: 100%;
-  padding: 18px 24px;
+  padding: 16px 32px;
   font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: none;
+  font-weight: 600;
   border-radius: 12px;
+  border: none;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .btn-primary:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .btn-primary.loading {
   pointer-events: none;
 }
 
-/* Auth Footer */
+/* Footer */
 .auth-footer {
   text-align: center;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 25px;
-  margin-top: 10px;
+  margin-top: 25px;
 }
 
 .auth-footer p {
-  margin: 0;
   color: #718096;
-  font-size: 15px;
+  font-size: 14px;
+  margin: 0;
 }
 
 .auth-link {
@@ -357,7 +348,7 @@
 }
 
 .auth-link i {
-  margin-right: 5px;
+  margin-right: 4px;
 }
 
 /* Animations */
@@ -373,7 +364,7 @@
 }
 
 .auth-card {
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 /* Responsive Design */
@@ -384,7 +375,6 @@
 
   .auth-card {
     padding: 30px 25px;
-    border-radius: 15px;
   }
 
   .auth-title {
@@ -396,19 +386,18 @@
   }
 
   .form-control {
-    padding: 14px 16px;
-    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 14px 18px;
+    font-size: 16px;
   }
 
   .btn-auth {
-    padding: 16px 20px;
+    padding: 14px 28px;
     font-size: 15px;
   }
 
   .form-options {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
   }
 }
 
@@ -431,23 +420,19 @@
   }
 }
 
-/* Focus visible for accessibility */
+/* High Contrast Mode Support */
 .form-control:focus-visible,
-.btn-auth:focus-visible,
-.password-toggle:focus-visible,
-.auth-link:focus-visible,
-.forgot-password:focus-visible,
-.checkbox-container:focus-visible {
+.btn-primary:focus-visible,
+.password-toggle:focus-visible {
   outline: 2px solid #667eea;
   outline-offset: 2px;
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .auth-card {
     border: 2px solid #000;
   }
-  
+
   .form-control {
     border-color: #000;
   }
@@ -455,4 +440,44 @@
   .checkmark {
     border-color: #000;
   }
+}
+
+/* GLOBAL OVERRIDE để loại bỏ mọi viền màu từ browser/framework */
+.auth-container *,
+.auth-container *:before,
+.auth-container *:after {
+  box-shadow: none !important;
+}
+
+.auth-container input,
+.auth-container textarea,
+.auth-container select,
+.auth-container button {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.auth-container input:focus,
+.auth-container textarea:focus,
+.auth-container select:focus,
+.auth-container button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Xóa viền focus từ browser */
+.auth-container input[type="email"]:focus,
+.auth-container input[type="password"]:focus,
+.auth-container input[type="text"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #667eea !important;
+}
+
+/* Xóa highlight khi autocomplete */
+.auth-container input:-webkit-autofill,
+.auth-container input:-webkit-autofill:hover,
+.auth-container input:-webkit-autofill:focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
