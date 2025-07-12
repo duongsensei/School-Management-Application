@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolApp.Models.DataModels
 {
@@ -13,8 +8,15 @@ namespace SchoolApp.Models.DataModels
     {
         [Key]
         public int MonthId { get; set; }
-        public String? MonthName { get; set; }
-        public MonthlyPayment? monthlyPayment { get; set; }
 
+        [Required(ErrorMessage = "Tên tháng không được để trống")]
+        [MaxLength(50, ErrorMessage = "Tên tháng không được vượt quá 50 ký tự")]
+        public string MonthName { get; set; } = string.Empty;
+
+        // FK nếu có
+        public int? MonthlyPaymentId { get; set; }
+
+        [ForeignKey("MonthlyPaymentId")]
+        public MonthlyPayment? MonthlyPayment { get; set; }
     }
 }
