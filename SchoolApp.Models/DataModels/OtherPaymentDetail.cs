@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolApp.Models.DataModels
 {
@@ -14,9 +9,20 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PaymentDetailId { get; set; }
-        public int OthersPaymentId { get; set; }
-        public string FeeName { get; set; }
-        public decimal FeeAmount { get; set; }
 
+        [Required]
+        public int OthersPaymentId { get; set; }
+
+        [ForeignKey("OthersPaymentId")]
+        public OthersPayment? OthersPayment { get; set; }
+
+        [Required(ErrorMessage = "Tên khoản phí không được để trống")]
+        [MaxLength(100, ErrorMessage = "Tên khoản phí không vượt quá 100 ký tự")]
+        public string FeeName { get; set; } = string.Empty;
+
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
+        [Range(0, double.MaxValue, ErrorMessage = "Số tiền phải >= 0")]
+        public decimal FeeAmount { get; set; }
     }
 }

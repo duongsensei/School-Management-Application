@@ -15,10 +15,18 @@ namespace SchoolApp.Models.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ExamScheduleStandardId { get; set; }
 
-        public int? ExamScheduleId { get; set; }
+        [Required(ErrorMessage = "ExamScheduleId không được để trống")]
+        public int ExamScheduleId { get; set; }
+
+        [Required(ErrorMessage = "StandardId không được để trống")]
         public int StandardId { get; set; }
+
+        [ForeignKey("StandardId")]
         public virtual Standard? Standard { get; set; }
+
+        [ForeignKey("ExamScheduleId")]
         public virtual ExamSchedule? ExamSchedule { get; set; }
-        public virtual ICollection<ExamSubject>? ExamSubjects { get; set; } = [];
+
+        public virtual ICollection<ExamSubject> ExamSubjects { get; set; } = new List<ExamSubject>();
     }
 }

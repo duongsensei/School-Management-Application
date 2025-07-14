@@ -15,16 +15,35 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FeeId { get; set; }
-        public int FeeTypeId { get; set; }
-        public int StandardId { get; set; }
-        public Frequency PaymentFrequency { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime DueDate { get; set; } = DateTime.Now;
-        public Standard? standard { get; set; }
-        public FeeType? feeType { get; set; }
-        public MonthlyPayment? monthlyPayment { get; set; }
-        public OthersPayment? othersPayment { get; set; }
 
+        [Required(ErrorMessage = "FeeTypeId không được để trống")]
+        public int FeeTypeId { get; set; }
+
+        [Required(ErrorMessage = "StandardId không được để trống")]
+        public int StandardId { get; set; }
+
+        [Required(ErrorMessage = "Tần suất thanh toán là bắt buộc")]
+        [EnumDataType(typeof(Frequency))]
+        public Frequency PaymentFrequency { get; set; }
+
+        [Required(ErrorMessage = "Số tiền là bắt buộc")]
+        [Range(0, double.MaxValue, ErrorMessage = "Số tiền phải lớn hơn hoặc bằng 0")]
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Amount { get; set; }
+
+        [Required(ErrorMessage = "Ngày đến hạn là bắt buộc")]
+        [DataType(DataType.Date)]
+        public DateTime DueDate { get; set; }
+
+        [ForeignKey("StandardId")]
+        public Standard? Standard { get; set; }
+
+        [ForeignKey("FeeTypeId")]
+        public FeeType? FeeType { get; set; }
+
+        public MonthlyPayment? MonthlyPayment { get; set; }
+
+        public OthersPayment? OthersPayment { get; set; }
     }
 
     public enum Frequency

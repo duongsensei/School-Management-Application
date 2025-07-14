@@ -14,8 +14,10 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DepartmentId { get; set; }
-        public required string DepartmentName { get; set; }
 
+        [Required(ErrorMessage = "Tên khoa không được để trống")]
+        [MaxLength(100, ErrorMessage = "Tên khoa không được vượt quá 100 ký tự")]
+        public required string DepartmentName { get; set; }
     }
 
 }

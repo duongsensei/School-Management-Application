@@ -14,7 +14,15 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PaymentMonthId { get; set; }
+
+        [Required]
         public int MonthlyPaymentId { get; set; }
-        public string MonthName { get; set; }
+
+        [ForeignKey("MonthlyPaymentId")]
+        public MonthlyPayment? MonthlyPayment { get; set; }
+
+        [Required(ErrorMessage = "Tên tháng không được để trống")]
+        [MaxLength(20, ErrorMessage = "Tên tháng không vượt quá 20 ký tự")]
+        public string MonthName { get; set; } = string.Empty;
     }
 }

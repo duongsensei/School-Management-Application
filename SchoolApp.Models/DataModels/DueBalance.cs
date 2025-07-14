@@ -14,9 +14,18 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DueBalanceId { get; set; }
-        public int? StudentId { get; set; }
-        public decimal? DueBalanceAmount { get; set; }
-        public DateTime? LastUpdate { get; set; } = DateTime.Now;
+
+        [Required(ErrorMessage = "Mã học sinh không được để trống")]
+        public int StudentId { get; set; }
+
+        [Required(ErrorMessage = "Số tiền còn nợ không được để trống")]
+        [Range(0, double.MaxValue, ErrorMessage = "Số tiền còn nợ phải >= 0")]
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal DueBalanceAmount { get; set; }
+
+        public DateTime LastUpdate { get; set; } = DateTime.Now;
+
+        [ForeignKey("StudentId")]
         public Student? Student { get; set; }
     }
 }

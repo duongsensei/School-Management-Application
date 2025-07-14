@@ -15,16 +15,39 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StaffExperienceId { get; set; }
-        public string? CompanyName { get; set; }
-        public string? Designation { get; set; }
-        public DateTime JoiningDate { get; set; } = DateTime.Now;
-        public DateTime? LeavingDate { get; set; } = DateTime.Now;
-        public string? Responsibilities { get; set; }
-        public string? Achievements { get; set; }
-        public TimeSpan ServiceDuration => LeavingDate.HasValue
-                                      ? LeavingDate.Value - JoiningDate
-                                      : DateTime.Now - JoiningDate;
-        public string ServiceDurationText=> ServiceDuration.ToReadableString();
 
+        [Required]
+        public int StaffId { get; set; }
+
+        [ForeignKey("StaffId")]
+        public Staff? Staff { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string CompanyName { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string Designation { get; set; } = string.Empty;
+
+        [DataType(DataType.Date)]
+        public DateTime JoiningDate { get; set; } = DateTime.Now;
+
+        [DataType(DataType.Date)]
+        public DateTime? LeavingDate { get; set; }
+
+        [MaxLength(500)]
+        public string? Responsibilities { get; set; }
+
+        [MaxLength(300)]
+        public string? Achievements { get; set; }
+
+        [NotMapped]
+        public TimeSpan ServiceDuration => LeavingDate.HasValue
+            ? LeavingDate.Value - JoiningDate
+            : DateTime.Now - JoiningDate;
+
+        [NotMapped]
+        public string ServiceDurationText => ServiceDuration.ToReadableString(); // Custom extension method
     }
 }

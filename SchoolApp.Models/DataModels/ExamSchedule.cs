@@ -15,9 +15,10 @@ namespace SchoolApp.Models.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ExamScheduleId { get; set; }
 
-        [Required]
-        public string? ExamScheduleName { get; set; }
+        [Required(ErrorMessage = "Tên lịch thi không được để trống")]
+        [MaxLength(100, ErrorMessage = "Tên lịch thi không được vượt quá 100 ký tự")]
+        public string ExamScheduleName { get; set; } = string.Empty;
 
-        public virtual ICollection<ExamScheduleStandard>? ExamScheduleStandards { get; set; } = [];
+        public virtual ICollection<ExamScheduleStandard> ExamScheduleStandards { get; set; } = new List<ExamScheduleStandard>();
     }
 }

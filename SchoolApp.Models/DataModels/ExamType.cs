@@ -15,9 +15,11 @@ namespace SchoolApp.Models.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ExamTypeId { get; set; }
 
-        [Required]
-        public string? ExamTypeName { get; set; }
-        public virtual ICollection<ExamSubject>? ExamSubjects { get; set; }
+        [Required(ErrorMessage = "Tên loại bài thi không được để trống")]
+        [MaxLength(100, ErrorMessage = "Tên loại bài thi không được vượt quá 100 ký tự")]
+        public string ExamTypeName { get; set; } = string.Empty;
+
+        public virtual ICollection<ExamSubject> ExamSubjects { get; set; } = new List<ExamSubject>();
     }
 
     //public enum ExamTypeName

@@ -14,15 +14,31 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OthersPaymentId { get; set; }
-        public int? StudentId { get; set; }
+
+        [Required]
+        public int StudentId { get; set; }
+
+        [ForeignKey("StudentId")]
+        public Student? Student { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal TotalAmount { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal AmountPaid { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal AmountRemaining { get; set; }
+
+        [DataType(DataType.Date)]
         public DateTime PaymentDate { get; set; } = DateTime.Now;
 
-        public Student? Student { get; set; }
-        public IList<Fee>? fees { get; set; }
-        public IList<OtherPaymentDetail>? otherPaymentDetails { get; set; }
+        // Nếu bạn thực sự muốn liên kết đến Fee (danh mục khoản thu), thì giữ lại
+        public ICollection<Fee> Fees { get; set; } = new List<Fee>();
 
+        public ICollection<OtherPaymentDetail> OtherPaymentDetails { get; set; } = new List<OtherPaymentDetail>();
     }
 }

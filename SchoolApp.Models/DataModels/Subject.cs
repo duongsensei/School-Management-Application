@@ -15,13 +15,20 @@ namespace SchoolApp.Models.DataModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SubjectId { get; set; }
+
+        [Required(ErrorMessage = "Tên môn học là bắt buộc")]
+        [StringLength(100, ErrorMessage = "Tên môn học không được dài quá 100 ký tự")]
         public string? SubjectName { get; set; }
 
-        //The value of this property must be Unique (See in the SchoolDbContext.cs file)
+        [Required(ErrorMessage = "Mã môn học là bắt buộc")]
+        [Range(1, int.MaxValue, ErrorMessage = "Mã môn học phải là số dương")]
         public int? SubjectCode { get; set; }
 
         public int? StandardId { get; set; }
+
+        [ForeignKey("StandardId")]
         public virtual Standard? Standard { get; set; }
+
         public virtual ICollection<ExamSubject>? ExamSubjects { get; set; }
     }
 }

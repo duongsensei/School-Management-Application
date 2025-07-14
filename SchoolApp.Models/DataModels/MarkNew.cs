@@ -9,59 +9,55 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchoolApp.Models.DataModels
 {
-    [Table("MarkEntry")] // not migrated yet
+    [Table("MarkEntry")]
     public class MarkEntry
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MarkEntryId { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime? MarkEntryDate { get; set; } = DateTime.Now;
 
+        [Required]
         public int StaffId { get; set; }
+
+        [ForeignKey("StaffId")]
         public Staff? Staff { get; set; }
 
-
-        // 1st Semester, 2nd Semester
+        [Required]
         public int ExamScheduleId { get; set; }
+
+        [ForeignKey("ExamScheduleId")]
         public ExamSchedule? ExamSchedule { get; set; }
 
-
-
-        // Oral, Writen, MCQ
+        [Required]
         public int ExamTypeId { get; set; }
+
+        [ForeignKey("ExamTypeId")]
         public ExamType? ExamType { get; set; }
 
-        
-
-        // Class 1, Class 2
-        //public int ExamScheduleStandardId { get; set; }
-        //public ExamScheduleStandard? ExamScheduleStandard { get; set; }
-
-
+        [Required]
         public int SubjectId { get; set; }
+
+        [ForeignKey("SubjectId")]
         public Subject? Subject { get; set; }
 
-
+        [Required]
         public int StandardId { get; set; }
+
+        [ForeignKey("StandardId")]
         public Standard? Standard { get; set; }
 
-
-        // Bengali, 
-        //public int ExamSubjectId { get; set; }
-        //public ExamSubject? ExamSubject { get; set; }
-
+        [Range(0, int.MaxValue, ErrorMessage = "Tổng điểm phải >= 0")]
         public int? TotalMarks { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "Điểm qua phải >= 0")]
         public int? PassMarks { get; set; }
 
-
-        //public virtual ICollection<Student>? Students { get; set; } = [];
-
-
-        public virtual ICollection<StudentMarksDetails> StudentMarksDetails { get; set; } = [];
-
+        public virtual ICollection<StudentMarksDetails> StudentMarksDetails { get; set; } = new List<StudentMarksDetails>();
     }
 
-   
+
 
 }
